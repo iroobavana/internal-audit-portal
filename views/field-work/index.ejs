@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .table-scroll {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    
+    .procedures-table {
+      min-width: 1800px;
+    }
+    
+    .procedures-table th {
+      position: sticky;
+      top: 0;
+      background-color: #f8f9fa;
+      z-index: 10;
+      padding: 16px 12px;
+      white-space: nowrap;
+    }
+    
+    .procedures-table td {
+      padding: 12px;
+      vertical-align: top;
+    }
+    
+    .procedures-table textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    
+    .procedures-table .form-control-sm,
+    .procedures-table .form-select-sm {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/messages') %>
+  
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1>Audit Procedures</h1>
+        <p class="text-muted mb-0">Audit: <%= audit.audit_name %> - <%= audit.auditee_name %></p>
+      </div>
+      <a href="/audits/<%= audit.id %>" class="btn btn-secondary">Back to Audit</a>
+    </div>
+
+    <% if (selectedAreas.length === 0) { %>
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-exclamation-circle text-muted" style="font-size: 48px;"></i>
+          <h5 class="mt-3">No Selected Areas Found</h5>
+          <p class="text-muted">Please complete risk assessment and select areas to audit first.</p>
+          <a href="/risk-assessment/<%= audit.id %>" class="btn btn-primary">
+            Go to Risk Assessment
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      
+      <form action="/field-work/<%= audit.id %>/save-all" method="POST" enctype="multipart/form-data">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Testing Procedures</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-scroll">
+              <table class="table table-bordered mb-0 procedures-table">
+                <thead>
+                  <tr>
+                    <th style="width: 180px;">Audit Area</th>
+                    <th style="width: 250px;">Audit Procedure</th>
+                    <th style="width: 300px;">Record of Work</th>
+                    <th style="width: 300px;">Conclusion</th>
+                    <th style="width: 120px;">Result</th>
+                    <th style="width: 250px;">Cause</th>
+                    <th style="width: 200px;">Evidence</th>
+                    <th style="width: 200px;">Working Paper</th>
+                    <th style="width: 150px;">Assigned Auditor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% selectedAreas.forEach((area, index) => { 
+                    const existingProc = procedures.find(p => p.risk_assessment_id === area.id);
+                  %>
+                    <tr>
+                      <td>
+                        <strong><%= area.audit_area %></strong>
+                        <input type="hidden" name="items[<%= index %>][risk_assessment_id]" value="<%= area.id %>">
+                      </td>
+                      <td style="white-space: normal;"><%= area.audit_procedure || '-' %></td>
+                      <td>
+                        <textarea class="form-control" 
+                                  name="items[<%= index %>][record_of_work]" 
+                                  rows="3"
+                                  placeholder="Enter record of work..."><%= existingProc ? existingProc.record_of_work || '' : '' %></textarea>
+                      </td>
+                      <td>
+                        <textarea class="form-control" 
+                                  name="items[<%= index %>][conclusion]" 
+                                  rows="3" 
+                                  placeholder="Enter conclusion..." 
+                                  required><%= existingProc ? existingProc.conclusion || '' : '' %></textarea>
+                      </td>
+                      <td>
+                        <select class="form-select" name="items[<%= index %>][result]" required>
+                          <option value="">- Select -</option>
+                          <option value="pass" <%= existingProc && existingProc.result === 'pass' ? 'selected' : '' %>>Pass</option>
+                          <option value="fail" <%= existingProc && existingProc.result === 'fail' ? 'selected' : '' %>>Fail</option>
+                        </select>
+                      </td>
+                      <td>
+                        <textarea class="form-control" 
+                                  name="items[<%= index %>][cause]" 
+                                  rows="3"
+                                  placeholder="Enter cause if failed..."><%= existingProc ? existingProc.cause || '' : '' %></textarea>
+                      </td>
+                      <td>
+                        <input type="file" class="form-control" 
+                               name="evidence_<%= index %>" 
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <% if (existingProc && existingProc.evidence_file) { %>
+                          <small class="text-success d-block mt-2">
+                            <i class="bi bi-check-circle"></i> File uploaded
+                            <a href="/uploads/<%= existingProc.evidence_file %>" target="_blank" class="d-block">
+                              View Evidence
+                            </a>
+                          </small>
+                        <% } %>
+                      </td>
+                      <td>
+                        <select class="form-select" name="items[<%= index %>][working_paper_id]">
+                          <option value="">- None -</option>
+                          <% workingPapers.forEach(wp => { %>
+                            <option value="<%= wp.id %>" 
+                              <%= existingProc && existingProc.working_paper_id === wp.id ? 'selected' : '' %>>
+                              <%= wp.name %>
+                            </option>
+                          <% }) %>
+                        </select>
+                      </td>
+                      <td>
+                        <input type="text" class="form-control" 
+                               value="<%= area.auditor_name || 'Unassigned' %>" 
+                               readonly style="background-color: #e9ecef;">
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                <i class="bi bi-info-circle"></i> Scroll horizontally to see all columns
+              </small>
+              <div>
+                <a href="/audits/<%= audit.id %>" class="btn btn-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-save"></i> Save All Procedures
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+    <% } %>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

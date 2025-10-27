@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/messages') %>
+  
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><i class="bi bi-plus-circle"></i> Create Audit</h1>
+      <a href="/audits" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+    </div>
+    
+    <div class="card">
+      <div class="card-body">
+        <form action="/audits/create" method="POST">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="audit_name" class="form-label">Audit Name *</label>
+              <input type="text" class="form-control" id="audit_name" name="audit_name" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="auditee_id" class="form-label">Select Auditee *</label>
+              <select class="form-select" id="auditee_id" name="auditee_id" required>
+                <option value="">-- Choose Auditee --</option>
+                <% auditees.forEach(auditee => { %>
+                  <option value="<%= auditee.id %>"><%= auditee.name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="start_date" class="form-label">Start Date *</label>
+              <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="end_date" class="form-label">End Date *</label>
+              <input type="date" class="form-control" id="end_date" name="end_date" required>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="team_leader_id" class="form-label">Team Leader *</label>
+            <select class="form-select" id="team_leader_id" name="team_leader_id" required>
+              <option value="">-- Choose Team Leader --</option>
+              <% auditors.forEach(auditor => { %>
+                <option value="<%= auditor.id %>"><%= auditor.name %> (<%= auditor.role %>)</option>
+              <% }) %>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Audit Team Members</label>
+            <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+              <% auditors.forEach(auditor => { %>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="team_members[]" 
+                         value="<%= auditor.id %>" id="member_<%= auditor.id %>">
+                  <label class="form-check-label" for="member_<%= auditor.id %>">
+                    <%= auditor.name %> - <%= auditor.role %>
+                  </label>
+                </div>
+              <% }) %>
+            </div>
+            <small class="text-muted">Select team members for this audit</small>
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/audits" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save"></i> Create Audit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

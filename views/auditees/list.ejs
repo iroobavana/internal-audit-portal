@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    /* Top Navigation Bar */
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .nav-brand i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    
+    .nav-link.active {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      min-height: 100vh;
+      padding: 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    /* Card Styles */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+      background: #3b82f6;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Table Styles */
+    .table-modern {
+      margin: 0;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+    }
+    
+    .table-modern th {
+      font-weight: 600;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 16px;
+      font-size: 14px;
+    }
+    
+    .table-modern td {
+      padding: 16px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* Action Buttons */
+    .btn-sm {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .btn-info {
+      background: #0ea5e9;
+      border: none;
+      color: white;
+    }
+    
+    .btn-info:hover {
+      background: #0284c7;
+    }
+    
+    .btn-success {
+      background: #22c55e;
+      border: none;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #16a34a;
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      border: none;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      border: none;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      color: #0f172a;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="/dashboard" class="nav-brand">
+      <i class="bi bi-shield-check"></i>
+      <span>Internal Audit Portal</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <i class="bi bi-house"></i> Dashboard
+      </a>
+      <a href="/auditees" class="nav-link active">
+        <i class="bi bi-building"></i> Auditees
+      </a>
+      <a href="/audits" class="nav-link">
+        <i class="bi bi-clipboard-check"></i> Audits
+      </a>
+      <a href="/working-papers" class="nav-link">
+        <i class="bi bi-file-earmark-text"></i> Working Papers
+      </a>
+      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
+        <a href="/issues/verify" class="nav-link">
+          <i class="bi bi-check-circle"></i> Verify
+        </a>
+      <% } %>
+    </div>
+    
+    <div class="user-menu">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
+        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
+      </div>
+      <a href="/auth/logout" class="btn btn-sm btn-secondary">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <%- include('../partials/messages') %>
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-building"></i> Auditees
+      </h1>
+      <a href="/auditees/create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Auditee
+      </a>
+    </div>
+    
+    <!-- Auditees Table -->
+    <div class="card-modern">
+      <% if (auditees.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-building"></i>
+          </div>
+          <div class="empty-text">No auditees found. Create your first auditee!</div>
+          <a href="/auditees/create" class="btn btn-primary mt-3">
+            <i class="bi bi-plus-circle"></i> Create First Auditee
+          </a>
+        </div>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-modern">
+            <thead>
+              <tr>
+                <th style="width: 60px;">#</th>
+                <th>Name</th>
+                <th>Official Email</th>
+                <th style="width: 150px;">Departments</th>
+                <th style="width: 150px;">Created At</th>
+                <th style="width: 220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% auditees.forEach((auditee, index) => { %>
+                <tr>
+                  <td><strong><%= index + 1 %></strong></td>
+                  <td>
+                    <strong><%= auditee.name %></strong>
+                  </td>
+                  <td><%= auditee.official_email %></td>
+                  <td>
+                    <span class="badge bg-primary"><%= auditee.department_count %> departments</span>
+                  </td>
+                  <td><%= new Date(auditee.created_at).toLocaleDateString() %></td>
+                  <td>
+                    <a href="/auditees/<%= auditee.id %>" class="btn btn-sm btn-info" title="View">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="/auditees/<%= auditee.id %>/audit-universe" class="btn btn-sm btn-success" title="Audit Universe">
+                      <i class="bi bi-grid"></i>
+                    </a>
+                    <a href="/auditees/<%= auditee.id %>/edit" class="btn btn-sm btn-warning" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <form action="/auditees/<%= auditee.id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="return confirm('Delete this auditee?');">
+                      <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

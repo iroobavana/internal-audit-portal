@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .main-content {
+      margin-left: 260px;
+      min-height: 100vh;
+      padding: 32px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .page-title i {
+      color: #3b82f6;
+    }
+    
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    
+    .filters-section {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .filter-label {
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+    }
+    
+    .table-modern th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+    }
+    
+    .table-modern td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    
+    .table-modern tbody tr {
+      transition: background 0.2s;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    .badge-custom {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-yellow {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .badge-red {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      color: #64748b;
+      font-size: 16px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-box {
+      flex: 1;
+      min-width: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      border-radius: 12px;
+      color: white;
+    }
+    
+    .stat-box.blue {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    
+    .stat-box.green {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .stat-box.orange {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/sidebar') %>
+  
+  <div class="main-content">
+    <%- include('../partials/messages') %>
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-grid-3x3-gap"></i>
+        Audit Universe
+      </h1>
+      <a href="/dashboard" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i>
+        Back to Dashboard
+      </a>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="stats-row">
+      <div class="stat-box blue">
+        <div class="stat-label">Total Entries</div>
+        <div class="stat-value" id="total-count"><%= universe.length %></div>
+      </div>
+      <div class="stat-box green">
+        <div class="stat-label">Auditees</div>
+        <div class="stat-value"><%= auditees.length %></div>
+      </div>
+      <div class="stat-box orange">
+        <div class="stat-label">Audit Areas</div>
+        <div class="stat-value" id="areas-count">-</div>
+      </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card-modern">
+      <div class="filters-section">
+        <div class="filter-group">
+          <div class="filter-label">Filter by Auditee</div>
+          <select id="auditee-filter" class="form-select">
+            <option value="">All Auditees</option>
+            <% auditees.forEach(auditee => { %>
+              <option value="<%= auditee.name %>"><%= auditee.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <div class="filter-label">Search</div>
+          <input type="text" id="search-input" class="form-control" placeholder="Search audit area, process, department...">
+        </div>
+        
+        <div class="filter-group" style="display: flex; align-items: flex-end;">
+          <button onclick="resetFilters()" class="btn btn-secondary" style="width: 100%;">
+            <i class="bi bi-x-circle"></i>
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Audit Universe Table -->
+    <div class="card-modern">
+      <div class="table-container">
+        <table class="table-modern" id="universe-table">
+          <thead>
+            <tr>
+              <th>Auditee</th>
+              <th>Department</th>
+              <th>Audit Area</th>
+              <th>Process</th>
+              <th>Inherent Risk</th>
+              <th>Control Measure</th>
+              <th>Audit Procedure</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (universe.length > 0) { %>
+              <% universe.forEach(entry => { %>
+                <tr data-auditee="<%= entry.auditee_name %>" class="universe-row">
+                  <td>
+                    <div style="font-weight: 600; color: #0f172a;">
+                      <%= entry.auditee_name || 'N/A' %>
+                    </div>
+                  </td>
+                  <td><%= entry.department_name || 'N/A' %></td>
+                  <td>
+                    <span class="badge-custom badge-blue"><%= entry.audit_area || 'N/A' %></span>
+                  </td>
+                  <td><%= entry.process || '-' %></td>
+                  <td>
+                    <% if (entry.inherent_risk) { %>
+                      <% 
+                        let badgeClass = 'badge-blue';
+                        const risk = entry.inherent_risk.toLowerCase();
+                        if (risk.includes('high')) badgeClass = 'badge-red';
+                        else if (risk.includes('medium')) badgeClass = 'badge-yellow';
+                        else if (risk.includes('low')) badgeClass = 'badge-green';
+                      %>
+                      <span class="badge-custom <%= badgeClass %>"><%= entry.inherent_risk %></span>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td style="max-width: 300px;">
+                    <%= entry.control_measure || '-' %>
+                  </td>
+                  <td style="max-width: 300px;">
+                    <%= entry.audit_procedure || '-' %>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-icon">
+                      <i class="bi bi-inbox"></i>
+                    </div>
+                    <div class="empty-text">No audit universe entries found</div>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="no-results" style="display: none;">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-search"></i>
+          </div>
+          <div class="empty-text">No entries match your filters</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Filter functionality
+    const auditeeFilter = document.getElementById('auditee-filter');
+    const searchInput = document.getElementById('search-input');
+    const tableBody = document.querySelector('#universe-table tbody');
+    const rows = document.querySelectorAll('.universe-row');
+    const noResults = document.getElementById('no-results');
+    const totalCount = document.getElementById('total-count');
+    
+    // Calculate unique audit areas
+    const uniqueAreas = new Set();
+    rows.forEach(row => {
+      const area = row.querySelector('td:nth-child(3)').textContent.trim();
+      if (area && area !== 'N/A') uniqueAreas.add(area);
+    });
+    document.getElementById('areas-count').textContent = uniqueAreas.size;
+    
+    function filterTable() {
+      const auditeeValue = auditeeFilter.value.toLowerCase();
+      const searchValue = searchInput.value.toLowerCase();
+      let visibleCount = 0;
+      
+      rows.forEach(row => {
+        const auditee = row.getAttribute('data-auditee').toLowerCase();
+        const rowText = row.textContent.toLowerCase();
+        
+        const matchesAuditee = !auditeeValue || auditee.includes(auditeeValue);
+        const matchesSearch = !searchValue || rowText.includes(searchValue);
+        
+        if (matchesAuditee && matchesSearch) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      
+      // Update total count
+      totalCount.textContent = visibleCount;
+      
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        tableBody.style.display = 'none';
+        noResults.style.display = 'block';
+      } else {
+        tableBody.style.display = '';
+        noResults.style.display = 'none';
+      }
+    }
+    
+    function resetFilters() {
+      auditeeFilter.value = '';
+      searchInput.value = '';
+      filterTable();
+    }
+    
+    auditeeFilter.addEventListener('change', filterTable);
+    searchInput.addEventListener('input', filterTable);
+  </script>
+</body>
+</html>

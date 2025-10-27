@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    /* Top Navigation Bar */
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .nav-brand i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    
+    .nav-link.active {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      min-height: 100vh;
+      padding: 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .page-title i {
+      color: #3b82f6;
+    }
+    
+    /* Card Modern */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+    
+    /* Table Container */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .table-modern {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-modern th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .table-modern td {
+      padding: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #475569;
+    }
+    
+    .table-modern tbody tr {
+      transition: background 0.2s;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    .table-modern tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 64px 32px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    
+    /* Buttons */
+    .btn {
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      color: white;
+    }
+    
+    .btn-info {
+      background: #06b6d4;
+      color: white;
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    
+    /* Badge */
+    .badge {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .badge.bg-success {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    
+    .badge.bg-secondary {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    
+    /* Modal Styling */
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+      border-bottom: 1px solid #e2e8f0;
+      padding: 24px;
+    }
+    
+    .modal-title {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    .modal-body {
+      padding: 24px;
+    }
+    
+    .modal-footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="/dashboard" class="nav-brand">
+      <i class="bi bi-shield-check"></i>
+      <span>Internal Audit Portal</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <i class="bi bi-house"></i> Dashboard
+      </a>
+      <a href="/auditees" class="nav-link">
+        <i class="bi bi-building"></i> Auditees
+      </a>
+      <a href="/audits" class="nav-link">
+        <i class="bi bi-clipboard-check"></i> Audits
+      </a>
+      <a href="/working-papers" class="nav-link active">
+        <i class="bi bi-file-earmark-text"></i> Working Papers
+      </a>
+      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
+        <a href="/issues/verify" class="nav-link">
+          <i class="bi bi-check-circle"></i> Verify
+        </a>
+      <% } %>
+    </div>
+    
+    <div class="user-menu">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
+        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
+      </div>
+      <a href="/auth/logout" class="btn btn-sm btn-secondary">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </nav>
+
+  <%- include('../partials/messages') %>
+  
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-file-earmark-text"></i>
+        Working Papers
+      </h1>
+      <a href="/working-papers/create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Working Paper
+      </a>
+    </div>
+    
+    <!-- Working Papers Table -->
+    <div class="card-modern">
+      <div class="table-container">
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th style="width: 60px;">#</th>
+              <th>Name</th>
+              <th style="width: 120px;">Columns</th>
+              <th style="width: 150px;">Allow Row Insert</th>
+              <th>Created By</th>
+              <th style="width: 140px;">Created At</th>
+              <th style="width: 200px; text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (workingPapers.length === 0) { %>
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-icon">
+                      <i class="bi bi-file-earmark"></i>
+                    </div>
+                    <h5 class="empty-text">No Working Papers Found</h5>
+                    <p style="color: #64748b;">Create your first working paper to get started</p>
+                    <a href="/working-papers/create" class="btn btn-primary" style="margin-top: 16px;">
+                      <i class="bi bi-plus-circle"></i> Create Working Paper
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% } else { %>
+              <% workingPapers.forEach((wp, index) => { %>
+                <tr>
+                  <td style="font-weight: 600; color: #64748b;"><%= index + 1 %></td>
+                  <td style="font-weight: 600; color: #0f172a;"><%= wp.name %></td>
+                  <td><%= wp.column_count %> column(s)</td>
+                  <td>
+                    <span class="badge bg-<%= wp.allow_row_insert ? 'success' : 'secondary' %>">
+                      <%= wp.allow_row_insert ? 'Yes' : 'No' %>
+                    </span>
+                  </td>
+                  <td><%= wp.created_by_name %></td>
+                  <td><%= new Date(wp.created_at).toLocaleDateString() %></td>
+                  <td style="text-align: center;">
+                    <button class="btn btn-info btn-sm" title="View" onclick="viewWorkingPaper(<%= wp.id %>)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <a href="/working-papers/<%= wp.id %>/edit" class="btn btn-warning btn-sm" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <button class="btn btn-danger btn-sm" title="Delete" onclick="deleteWorkingPaper(<%= wp.id %>, '<%= wp.name %>')">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- View Modal -->
+  <div class="modal fade" id="viewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Working Paper</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <div class="text-center py-5">
+            <div class="spinner-border" role="status" style="color: #3b82f6;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-warning" id="editBtn" onclick="editFromModal()">
+            <i class="bi bi-pencil"></i> Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let currentWPId = null;
+    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+    
+    function viewWorkingPaper(id) {
+      currentWPId = id;
+      modal.show();
+      
+      // Fetch working paper details
+      fetch(`/working-papers/${id}/view-data`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('modalTitle').textContent = data.workingPaper.name;
+          
+          let html = '<div class="mb-4">';
+          html += `<p><strong>Allow Row Insert:</strong> <span class="badge bg-${data.workingPaper.allow_row_insert ? 'success' : 'secondary'}">${data.workingPaper.allow_row_insert ? 'Yes' : 'No'}</span></p>`;
+          html += `<p><strong>Created:</strong> ${new Date(data.workingPaper.created_at).toLocaleString()}</p>`;
+          html += '</div>';
+          
+          if (data.columns.length > 0) {
+            html += '<h6 class="mb-3">Table Structure:</h6>';
+            html += '<div style="overflow-x: auto;"><table class="table table-bordered">';
+            html += '<thead style="background: #f8fafc;"><tr>';
+            
+            data.columns.forEach(col => {
+              html += `<th style="padding: 12px;">${col.column_name} <small class="text-muted">(${col.column_type})</small></th>`;
+            });
+            
+            html += '</tr></thead><tbody><tr>';
+            
+            data.columns.forEach(col => {
+              if (col.column_type === 'select' || col.column_type === 'multiselect') {
+                try {
+                  const options = JSON.parse(col.options);
+                  html += `<td style="padding: 12px;"><small class="text-muted">Options: ${options.join(', ')}</small></td>`;
+                } catch(e) {
+                  html += '<td style="padding: 12px;"><small class="text-muted">-</small></td>';
+                }
+              } else if (col.column_type === 'formula') {
+                html += `<td style="padding: 12px;"><small class="text-muted">Formula: ${col.formula}</small></td>`;
+              } else {
+                html += '<td style="padding: 12px;"><small class="text-muted">-</small></td>';
+              }
+            });
+            
+            html += '</tr></tbody></table></div>';
+          } else {
+            html += '<p class="text-muted">No columns configured</p>';
+          }
+          
+          document.getElementById('modalBody').innerHTML = html;
+        })
+        .catch(error => {
+          document.getElementById('modalBody').innerHTML = '<p class="text-danger">Error loading working paper</p>';
+        });
+    }
+    
+    function editFromModal() {
+      if (currentWPId) {
+        window.location.href = `/working-papers/${currentWPId}/edit`;
+      }
+    }
+    
+    function deleteWorkingPaper(id, name) {
+      if (confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) {
+        fetch(`/working-papers/${id}/delete`, {
+          method: 'POST'
+        })
+        .then(response => {
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert('Error deleting working paper');
+          }
+        })
+        .catch(error => {
+          alert('Error deleting working paper');
+        });
+      }
+    }
+  </script>
+</body>
+</html>

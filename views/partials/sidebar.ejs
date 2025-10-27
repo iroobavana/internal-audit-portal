@@ -1,0 +1,231 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <i class="bi bi-shield-check"></i>
+      <span>Internal Audit</span>
+    </div>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <% if (user.role === 'system_admin') { %>
+      <!-- System Admin Menu -->
+      <a href="/admin/dashboard" class="nav-item <%= title === 'System Admin Dashboard' ? 'active' : '' %>">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <a href="/admin/organizations" class="nav-item <%= title === 'Manage Organizations' ? 'active' : '' %>">
+        <i class="bi bi-building"></i>
+        <span>Organizations</span>
+      </a>
+      
+      <a href="/admin/users" class="nav-item <%= title === 'Manage Users' ? 'active' : '' %>">
+        <i class="bi bi-people"></i>
+        <span>Users</span>
+      </a>
+    <% } else { %>
+      <!-- Regular User Menu -->
+      <a href="/dashboard" class="nav-item <%= title === 'Dashboard' ? 'active' : '' %>">
+        <i class="bi bi-house-door"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <a href="/audits" class="nav-item <%= title === 'Audits' || (title.includes('Audit') && title !== 'Audit Universe') ? 'active' : '' %>">
+        <i class="bi bi-clipboard-check"></i>
+        <span>Audits</span>
+      </a>
+      
+      <% if (user.role === 'head_of_audit') { %>
+        <a href="/auditees" class="nav-item <%= title === 'Auditees' ? 'active' : '' %>">
+          <i class="bi bi-building"></i>
+          <span>Auditees</span>
+        </a>
+        
+        <a href="/audits/audit-universe-all" class="nav-item <%= title === 'Audit Universe' ? 'active' : '' %>">
+          <i class="bi bi-globe"></i>
+          <span>Audit Universe</span>
+        </a>
+      <% } %>
+      
+      <a href="/working-papers" class="nav-item <%= title === 'Working Papers' ? 'active' : '' %>">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Working Papers</span>
+      </a>
+      
+      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
+        <a href="/issues/verify" class="nav-item">
+          <i class="bi bi-check-circle"></i>
+          <span>Verify Issues</span>
+        </a>
+      <% } %>
+      
+      <a href="/issues/issues-register" class="nav-item">
+        <i class="bi bi-journal-text"></i>
+        <span>Issues Register</span>
+      </a>
+      
+      <a href="/issues/follow-up-tracker" class="nav-item">
+        <i class="bi bi-arrow-repeat"></i>
+        <span>Follow-up Tracker</span>
+      </a>
+    <% } %>
+    
+    <div class="nav-divider"></div>
+    
+    <a href="/profile" class="nav-item">
+      <i class="bi bi-person-circle"></i>
+      <span>Profile</span>
+    </a>
+    
+    <a href="/logout" class="nav-item">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </a>
+  </nav>
+  
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <%= user.name.charAt(0).toUpperCase() %>
+      </div>
+      <div class="user-details">
+        <div class="user-name"><%= user.name %></div>
+        <div class="user-role"><%= user.role.replace('_', ' ') %></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  
+  .logo i {
+    font-size: 28px;
+    color: #3b82f6;
+  }
+  
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #94a3b8;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .nav-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+  
+  .nav-item.active {
+    background: #3b82f6;
+    color: white;
+  }
+  
+  .nav-item i {
+    font-size: 18px;
+    width: 20px;
+  }
+  
+  .nav-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 12px 0;
+  }
+  
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .user-details {
+    flex: 1;
+  }
+  
+  .user-name {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  
+  .user-role {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: capitalize;
+  }
+  
+  /* Scrollbar styling */
+  .sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+  }
+  
+  .sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+  }
+</style>

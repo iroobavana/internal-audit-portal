@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fafbfc;
+    }
+    
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .main-content {
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    .card-modern {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 24px;
+    }
+    
+    .issue-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.2s;
+    }
+    
+    .issue-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-color: #cbd5e1;
+    }
+    
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .issue-title-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    .issue-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .meta-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    .meta-value {
+      font-size: 14px;
+      color: #1e293b;
+      font-weight: 500;
+    }
+    
+    .issue-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .content-field {
+      padding: 12px;
+      background: #fafbfc;
+      border-radius: 8px;
+    }
+    
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    
+    .field-value {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-approve {
+      background: #10b981;
+      color: white;
+    }
+    
+    .btn-approve:hover {
+      background: #059669;
+    }
+    
+    .btn-amend {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .btn-amend:hover {
+      background: #d97706;
+    }
+    
+    .btn-remove {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-remove:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <a href="/dashboard" class="text-decoration-none">
+      <h4 class="m-0" style="color: #0f172a;">
+        <i class="bi bi-shield-check text-primary"></i> Internal Audit Portal
+      </h4>
+    </a>
+    <div>
+      <a href="/dashboard" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-clipboard-check text-primary"></i> Verify Audit Issues
+      </h1>
+      <p class="text-muted mt-2">Review and approve issues submitted by auditors</p>
+    </div>
+
+    <% if (issues.length === 0) { %>
+      <div class="card-modern text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 64px; color: #cbd5e1;"></i>
+        <h3 class="mt-3 text-muted">No issues to verify</h3>
+        <p class="text-muted">All issues have been reviewed</p>
+      </div>
+    <% } else { %>
+      <% issues.forEach(issue => { %>
+        <div class="issue-card" id="issue-<%= issue.id %>">
+          <div class="issue-header">
+            <div>
+              <h3 class="issue-title-text"><%= issue.issue_title %></h3>
+            </div>
+          </div>
+
+          <div class="issue-meta">
+            <div class="meta-item">
+              <div class="meta-label">Auditee</div>
+              <div class="meta-value"><%= issue.auditee_name %></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Audit Year</div>
+              <div class="meta-value"><%= issue.audit_year %></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Audit Area</div>
+              <div class="meta-value"><%= issue.audit_area || 'N/A' %></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Submitted By</div>
+              <div class="meta-value"><%= issue.submitted_by_name %></div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Submitted On</div>
+              <div class="meta-value"><%= new Date(issue.submitted_at).toLocaleDateString() %></div>
+            </div>
+            <% if (issue.working_paper_name) { %>
+            <div class="meta-item">
+              <div class="meta-label">Working Paper</div>
+              <div class="meta-value"><%= issue.working_paper_name %></div>
+            </div>
+            <% } %>
+          </div>
+
+          <div class="issue-content">
+            <div class="content-field">
+              <div class="field-label">Criteria</div>
+              <div class="field-value"><%= issue.criteria || 'Not provided' %></div>
+            </div>
+            <div class="content-field">
+              <div class="field-label">Condition</div>
+              <div class="field-value"><%= issue.condition || 'Not provided' %></div>
+            </div>
+            <div class="content-field">
+              <div class="field-label">Cause</div>
+              <div class="field-value"><%= issue.cause || 'Not provided' %></div>
+            </div>
+            <div class="content-field">
+              <div class="field-label">Consequence</div>
+              <div class="field-value"><%= issue.consequence || 'Not provided' %></div>
+            </div>
+            <div class="content-field" style="grid-column: span 2;">
+              <div class="field-label">Corrective Action</div>
+              <div class="field-value"><%= issue.corrective_action || 'Not provided' %></div>
+            </div>
+            <% if (issue.corrective_date) { %>
+            <div class="content-field">
+              <div class="field-label">Corrective Date</div>
+              <div class="field-value"><%= new Date(issue.corrective_date).toLocaleDateString() %></div>
+            </div>
+            <% } %>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-approve" onclick="approveIssue(<%= issue.id %>)">
+              <i class="bi bi-check-circle"></i> Approve
+            </button>
+            <button class="btn btn-amend" onclick="sendForAmendment(<%= issue.id %>)">
+              <i class="bi bi-arrow-counterclockwise"></i> Send for Amendment
+            </button>
+            <button class="btn btn-remove" onclick="removeIssue(<%= issue.id %>)">
+              <i class="bi bi-trash"></i> Remove
+            </button>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    async function approveIssue(issueId) {
+      if (!confirm('Are you sure you want to approve this issue?')) return;
+      
+      try {
+        const response = await fetch(`/audits/issues/${issueId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue approved successfully', 'success');
+          document.getElementById(`issue-${issueId}`).remove();
+        } else {
+          showToast('Error: ' + data.error, 'danger');
+        }
+      } catch (error) {
+        showToast('Error approving issue', 'danger');
+      }
+    }
+
+    async function sendForAmendment(issueId) {
+      if (!confirm('Send this issue back for amendment?')) return;
+      
+      try {
+        const response = await fetch(`/audits/issues/${issueId}/send-for-amendment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue sent for amendment', 'success');
+          document.getElementById(`issue-${issueId}`).remove();
+        } else {
+          showToast('Error: ' + data.error, 'danger');
+        }
+      } catch (error) {
+        showToast('Error sending for amendment', 'danger');
+      }
+    }
+
+    async function removeIssue(issueId) {
+      if (!confirm('Are you sure you want to remove this issue? It will be moved to the removed issues register.')) return;
+      
+      try {
+        const response = await fetch(`/audits/issues/${issueId}/remove`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue removed', 'success');
+          document.getElementById(`issue-${issueId}`).remove();
+        } else {
+          showToast('Error: ' + data.error, 'danger');
+        }
+      } catch (error) {
+        showToast('Error removing issue', 'danger');
+      }
+    }
+
+    function showToast(message, type = 'info') {
+      const existingToast = document.querySelector('.custom-toast');
+      if (existingToast) existingToast.remove();
+      
+      const colors = {
+        success: '#10b981',
+        danger: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+      };
+      
+      const toast = document.createElement('div');
+      toast.className = 'custom-toast';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type] || colors.info};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        font-weight: 500;
+        animation: slideIn 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

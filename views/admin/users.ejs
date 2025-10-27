@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .main-content {
+      margin-left: 260px;
+      min-height: 100vh;
+      padding: 32px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .page-title i {
+      color: #3b82f6;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+    }
+    
+    .table-modern th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-modern td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 14px;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    .badge-custom {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-yellow {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .badge-purple {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-dialog {
+      position: relative;
+      margin: 5% auto;
+      max-width: 500px;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+    
+    .modal-header {
+      padding: 24px 32px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    .modal-body {
+      padding: 32px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: block;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/sidebar') %>
+  
+  <div class="main-content">
+    <%- include('../partials/messages') %>
+    
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-people"></i>
+        Manage Users
+      </h1>
+      <div style="display: flex; gap: 12px;">
+        <button onclick="openModal()" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i>
+          Add User
+        </button>
+        <a href="/admin/dashboard" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i>
+          Back
+        </a>
+      </div>
+    </div>
+    
+    <div class="card-modern">
+      <table class="table-modern">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Organization</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users.length > 0) { %>
+            <% users.forEach((user, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td style="font-weight: 600;"><%= user.name %></td>
+                <td><%= user.email %></td>
+                <td>
+                  <% 
+                    let badgeClass = 'badge-blue';
+                    if (user.role === 'head_of_audit') badgeClass = 'badge-purple';
+                    else if (user.role === 'manager') badgeClass = 'badge-green';
+                    else if (user.role === 'auditor') badgeClass = 'badge-yellow';
+                  %>
+                  <span class="badge-custom <%= badgeClass %>">
+                    <%= user.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
+                  </span>
+                </td>
+                <td><%= user.organization_name || '-' %></td>
+                <td><%= new Date(user.created_at).toLocaleDateString() %></td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 64px;">
+                <i class="bi bi-inbox" style="font-size: 48px; color: #cbd5e1;"></i>
+                <div style="color: #64748b; margin-top: 16px;">No users yet</div>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Add User Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Add New User</h3>
+        </div>
+        <div class="modal-body">
+          <form action="/admin/users" method="POST">
+            <div class="form-group">
+              <label class="form-label">Name *</label>
+              <input type="text" name="name" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Email *</label>
+              <input type="email" name="email" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Password *</label>
+              <input type="password" name="password" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Role *</label>
+              <select name="role" class="form-control" required>
+                <option value="">Select Role</option>
+                <option value="head_of_audit">Head of Audit</option>
+                <option value="manager">Manager</option>
+                <option value="auditor">Auditor</option>
+                <option value="auditee">Auditee</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Organization *</label>
+              <select name="organization_id" class="form-control" required>
+                <option value="">Select Organization</option>
+                <% organizations.forEach(org => { %>
+                  <option value="<%= org.id %>"><%= org.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+              <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+              <button type="submit" class="btn btn-primary">Create User</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function openModal() {
+      document.getElementById('addModal').style.display = 'block';
+    }
+    
+    function closeModal() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+    
+    window.onclick = function(event) {
+      const modal = document.getElementById('addModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>

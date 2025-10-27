@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .top-bar {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 20px;
+      color: #0f172a;
+    }
+    
+    .brand i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .logout-btn {
+      padding: 8px 16px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .main-content {
+      padding: 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 8px 0;
+    }
+    
+    .page-subtitle {
+      color: #64748b;
+      font-size: 15px;
+    }
+    
+    .tabs-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0;
+    }
+    
+    .tab {
+      padding: 12px 24px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      color: #64748b;
+      transition: all 0.2s;
+      position: relative;
+      bottom: -2px;
+    }
+    
+    .tab:hover {
+      color: #3b82f6;
+    }
+    
+    .tab.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+    
+    .tab-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-left: 8px;
+      font-weight: 700;
+    }
+    
+    .tab.active .tab-badge {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .issue-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+    }
+    
+    .issue-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .issue-title-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+    }
+    
+    .issue-meta {
+      font-size: 14px;
+      color: #64748b;
+    }
+    
+    .deadline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    
+    .deadline-urgent {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .deadline-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .deadline-normal {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .issue-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .content-field {
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    
+    .field-value {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    
+    .comments-section {
+      background: #eff6ff;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 3px solid #3b82f6;
+      margin-bottom: 16px;
+    }
+    
+    .comments-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e40af;
+    }
+    
+    .comment-item {
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .comment-text {
+      margin: 0 0 8px 0;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .comment-meta {
+      margin: 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    
+    .add-comment-box {
+      margin-top: 16px;
+    }
+    
+    .comment-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    .comment-textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    
+    .btn-submit {
+      margin-top: 12px;
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    .btn-submit:hover {
+      background: #2563eb;
+    }
+    
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+    }
+    
+    .empty-state i {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+    
+    .empty-state p {
+      margin: 0;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="brand">
+      <i class="bi bi-shield-check"></i>
+      Internal Audit Portal
+    </div>
+    <div class="user-info">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <span style="font-weight: 500;"><%= user.name %></span>
+      <a href="/auth/logout" class="logout-btn">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </div>
+  </div>
+  
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Management Comments</h1>
+      <p class="page-subtitle">Review and respond to audit issues</p>
+    </div>
+    
+    <div class="tabs-container">
+      <button class="tab active" onclick="switchTab('pending')">
+        Pending
+        <span class="tab-badge"><%= pendingIssues.length %></span>
+      </button>
+      <button class="tab" onclick="switchTab('overdue')">
+        Overdue
+        <span class="tab-badge" style="background: #fee2e2; color: #991b1b;"><%= overdueIssues.length %></span>
+      </button>
+      <button class="tab" onclick="switchTab('commented')">
+        Commented
+        <span class="tab-badge"><%= commentedIssues.length %></span>
+      </button>
+      <button class="tab" onclick="switchTab('followup')">
+        Follow-up
+        <span class="tab-badge"><%= pendingFollowups.length + respondedFollowups.length %></span>
+      </button>
+    </div>
+    
+    <!-- Pending Tab -->
+    <div id="pending-tab" class="tab-content active">
+      <% if (pendingIssues.length === 0) { %>
+        <div class="empty-state">
+          <i class="bi bi-check-circle"></i>
+          <p>No pending issues - You've commented on all assigned issues!</p>
+        </div>
+      <% } else { %>
+        <% pendingIssues.forEach(issue => { %>
+          <div class="issue-card">
+            <div class="issue-header">
+              <div style="flex: 1;">
+                <h3 class="issue-title-text"><%= issue.issue_title %></h3>
+                <p class="issue-meta"><%= issue.audit_name %> • <%= issue.audit_year %> • <%= issue.audit_area || 'N/A' %></p>
+                <div class="deadline-badge <%= issue.remaining_days <= 2 ? 'deadline-urgent' : (issue.remaining_days <= 5 ? 'deadline-warning' : 'deadline-normal') %>">
+                  <i class="bi bi-clock"></i>
+                  <% if (issue.remaining_days === 0) { %>
+                    Due Today
+                  <% } else if (issue.remaining_days === 1) { %>
+                    1 Day Left
+                  <% } else { %>
+                    <%= issue.remaining_days %> Days Left
+                  <% } %>
+                  • Due: <%= new Date(issue.comment_due_date).toLocaleDateString() %>
+                </div>
+              </div>
+              <span style="background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">PENDING</span>
+            </div>
+            
+            <div class="issue-content">
+              <div class="content-field">
+                <div class="field-label">Criteria</div>
+                <div class="field-value"><%= issue.criteria || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Condition</div>
+                <div class="field-value"><%= issue.condition || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Cause</div>
+                <div class="field-value"><%= issue.cause || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Consequence</div>
+                <div class="field-value"><%= issue.consequence || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Corrective Action</div>
+                <div class="field-value"><%= issue.corrective_action || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Corrective Date</div>
+                <div class="field-value"><%= issue.corrective_date ? new Date(issue.corrective_date).toLocaleDateString() : 'N/A' %></div>
+              </div>
+            </div>
+            
+            <div class="comments-section">
+              <div class="comments-header">
+                <i class="bi bi-chat-left-text"></i>
+                Management Comments (<%= issue.comments.length %>)
+              </div>
+              <div id="comments-<%= issue.id %>">
+                <% if (issue.comments.length > 0) { %>
+                  <% issue.comments.forEach(comment => { %>
+                    <div class="comment-item">
+                      <% if (comment.is_auditor_response) { %>
+                        <div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-bottom: 4px;">AUDITOR RESPONSE</div>
+                      <% } %>
+                      <p class="comment-text"><%= comment.comment %></p>
+                      <% if (comment.attachment_path) { %>
+                        <a href="<%= comment.attachment_path %>" target="_blank" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #3b82f6; font-size: 13px;">
+                          <i class="bi bi-paperclip"></i> View Attachment
+                        </a>
+                      <% } %>
+                      <p class="comment-meta"><strong><%= comment.commented_by_name %></strong> • <%= new Date(comment.created_at).toLocaleString() %></p>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <p style="margin: 0; font-size: 13px; color: #64748b;">No comments yet</p>
+                <% } %>
+              </div>
+              
+              <div class="add-comment-box">
+                <textarea class="comment-textarea" id="comment-<%= issue.id %>" placeholder="Add your management comment..."></textarea>
+                <div style="margin-top: 8px; display: flex; gap: 12px; align-items: center;">
+                  <label for="file-<%= issue.id %>" style="cursor: pointer; padding: 8px 16px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-weight: 500; color: #475569;">
+                    <i class="bi bi-paperclip"></i> Attach File
+                  </label>
+                  <input type="file" id="file-<%= issue.id %>" style="display: none;" onchange="showFileName(<%= issue.id %>)">
+                  <span id="filename-<%= issue.id %>" style="font-size: 13px; color: #64748b;"></span>
+                </div>
+                <button class="btn-submit" onclick="submitComment(<%= issue.id %>)">
+                  <i class="bi bi-send"></i> Submit Comment
+                </button>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+    
+    <!-- Overdue Tab -->
+    <div id="overdue-tab" class="tab-content">
+      <% if (overdueIssues.length === 0) { %>
+        <div class="empty-state">
+          <i class="bi bi-check-circle"></i>
+          <p>No overdue issues!</p>
+        </div>
+      <% } else { %>
+        <% overdueIssues.forEach(issue => { %>
+          <div class="issue-card" style="border-left: 4px solid #ef4444;">
+            <div class="issue-header">
+              <div style="flex: 1;">
+                <h3 class="issue-title-text"><%= issue.issue_title %></h3>
+                <p class="issue-meta"><%= issue.audit_name %> • <%= issue.audit_year %> • <%= issue.audit_area || 'N/A' %></p>
+                <div class="deadline-badge deadline-urgent">
+                  <i class="bi bi-exclamation-triangle"></i>
+                  Overdue by <%= Math.abs(issue.remaining_days) %> Day<%= Math.abs(issue.remaining_days) !== 1 ? 's' : '' %>
+                  • Was Due: <%= new Date(issue.comment_due_date).toLocaleDateString() %>
+                </div>
+              </div>
+              <span style="background: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">OVERDUE</span>
+            </div>
+            
+            <div class="issue-content">
+              <div class="content-field">
+                <div class="field-label">Criteria</div>
+                <div class="field-value"><%= issue.criteria || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Condition</div>
+                <div class="field-value"><%= issue.condition || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Cause</div>
+                <div class="field-value"><%= issue.cause || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Consequence</div>
+                <div class="field-value"><%= issue.consequence || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Corrective Action</div>
+                <div class="field-value"><%= issue.corrective_action || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Corrective Date</div>
+                <div class="field-value"><%= issue.corrective_date ? new Date(issue.corrective_date).toLocaleDateString() : 'N/A' %></div>
+              </div>
+            </div>
+            
+            <div class="comments-section">
+              <div class="comments-header">
+                <i class="bi bi-chat-left-text"></i>
+                Management Comments (<%= issue.comments.length %>)
+              </div>
+              <div id="comments-overdue-<%= issue.id %>">
+                <% if (issue.comments.length > 0) { %>
+                  <% issue.comments.forEach(comment => { %>
+                    <div class="comment-item">
+                      <% if (comment.is_auditor_response) { %>
+                        <div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-bottom: 4px;">AUDITOR RESPONSE</div>
+                      <% } %>
+                      <p class="comment-text"><%= comment.comment %></p>
+                      <% if (comment.attachment_path) { %>
+                        <a href="<%= comment.attachment_path %>" target="_blank" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #3b82f6; font-size: 13px;">
+                          <i class="bi bi-paperclip"></i> View Attachment
+                        </a>
+                      <% } %>
+                      <p class="comment-meta"><strong><%= comment.commented_by_name %></strong> • <%= new Date(comment.created_at).toLocaleString() %></p>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <p style="margin: 0; font-size: 13px; color: #64748b;">No comments yet</p>
+                <% } %>
+              </div>
+              
+              <div style="background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 16px; border-radius: 8px; font-size: 14px; margin-top: 16px;">
+                <i class="bi bi-exclamation-triangle"></i> <strong>Comment period has expired.</strong> Please contact the auditor to request an extension if you need to comment.
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+    
+    <!-- Commented Tab -->
+    <div id="commented-tab" class="tab-content">
+      <% if (commentedIssues.length === 0) { %>
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <p>No commented issues yet</p>
+        </div>
+      <% } else { %>
+        <% commentedIssues.forEach(issue => { %>
+          <div class="issue-card">
+            <div class="issue-header">
+              <div>
+                <h3 class="issue-title-text"><%= issue.issue_title %></h3>
+                <p class="issue-meta"><%= issue.audit_name %> • <%= issue.audit_year %> • <%= issue.audit_area || 'N/A' %></p>
+              </div>
+              <span style="background: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">COMMENTED</span>
+            </div>
+            
+            <div class="issue-content">
+              <div class="content-field">
+                <div class="field-label">Criteria</div>
+                <div class="field-value"><%= issue.criteria || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Condition</div>
+                <div class="field-value"><%= issue.condition || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Cause</div>
+                <div class="field-value"><%= issue.cause || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Consequence</div>
+                <div class="field-value"><%= issue.consequence || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Corrective Action</div>
+                <div class="field-value"><%= issue.corrective_action || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Corrective Date</div>
+                <div class="field-value"><%= issue.corrective_date ? new Date(issue.corrective_date).toLocaleDateString() : 'N/A' %></div>
+              </div>
+            </div>
+            
+            <div class="comments-section">
+              <div class="comments-header">
+                <i class="bi bi-chat-left-text"></i>
+                Management Comments (<%= issue.comments.length %>)
+              </div>
+              <div id="comments-viewed-<%= issue.id %>">
+                <% if (issue.comments.length > 0) { %>
+                  <% issue.comments.forEach(comment => { %>
+                    <div class="comment-item">
+                      <% if (comment.is_auditor_response) { %>
+                        <div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-bottom: 4px;">AUDITOR RESPONSE</div>
+                      <% } %>
+                      <p class="comment-text"><%= comment.comment %></p>
+                      <% if (comment.attachment_path) { %>
+                        <a href="<%= comment.attachment_path %>" target="_blank" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #3b82f6; font-size: 13px;">
+                          <i class="bi bi-paperclip"></i> View Attachment
+                        </a>
+                      <% } %>
+                      <p class="comment-meta"><strong><%= comment.commented_by_name %></strong> • <%= new Date(comment.created_at).toLocaleString() %></p>
+                    </div>
+                  <% }) %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+  
+<!-- Follow-up Tab -->
+    <div id="followup-tab" class="tab-content">
+      <% if (pendingFollowups.length === 0 && respondedFollowups.length === 0) { %>
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <p>No follow-up issues</p>
+        </div>
+      <% } else { %>
+        <% pendingFollowups.forEach(issue => { %>
+          <div class="issue-card" style="border-left: 4px solid #f59e0b;">
+            <div class="issue-header">
+              <div style="flex: 1;">
+                <h3 class="issue-title-text"><%= issue.issue_title %></h3>
+                <p class="issue-meta"><%= issue.audit_name %> • <%= issue.audit_year %> • <%= issue.audit_area || 'N/A' %></p>
+                <div class="deadline-badge <%= issue.remaining_days <= 2 ? 'deadline-urgent' : (issue.remaining_days <= 5 ? 'deadline-warning' : 'deadline-normal') %>">
+                  <i class="bi bi-clock"></i>
+                  <% if (issue.remaining_days === 0) { %>
+                    Due Today
+                  <% } else if (issue.remaining_days === 1) { %>
+                    1 Day Left
+                  <% } else if (issue.remaining_days < 0) { %>
+                    Overdue by <%= Math.abs(issue.remaining_days) %> Day<%= Math.abs(issue.remaining_days) !== 1 ? 's' : '' %>
+                  <% } else { %>
+                    <%= issue.remaining_days %> Days Left
+                  <% } %>
+                  • Due: <%= new Date(issue.followup_due_date).toLocaleDateString() %>
+                </div>
+              </div>
+              <span style="background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">PENDING</span>
+            </div>
+            
+            <div class="issue-content">
+              <div class="content-field">
+                <div class="field-label">Corrective Action</div>
+                <div class="field-value"><%= issue.corrective_action || 'N/A' %></div>
+              </div>
+              <div class="content-field">
+                <div class="field-label">Target Date</div>
+                <div class="field-value"><%= issue.corrective_date ? new Date(issue.corrective_date).toLocaleDateString() : 'N/A' %></div>
+              </div>
+            </div>
+            
+            <div class="comments-section" style="background: #fef3c7; border-left: 3px solid #f59e0b;">
+              <div class="comments-header" style="color: #92400e;">
+                <i class="bi bi-arrow-repeat"></i>
+                Submit Follow-up Response
+              </div>
+              
+              <div class="add-comment-box">
+                <textarea class="comment-textarea" id="followup-response-<%= issue.id %>" placeholder="Provide your follow-up response..."></textarea>
+                <div style="margin-top: 8px; display: flex; gap: 12px; align-items: center;">
+                  <label for="evidence-<%= issue.id %>" style="cursor: pointer; padding: 8px 16px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-weight: 500; color: #475569;">
+                    <i class="bi bi-paperclip"></i> Attach Evidence
+                  </label>
+                  <input type="file" id="evidence-<%= issue.id %>" style="display: none;" onchange="showEvidenceFileName(<%= issue.id %>)">
+                  <span id="evidence-filename-<%= issue.id %>" style="font-size: 13px; color: #64748b;"></span>
+                </div>
+                <% if (issue.is_past_due) { %>
+                  <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 14px; margin-top: 12px;">
+                    <i class="bi bi-exclamation-triangle"></i> Follow-up period has expired
+                  </div>
+                <% } else { %>
+                  <button class="btn-submit" onclick="submitFollowup(<%= issue.id %>)">
+                    <i class="bi bi-send"></i> Submit Response
+                  </button>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+        
+        <% respondedFollowups.forEach(issue => { %>
+          <div class="issue-card">
+            <div class="issue-header">
+              <div>
+                <h3 class="issue-title-text"><%= issue.issue_title %></h3>
+                <p class="issue-meta"><%= issue.audit_name %> • <%= issue.audit_year %> • <%= issue.audit_area || 'N/A' %></p>
+              </div>
+              <span style="background: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">RESPONDED</span>
+            </div>
+            
+            <div class="issue-content">
+              <div class="content-field">
+                <div class="field-label">Your Response</div>
+                <div class="field-value"><%= issue.followup_response || 'N/A' %></div>
+              </div>
+              <% if (issue.followup_evidence_path) { %>
+                <div class="content-field">
+                  <div class="field-label">Evidence</div>
+                  <div class="field-value">
+                    <a href="<%= issue.followup_evidence_path %>" target="_blank" style="color: #3b82f6; text-decoration: none;">
+                      <i class="bi bi-paperclip"></i> View Evidence
+                    </a>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+  <script>
+    function switchTab(tabName) {
+      // Remove active class from all tabs and content
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      // Add active class to selected tab and content
+      event.target.classList.add('active');
+      document.getElementById(tabName + '-tab').classList.add('active');
+    }
+    
+    function showFileName(issueId) {
+      const fileInput = document.getElementById(`file-${issueId}`);
+      const fileNameSpan = document.getElementById(`filename-${issueId}`);
+      if (fileInput.files.length > 0) {
+        fileNameSpan.textContent = fileInput.files[0].name;
+      }
+    }
+
+    async function submitComment(issueId) {
+      const textarea = document.getElementById(`comment-${issueId}`);
+      const fileInput = document.getElementById(`file-${issueId}`);
+      const comment = textarea.value.trim();
+      
+      if (!comment && !fileInput.files.length) {
+        alert('Please enter a comment or attach a file');
+        return;
+      }
+      
+      try {
+        const formData = new FormData();
+        formData.append('comment', comment);
+        if (fileInput.files.length > 0) {
+          formData.append('attachment', fileInput.files[0]);
+        }
+        
+        const response = await fetch(`/auditee/comments/${issueId}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          alert('Comment submitted successfully');
+          location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error submitting comment');
+      }
+    }
+
+    function showEvidenceFileName(issueId) {
+      const fileInput = document.getElementById(`evidence-${issueId}`);
+      const fileNameSpan = document.getElementById(`evidence-filename-${issueId}`);
+      if (fileInput.files.length > 0) {
+        fileNameSpan.textContent = fileInput.files[0].name;
+      }
+    }
+
+    async function submitFollowup(issueId) {
+      const textarea = document.getElementById(`followup-response-${issueId}`);
+      const fileInput = document.getElementById(`evidence-${issueId}`);
+      const response = textarea.value.trim();
+      
+      if (!response) {
+        alert('Please enter a response');
+        return;
+      }
+      
+      try {
+        const formData = new FormData();
+        formData.append('response', response);
+        if (fileInput.files.length > 0) {
+          formData.append('evidence', fileInput.files[0]);
+        }
+        
+        const result = await fetch(`/auditee/followup/${issueId}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await result.json();
+        
+        if (data.success) {
+          alert('Follow-up response submitted successfully');
+          location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error submitting follow-up');
+      }
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/messages') %>
+  
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1>Risk Assessment</h1>
+        <p class="text-muted mb-0">Audit: <%= audit.audit_name %> - <%= audit.auditee_name %></p>
+      </div>
+      <a href="/audits/<%= audit.id %>" class="btn btn-secondary">Back to Audit</a>
+    </div>
+
+    <% if (universeItems.length === 0) { %>
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-exclamation-circle text-muted" style="font-size: 48px;"></i>
+          <h5 class="mt-3">No Audit Universe Found</h5>
+          <p class="text-muted">Please add audit universe entries for this auditee first.</p>
+          <a href="/auditees/<%= audit.auditee_id %>/audit-universe" class="btn btn-primary">
+            Go to Audit Universe
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      <form action="/risk-assessment/<%= audit.id %>/save" method="POST" id="riskForm">
+        <div class="card">
+          <div class="card-header">
+            <h5>Risk Assessment Matrix</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover" id="riskTable">
+                <thead>
+                  <tr>
+                    <th style="width: 200px;">Audit Area</th>
+                    <th style="width: 150px;">Process</th>
+                    <th style="width: 100px;">Likelihood (1-5)</th>
+                    <th style="width: 100px;">Impact (1-5)</th>
+                    <th style="width: 100px;">Risk Rating</th>
+                    <th style="width: 100px;">Score</th>
+                    <th style="width: 80px;">Select</th>
+                    <th style="width: 150px;">Assign Auditor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% universeItems.forEach((item, index) => { 
+                    const existing = riskAssessments.find(r => r.audit_universe_id === item.id);
+                    const likelihood = existing ? existing.likelihood : 3;
+                    const impact = existing ? existing.impact : 3;
+                    const rating = likelihood * impact;
+                    let score = 'Low';
+                    if (rating >= 7 && rating <= 14) score = 'Medium';
+                    if (rating >= 15) score = 'High';
+                    let scoreColor = 'success';
+                    if (score === 'Medium') scoreColor = 'warning';
+                    if (score === 'High') scoreColor = 'danger';
+                  %>
+                    <tr data-index="<%= index %>">
+                      <td><strong><%= item.audit_area %></strong></td>
+                      <td><%= item.process || '-' %></td>
+                      <td>
+                        <input type="hidden" name="items[<%= index %>][universe_id]" value="<%= item.id %>">
+                        <input type="number" class="form-control form-control-sm likelihood" 
+                               name="items[<%= index %>][likelihood]" 
+                               min="1" max="5" value="<%= likelihood %>" required>
+                      </td>
+                      <td>
+                        <input type="number" class="form-control form-control-sm impact" 
+                               name="items[<%= index %>][impact]" 
+                               min="1" max="5" value="<%= impact %>" required>
+                      </td>
+                      <td>
+                        <span class="rating badge bg-secondary"><%= rating %></span>
+                      </td>
+                      <td>
+                        <span class="score badge bg-<%= scoreColor %>"><%= score %></span>
+                      </td>
+                      <td>
+                        <input type="checkbox" class="form-check-input" 
+                               name="items[<%= index %>][selected]" value="true"
+                               <%= existing && existing.is_selected ? 'checked' : '' %>>
+                      </td>
+                      <td>
+                        <select class="form-select form-select-sm" name="items[<%= index %>][auditor_id]">
+                          <option value="">- Select -</option>
+                          <% teamMembers.forEach(member => { %>
+                            <option value="<%= member.id %>" 
+                              <%= existing && existing.assigned_auditor_id === member.id ? 'selected' : '' %>>
+                              <%= member.name %>
+                            </option>
+                          <% }) %>
+                        </select>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="alert alert-info mt-3">
+              <strong>Risk Scoring:</strong>
+              <span class="badge bg-success ms-2">Low (1-6)</span>
+              <span class="badge bg-warning ms-2">Medium (7-14)</span>
+              <span class="badge bg-danger ms-2">High (15-25)</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-end">
+              <a href="/audits/<%= audit.id %>" class="btn btn-secondary me-2">Cancel</a>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Risk Assessment
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    <% } %>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Auto-calculate risk rating and score
+    document.getElementById('riskTable')?.addEventListener('input', function(e) {
+      if (e.target.classList.contains('likelihood') || e.target.classList.contains('impact')) {
+        const row = e.target.closest('tr');
+        const likelihood = parseInt(row.querySelector('.likelihood').value) || 0;
+        const impact = parseInt(row.querySelector('.impact').value) || 0;
+        const rating = likelihood * impact;
+        
+        let score = 'Low';
+        let scoreColor = 'success';
+        if (rating >= 7 && rating <= 14) {
+          score = 'Medium';
+          scoreColor = 'warning';
+        }
+        if (rating >= 15) {
+          score = 'High';
+          scoreColor = 'danger';
+        }
+        
+        row.querySelector('.rating').textContent = rating;
+        const scoreSpan = row.querySelector('.score');
+        scoreSpan.textContent = score;
+        scoreSpan.className = `score badge bg-${scoreColor}`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,4632 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fafbfc;
+      color: #1e293b;
+    }
+    
+    /* Top Navigation Bar */
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .nav-brand i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    
+    .nav-link.active {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      min-height: 100vh;
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    /* Audit Info Card */
+    .audit-info-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 32px;
+    }
+    
+    .audit-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+    }
+    
+    .audit-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    
+    .detail-item {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #64748b;
+    }
+    
+    .detail-value {
+      color: #0f172a;
+    }
+    
+    /* Workflow Tabs */
+    .workflow-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    
+    .workflow-tab {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .workflow-tab:not(.active) {
+      border: 2px solid #e2e8f0 !important;
+      background: white !important;
+      color: #334155 !important;
+    }
+
+    .workflow-tab:hover:not(.active) {
+      background: #f8fafc !important;
+      border-color: #3b82f6 !important;
+      transform: translateY(-2px);
+    }
+    
+    .workflow-tab.active {
+      background: #3b82f6 !important;
+      color: white !important;
+      border-color: #3b82f6 !important;
+    }
+    
+    .workflow-tab i {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    
+    .workflow-tab h6 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .workflow-tab:not(.active) i,
+    .workflow-tab:not(.active) h6 {
+      color: #334155 !important;
+    }
+    
+    .workflow-tab.active i,
+    .workflow-tab.active h6 {
+      color: white !important;
+    }
+    
+    /* Sub Tabs */
+    .sub-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .sub-tab {
+      padding: 12px 24px;
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .sub-tab:hover {
+      background: #f8fafc;
+      border-color: #3b82f6;
+    }
+    
+    .sub-tab.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+    
+    /* Content Sections */
+    .content-section {
+      display: none;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    .workflow-section {
+      display: none;
+    }
+    
+    .workflow-section.active {
+      display: block;
+    }
+    
+    /* Card Styles */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    
+    .card-header-modern {
+      padding: 28px 32px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+    }
+    
+    .card-title-modern {
+      font-size: 17px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    .card-body-modern {
+      padding: 32px;
+    }
+    
+    /* RESIZABLE RISK ASSESSMENT TABLE */
+    .risk-table-container {
+      overflow-x: auto;
+      margin: 0;
+      background: white;
+      border-radius: 0 0 16px 16px;
+      position: relative;
+    }
+    
+    .risk-table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .risk-table-container::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    
+    .risk-table-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .table-risk {
+      margin: 0;
+      width: 100%;
+      min-width: 1700px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    
+    .table-risk th {
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      font-size: 13px;
+      text-align: left;
+      background: #f8fafc;
+      position: relative;
+      user-select: none;
+    }
+    
+    /* Resize Handle */
+    .table-risk th .resize-handle {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 10;
+    }
+    
+    .table-risk th .resize-handle:hover {
+      background: #3b82f6;
+    }
+    
+    .table-risk th.resizing {
+      border-right: 2px solid #3b82f6;
+    }
+    
+    .table-risk td {
+      padding: 12px;
+      vertical-align: top;
+      border: 1px solid #e2e8f0;
+      background: white;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .table-risk tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* Simple Form Controls */
+    .table-risk .form-control,
+    .table-risk .form-select {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .table-risk .form-control:focus,
+    .table-risk .form-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .table-risk .form-control-sm {
+      padding: 6px 10px;
+      font-size: 14px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .table-risk .form-check-input {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .table-risk .form-check-input:checked {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+    }
+    
+    /* Process Text Display */
+    .process-text {
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.5;
+      word-wrap: break-word;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    
+    .process-text::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .process-text::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    
+    .process-text::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+    
+    /* Risk Rating Display */
+    .risk-rating-cell {
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    /* Simple Badges */
+    .table-risk .badge {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+      min-width: 60px;
+      text-align: center;
+    }
+    
+    .table-risk .badge.bg-success {
+      background: #22c55e !important;
+      color: white;
+    }
+    
+    .table-risk .badge.bg-warning {
+      background: #eab308 !important;
+      color: white;
+    }
+    
+    .table-risk .badge.bg-danger {
+      background: #ef4444 !important;
+      color: white;
+    }
+    
+    /* Default Column Widths - Can be adjusted by dragging */
+    .col-audit-area { width: 180px; }
+    .col-process { width: 250px; }
+    .col-inherent-risk { width: 120px; text-align: center; }
+    .col-input-small { width: 100px; text-align: center; }
+    .col-rating { width: 80px; text-align: center; }
+    .col-score { width: 100px; text-align: center; }
+    .col-select { width: 80px; text-align: center; }
+    .col-auditor { width: 180px; }
+    
+    /* Audit Procedures Table - SAME STYLE AS RISK ASSESSMENT */
+    .audit-procedures-container {
+      overflow-x: auto;
+      margin: 0;
+      background: white;
+      border-radius: 0 0 16px 16px;
+    }
+    
+    .audit-procedures-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .audit-procedures-container::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    
+    .audit-procedures-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .table-audit-proc {
+      margin: 0;
+      width: 100%;
+      min-width: 2200px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    
+    .table-audit-proc th {
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      font-size: 13px;
+      text-align: left;
+      background: #f8fafc;
+      position: relative;
+      user-select: none;
+    }
+    
+    .table-audit-proc th .resize-handle {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 10;
+    }
+    
+    .table-audit-proc th .resize-handle:hover {
+      background: #3b82f6;
+    }
+    
+    .table-audit-proc th.resizing {
+      border-right: 2px solid #3b82f6;
+    }
+    
+    .table-audit-proc td {
+      padding: 12px;
+      vertical-align: top;
+      border: 1px solid #e2e8f0;
+      background: white;
+    }
+    
+    .table-audit-proc tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* Audit Procedures Form Controls - Borderless Style */
+    .table-audit-proc .form-control,
+    .table-audit-proc .form-select {
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .table-audit-proc .form-control:hover,
+    .table-audit-proc .form-select:hover {
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .table-audit-proc .form-control:focus,
+    .table-audit-proc .form-select:focus {
+      background: #f8fafc;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .table-audit-proc .form-control-sm {
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+    
+    .table-audit-proc .form-select-sm {
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+    
+    /* Audit Textarea Styling - Borderless */
+    .audit-textarea {
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      font-size: 14px;
+      width: 100%;
+      min-height: 50px;
+      resize: vertical;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    .audit-textarea:hover {
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .audit-textarea:focus {
+      background: #f8fafc;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    /* Procedure Text Display */
+    .procedure-text {
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.5;
+      word-wrap: break-word;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    
+    .procedure-text::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .procedure-text::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    
+    .procedure-text::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+    
+    /* Audit Procedures Column Widths */
+    .col-audit-area-proc { width: 150px; }
+    .col-procedure { width: 200px; }
+    .col-record { width: 220px; }
+    .col-conclusion { width: 220px; }
+    .col-result { width: 100px; text-align: center; }
+    .col-cause { width: 180px; }
+    .col-evidence { width: 150px; }
+    .col-wp-link { width: 180px; }
+    .col-assigned { width: 140px; }
+    .col-likelihood { width: 100px; text-align: center; }
+    .col-impact { width: 100px; text-align: center; }
+    .col-rating { width: 100px; text-align: center; }
+    .col-score { width: 100px; text-align: center; }
+    
+    /* Folder Cards */
+    .folder-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    
+    .folder-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
+    }
+    
+    .folder-icon {
+      font-size: 64px;
+      color: #ffc107;
+    }
+    
+    /* Form Styles */
+    .form-label {
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-control, .form-select {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    /* Table Styles (for other tables) */
+    .table-modern {
+      margin: 0;
+      font-size: 14px;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+    }
+    
+    .table-modern th {
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      font-size: 13px;
+    }
+    
+    .table-modern td {
+      padding: 12px;
+      vertical-align: top;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+      background: #3b82f6;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-success {
+      background: #22c55e;
+      border: none;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      border: none;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      color: #0f172a;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    
+    .btn-sm {
+      padding: 8px 20px;
+      font-size: 14px;
+    }
+    
+    /* Badge Styles */
+    .badge {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    
+    /* Alert Styles */
+    .alert {
+      border-radius: 12px;
+      border: none;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    
+    .alert-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    /* Document Manager Table Styles */
+    .doc-table-container {
+      overflow-x: auto;
+      margin: 0;
+      background: white;
+    }
+    
+    .table-doc {
+      margin: 0;
+      width: 100%;
+      min-width: 1000px;
+      border-collapse: collapse;
+    }
+    
+    .table-doc th {
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      font-size: 13px;
+      text-align: left;
+      background: #f8fafc;
+    }
+    
+    .table-doc td {
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      vertical-align: middle;
+    }
+    
+    .table-doc tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    .table-doc input[type="text"],
+    .table-doc input[type="date"],
+    .table-doc input[type="file"] {
+      border: 1px solid #e2e8f0;
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    
+    .table-doc input:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Audit Procedures Include in Report Column */
+    .col-include-report {
+      width: 140px;
+      min-width: 140px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    
+    .col-include-report select {
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="/dashboard" class="nav-brand">
+      <i class="bi bi-shield-check"></i>
+      <span>Internal Audit Portal</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <i class="bi bi-house"></i> Dashboard
+      </a>
+      <a href="/auditees" class="nav-link">
+        <i class="bi bi-building"></i> Auditees
+      </a>
+      <a href="/audits" class="nav-link active">
+        <i class="bi bi-clipboard-check"></i> Audits
+      </a>
+      <a href="/working-papers" class="nav-link">
+        <i class="bi bi-file-earmark-text"></i> Working Papers
+      </a>
+      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
+        <a href="/issues/verify" class="nav-link">
+          <i class="bi bi-check-circle"></i> Verify
+        </a>
+      <% } %>
+    </div>
+    
+    <div class="user-menu">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
+        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
+      </div>
+      <a href="/auth/logout" class="btn btn-sm btn-secondary">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <%- include('../partials/messages') %>
+    
+    <!-- Audit Info Card -->
+    <div class="audit-info-card">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+        <h1 class="audit-title"><%= audit.audit_name %></h1>
+        <a href="/audits" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Back to Audits
+        </a>
+      </div>
+      
+      <div class="audit-details">
+        <div class="detail-item">
+          <span class="detail-label">Auditee:</span>
+          <span class="detail-value"><%= audit.auditee_name %></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Team Leader:</span>
+          <span class="detail-value"><%= audit.team_leader_name %></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Start Date:</span>
+          <span class="detail-value"><%= new Date(audit.start_date).toLocaleDateString() %></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Finish Date:</span>
+          <span class="detail-value"><%= new Date(audit.finish_date).toLocaleDateString() %></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Workflow Tabs -->
+    <div class="workflow-tabs">
+      <div class="workflow-tab active" data-section="planning">
+        <i class="bi bi-lightbulb"></i>
+        <h6>Planning</h6>
+      </div>
+      <div class="workflow-tab" data-section="fieldwork">
+        <i class="bi bi-clipboard-data"></i>
+        <h6>Field Work</h6>
+      </div>
+      <div class="workflow-tab" data-section="reporting">
+        <i class="bi bi-file-earmark-text"></i>
+        <h6>Reporting</h6>
+      </div>
+      <div class="workflow-tab" data-section="followup">
+        <i class="bi bi-arrow-repeat"></i>
+        <h6>Follow-up</h6>
+      </div>
+    </div>
+    
+    <!-- Planning Section -->
+    <div class="workflow-section active" id="planning">
+      <div class="sub-tabs">
+        <div class="sub-tab active" data-content="understanding">Understanding the Organization</div>
+        <div class="sub-tab" data-content="risk-assessment">Risk Assessment</div>
+        <div class="sub-tab" data-content="trend-analysis">Trend Analysis</div>
+      </div>
+      
+      
+      <div class="content-section active" id="understanding">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">
+              <i class="bi bi-folder2-open"></i> Understanding the Organization - Document Library
+            </h5>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addDocumentRow()">
+              <i class="bi bi-plus-circle"></i> Add Document
+            </button>
+          </div>
+          
+          <form id="documentForm" onsubmit="saveDocuments(event)">
+            <div class="doc-table-container">
+              <table class="table-doc table-bordered" id="documentTable">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <th style="width: 250px;">Document Name</th>
+                    <th style="width: 150px;">Ref. No</th>
+                    <th style="width: 150px;">Last Amended Date</th>
+                    <th style="width: 200px;">Upload File</th>
+                    <th style="width: 120px;">View File</th>
+                    <th style="width: 80px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="documentTableBody">
+                  <% if (documents && documents.length > 0) { %>
+                    <% documents.forEach((doc, index) => { %>
+                      <tr data-doc-id="<%= doc.id %>">
+                        <td><%= index + 1 %></td>
+                        <td>
+                          <input type="text" 
+                                 class="form-control" 
+                                 name="documents[<%= index %>][name]" 
+                                 value="<%= doc.document_name %>"
+                                 placeholder="Enter document name">
+                          <input type="hidden" name="documents[<%= index %>][id]" value="<%= doc.id %>">
+                        </td>
+                        <td>
+                          <input type="text" 
+                                 class="form-control" 
+                                 name="documents[<%= index %>][ref_no]" 
+                                 value="<%= doc.ref_no || '' %>"
+                                 placeholder="Ref. No">
+                        </td>
+                        <td>
+                          <input type="date" 
+                                 class="form-control" 
+                                 name="documents[<%= index %>][last_amended]" 
+                                 value="<%= doc.last_amended_date ? doc.last_amended_date.toISOString().split('T')[0] : '' %>">
+                        </td>
+                        <td>
+                          <input type="file" 
+                                 class="form-control form-control-sm" 
+                                 name="documents[<%= index %>][file]">
+                          <% if (doc.file_path) { %>
+                            <small class="text-success">
+                              <i class="bi bi-check-circle"></i> File uploaded
+                            </small>
+                          <% } %>
+                        </td>
+                        <td class="text-center">
+                          <% if (doc.file_path) { %>
+                            <a href="<%= doc.file_path %>" 
+                               target="_blank" 
+                               class="btn btn-info btn-sm"
+                               title="View document">
+                              <i class="bi bi-eye"></i>
+                            </a>
+                          <% } else { %>
+                            <span class="text-muted">-</span>
+                          <% } %>
+                        </td>
+                        <td class="text-center">
+                          <button type="button" 
+                                  class="btn btn-danger btn-sm" 
+                                  onclick="deleteDocumentRow(this, <%= doc.id %>)"
+                                  title="Delete">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr class="empty-row">
+                      <td colspan="7" class="text-center text-muted py-4">
+                        <i class="bi bi-folder2-open" style="font-size: 48px; opacity: 0.3;"></i>
+                        <p class="mt-2 mb-0">No documents yet. Click "Add Document" to start.</p>
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="card-body-modern">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div id="docSaveStatus" style="font-weight: 600;"></div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-save"></i> Save Documents
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      
+      <div class="content-section" id="risk-assessment">
+        <% if (universeItems.length === 0) { %>
+          <div class="card-modern">
+            <div class="card-body-modern">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="bi bi-exclamation-circle"></i>
+                </div>
+                <h5 class="empty-text">No Audit Universe Found</h5>
+                <p class="text-muted">Please add audit universe entries for this auditee first.</p>
+              </div>
+            </div>
+          </div>
+        <% } else { %>
+          <form action="/risk-assessment/<%= audit.id %>/save" method="POST" id="riskForm" enctype="multipart/form-data">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <h5 class="card-title-modern"><i class="bi bi-shield-shaded"></i> Risk Assessment Matrix</h5>
+                <button type="submit" class="btn btn-primary btn-sm">
+                  <i class="bi bi-save"></i> Save Risk Assessment
+                </button>
+              </div>
+              
+              <!-- RESIZABLE RISK TABLE -->
+              <div class="risk-table-container">
+                <table class="table-risk table-bordered" id="riskTable">
+                  <thead>
+                    <tr>
+                      <th class="col-audit-area">
+                        Audit Area
+                        <div class="resize-handle" data-column="0"></div>
+                      </th>
+                      <th class="col-process">
+                        Process
+                        <div class="resize-handle" data-column="1"></div>
+                      </th>
+                      <th class="col-inherent-risk">
+                        Inherent Risk
+                        <div class="resize-handle" data-column="2"></div>
+                      </th>
+                      <th class="col-input-small">
+                        Likelihood
+                        <div class="resize-handle" data-column="3"></div>
+                      </th>
+                      <th class="col-input-small">
+                        Impact
+                        <div class="resize-handle" data-column="4"></div>
+                      </th>
+                      <th class="col-rating">
+                        Rating
+                        <div class="resize-handle" data-column="5"></div>
+                      </th>
+                      <th class="col-score">
+                        Score
+                        <div class="resize-handle" data-column="6"></div>
+                      </th>
+                      <th class="col-select">
+                        Select
+                        <div class="resize-handle" data-column="7"></div>
+                      </th>
+                      <th class="col-auditor">
+                        Assigned To
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% universeItems.forEach((item, index) => { 
+                      const existing = riskAssessments.find(r => r.audit_universe_id === item.id);
+                      const likelihood = existing ? existing.likelihood : 3;
+                      const impact = existing ? existing.impact : 3;
+                      const rating = likelihood * impact;
+                      let score = 'Low';
+                      if (rating >= 7 && rating <= 14) score = 'Medium';
+                      if (rating >= 15) score = 'High';
+                      let scoreColor = 'success';
+                      if (score === 'Medium') scoreColor = 'warning';
+                      if (score === 'High') scoreColor = 'danger';
+                    %>
+                      <tr>
+                        <td class="col-audit-area">
+                          <strong><%= item.audit_area %></strong>
+                          <input type="hidden" name="items[<%= index %>][universe_id]" value="<%= item.id %>">
+                          <input type="hidden" name="items[<%= index %>][process]" value="<%= item.process || '' %>">
+                        </td>
+                        <td class="col-process">
+                          <div class="process-text"><%= item.process || '-' %></div>
+                        </td>
+                        <td class="col-inherent-risk">
+                          <% if (item.inherent_risk) { %>
+                            <span class="badge bg-<%= item.inherent_risk.toLowerCase() === 'high' ? 'danger' : item.inherent_risk.toLowerCase() === 'medium' ? 'warning' : 'success' %>">
+                              <%= item.inherent_risk %>
+                            </span>
+                          <% } else { %>
+                            <span class="text-muted">-</span>
+                          <% } %>
+                        </td>
+                        <td class="col-input-small">
+                          <input type="number" 
+                                 class="form-control form-control-sm likelihood" 
+                                 name="items[<%= index %>][likelihood]" 
+                                 value="<%= likelihood %>" 
+                                 min="1" max="5" required>
+                        </td>
+                        <td class="col-input-small">
+                          <input type="number" 
+                                 class="form-control form-control-sm impact" 
+                                 name="items[<%= index %>][impact]" 
+                                 value="<%= impact %>" 
+                                 min="1" max="5" required>
+                        </td>
+                        <td class="col-rating risk-rating-cell rating"><%= rating %></td>
+                        <td class="col-score">
+                          <span class="score badge bg-<%= scoreColor %>"><%= score %></span>
+                        </td>
+                        <td class="col-select">
+                          <input type="checkbox" 
+                                 class="form-check-input" 
+                                 name="items[<%= index %>][is_selected]" 
+                                 <%= existing && existing.is_selected ? 'checked' : '' %>>
+                        </td>
+                        <td class="col-auditor">
+                          <select class="form-select form-select-sm" name="items[<%= index %>][assigned_auditor_id]">
+                            <option value="">Select Auditor</option>
+                            <% teamMembers.forEach(member => { %>
+                              <option value="<%= member.id %>" 
+                                <%= existing && existing.assigned_auditor_id === member.id ? 'selected' : '' %>>
+                                <%= member.name %>
+                              </option>
+                            <% }) %>
+                          </select>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </form>
+        <% } %>
+      </div>
+      
+      <div class="content-section" id="trend-analysis">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">Trend Analysis</h5>
+          </div>
+          <div class="card-body-modern">
+            <p class="text-muted">Visual trend analysis - Coming soon</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Field Work Section -->
+    <div class="workflow-section" id="fieldwork">
+      <div class="sub-tabs">
+        <div class="sub-tab active" data-content="testing-procedures">Testing Procedures</div>
+        <div class="sub-tab" data-content="audit-procedures">Audit Procedures</div>
+        <div class="sub-tab" data-content="closing-meeting">Closing Meeting</div>
+      </div>
+      
+      <div class="content-section active" id="testing-procedures">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">Testing Procedures - Audit Folders</h5>
+          </div>
+          <div class="card-body-modern">
+            <div id="testingProceduresFolders" class="row g-4">
+              <!-- Folders will be dynamically generated -->
+              <% if (selectedAreas.length === 0) { %>
+                <div class="col-12">
+                  <div class="empty-state">
+                    <div class="empty-icon">
+                      <i class="bi bi-exclamation-circle"></i>
+                    </div>
+                    <h5 class="empty-text">No Areas Selected</h5>
+                    <p class="text-muted">Please select areas in Risk Assessment first.</p>
+                  </div>
+                </div>
+              <% } else { %>
+                <% 
+                  // Group by unique audit_area to avoid duplicates
+                  const uniqueAreas = {};
+                  selectedAreas.forEach(area => {
+                    if (!uniqueAreas[area.audit_area]) {
+                      uniqueAreas[area.audit_area] = area;
+                    }
+                  });
+                  Object.values(uniqueAreas).forEach(area => { 
+                %>
+                  <div class="col-md-4">
+                    <a href="/audits/<%= audit.id %>/testing-procedures/<%= area.id %>" class="folder-card">
+                      <div style="padding: 24px; text-align: center;">
+                        <i class="bi bi-folder-fill folder-icon"></i>
+                        <h6 style="margin-top: 16px; font-weight: 600; color: #0f172a;">
+                          <%= area.audit_area %>
+                        </h6>
+                        <p style="font-size: 13px; color: #64748b; margin: 0;">
+                          Assigned to: <%= area.auditor_name || 'Unassigned' %>
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                <% }) %>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-section" id="audit-procedures">
+        <div id="auditProceduresContainer">
+          <!-- Content will be dynamically generated or from server -->
+          <% if (selectedAreas.length === 0) { %>
+          <div class="card-modern">
+            <div class="card-body-modern">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="bi bi-exclamation-circle"></i>
+                </div>
+                <h5 class="empty-text">No Audit Areas Selected</h5>
+                <p class="text-muted">Please complete Risk Assessment first.</p>
+              </div>
+            </div>
+          </div>
+        <% } else { %>
+          <form action="/audits/field-work/<%= audit.id %>/save-all" method="POST" id="auditProceduresForm" enctype="multipart/form-data">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <h5 class="card-title-modern"><i class="bi bi-clipboard-check"></i> Audit Procedures</h5>
+                <button type="submit" class="btn btn-primary btn-sm">
+                  <i class="bi bi-save"></i> Save All Procedures
+                </button>
+              </div>
+              
+              <!-- AUDIT PROCEDURES TABLE - SAME STYLE AS RISK ASSESSMENT -->
+              <div class="audit-procedures-container">
+                <table class="table-audit-proc table-bordered" id="auditProceduresTable">
+                  <thead>
+                    <tr>
+                      <th class="col-audit-area-proc">
+                        Audit Area
+                        <div class="resize-handle" data-column="0"></div>
+                      </th>
+                      <th class="col-procedure">
+                        Audit Procedure
+                        <div class="resize-handle" data-column="1"></div>
+                      </th>
+                      <th class="col-record">
+                        Record of Work
+                        <div class="resize-handle" data-column="2"></div>
+                      </th>
+                      <th class="col-conclusion">
+                        Conclusion
+                        <div class="resize-handle" data-column="3"></div>
+                      </th>
+                      <th class="col-result">
+                        Result
+                        <div class="resize-handle" data-column="4"></div>
+                      </th>
+                      <th class="col-cause">
+                        Cause
+                        <div class="resize-handle" data-column="5"></div>
+                      </th>
+                      <th class="col-evidence">
+                        Evidence
+                        <div class="resize-handle" data-column="6"></div>
+                      </th>
+                      <th class="col-wp-link">
+                        Working Paper
+                        <div class="resize-handle" data-column="7"></div>
+                      </th>
+                      <th class="col-assigned">
+                        Assigned To
+                        <div class="resize-handle" data-column="8"></div>
+                      </th>
+                      <th class="col-likelihood">
+                        Likelihood
+                        <div class="resize-handle" data-column="9"></div>
+                      </th>
+                      <th class="col-impact">
+                        Impact
+                        <div class="resize-handle" data-column="10"></div>
+                      </th>
+                      <th class="col-rating">
+                        Rating
+                        <div class="resize-handle" data-column="11"></div>
+                      </th>
+                      <th class="col-score">
+                        Score
+                        <div class="resize-handle" data-column="12"></div>
+                      </th>
+                      <th class="col-include-report">
+                        Include in Report
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% selectedAreas.forEach((area, index) => { 
+                      const existingProc = procedures.find(p => p.risk_assessment_id === area.id);
+                    %>
+                      <tr>
+                        <td class="col-audit-area-proc">
+                          <strong><%= area.audit_area %></strong>
+                          <input type="hidden" name="items[<%= index %>][risk_assessment_id]" value="<%= area.id %>">
+                          <input type="hidden" name="items[<%= index %>][procedure_id]" value="<%= existingProc ? existingProc.id : '' %>">
+                        </td>
+                        <td class="col-procedure">
+                          <div class="procedure-text"><%= area.audit_procedure || '-' %></div>
+                        </td>
+                        <td class="col-record">
+                          <textarea class="form-control form-control-sm audit-textarea" 
+                                    name="items[<%= index %>][record_of_work]" 
+                                    rows="2"
+                                    placeholder="Enter record of work..."><%= existingProc ? existingProc.record_of_work || '' : '' %></textarea>
+                        </td>
+                        <td class="col-conclusion">
+                          <textarea class="form-control form-control-sm audit-textarea" 
+                                    name="items[<%= index %>][conclusion]" 
+                                    rows="2" 
+                                    placeholder="Enter conclusion..." 
+                                    required><%= existingProc ? existingProc.conclusion || '' : '' %></textarea>
+                        </td>
+                        <td class="col-result">
+                          <select class="form-select form-select-sm" name="items[<%= index %>][result]" required>
+                            <option value="">Select</option>
+                            <option value="pass" <%= existingProc && existingProc.result === 'pass' ? 'selected' : '' %>>Pass</option>
+                            <option value="fail" <%= existingProc && existingProc.result === 'fail' ? 'selected' : '' %>>Fail</option>
+                          </select>
+                        </td>
+                        <td class="col-cause">
+                          <textarea class="form-control form-control-sm audit-textarea" 
+                                    name="items[<%= index %>][cause]" 
+                                    rows="2"
+                                    placeholder="Enter cause..."><%= existingProc ? existingProc.cause || '' : '' %></textarea>
+                        </td>
+                        <td class="col-evidence">
+                          <input type="file" class="form-control form-control-sm" 
+                                 name="items[<%= index %>][evidence]" 
+                                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                 style="font-size: 12px;">
+                          <% if (existingProc && existingProc.evidence_file) { %>
+                            <input type="hidden" name="items[<%= index %>][existing_evidence]" value="<%= existingProc.evidence_file %>">
+                            <small class="text-success d-block mt-1" style="font-size: 11px;">
+                              <i class="bi bi-check-circle"></i> Uploaded
+                            </small>
+                          <% } %>
+                        </td>
+                        <td class="col-wp-link">
+                          <% 
+                            // Get working papers for this audit area NAME (not specific risk_assessment_id)
+                            // This way ALL rows with same audit_area name get the WPs from Testing Procedures
+                            const areaWPs = attachedWPs.filter(wp => wp.audit_area === area.audit_area);
+                            const linkedWP = existingProc ? existingProc.working_paper_id : null;
+                            const linkedWPData = linkedWP ? workingPapers.find(wp => wp.id === linkedWP) : null;
+                          %>
+                          
+                          <% if (linkedWP && linkedWPData) { %>
+                            <!-- Already Linked - Show View and Unlink icons only -->
+                            <div style="display: flex; gap: 4px; align-items: center; justify-content: center;">
+                              <button type="button"
+                                      class="btn btn-info btn-sm" 
+                                      style="padding: 4px 10px; font-size: 12px;"
+                                      onclick="viewWorkingPaper(<%= audit.id %>, <%= area.id %>, <%= linkedWP %>, '<%= linkedWPData.name %>')"
+                                      title="<%= linkedWPData.name %>">
+                                <i class="bi bi-eye"></i>
+                              </button>
+                              <button type="button" 
+                                      class="btn btn-danger btn-sm" 
+                                      style="padding: 4px 10px; font-size: 12px;"
+                                      onclick="unlinkWorkingPaper(<%= existingProc.id %>, <%= audit.id %>, <%= area.id %>, <%= index %>, this)"
+                                      title="Unlink Working Paper">
+                                <i class="bi bi-x-lg"></i>
+                              </button>
+                            </div>
+                          <% } else if (areaWPs.length > 0) { %>
+                            <!-- Not Linked - Show Dropdown and Link button -->
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                              <select class="form-select form-select-sm" 
+                                      id="wp-select-<%= existingProc ? existingProc.id : 'new-' + index %>"
+                                      style="font-size: 12px; flex: 1;">
+                                <option value="">Select WP...</option>
+                                <% areaWPs.forEach(wp => { %>
+                                  <option value="<%= wp.working_paper_id %>"><%= wp.working_paper_name %></option>
+                                <% }) %>
+                              </select>
+                              <button type="button" 
+                                      class="btn btn-primary btn-sm" 
+                                      style="padding: 2px 8px; font-size: 11px; white-space: nowrap;"
+                                      onclick="linkWorkingPaper(<%= existingProc ? existingProc.id : 'null' %>, <%= area.id %>, <%= audit.id %>, <%= index %>)"
+                                      title="Link Working Paper">
+                                <i class="bi bi-link-45deg"></i> Link
+                              </button>
+                            </div>
+                          <% } else { %>
+                            <!-- No working papers available for this area -->
+                            <small class="text-muted" style="font-size: 11px;">
+                              <i class="bi bi-info-circle"></i> No WPs in Testing
+                            </small>
+                          <% } %>
+                        </td>
+                        <td class="col-assigned">
+                          <input type="text" class="form-control form-control-sm" 
+                                 value="<%= area.auditor_name || 'Unassigned' %>" 
+                                 readonly style="background-color: #f8fafc; border-color: #e2e8f0;">
+                        </td>
+                        <td class="col-likelihood">
+                          <input type="number" 
+                                 class="form-control form-control-sm" 
+                                 name="items[<%= index %>][likelihood]"
+                                 min="1" 
+                                 max="5"
+                                 value="<%= existingProc ? existingProc.likelihood || '' : '' %>"
+                                 onchange="calculateRating(<%= index %>)"
+                                 placeholder="1-5"
+                                 style="text-align: center;">
+                        </td>
+                        <td class="col-impact">
+                          <input type="number" 
+                                 class="form-control form-control-sm" 
+                                 name="items[<%= index %>][impact]"
+                                 min="1" 
+                                 max="5"
+                                 value="<%= existingProc ? existingProc.impact || '' : '' %>"
+                                 onchange="calculateRating(<%= index %>)"
+                                 placeholder="1-5"
+                                 style="text-align: center;">
+                        </td>
+                        <td class="col-rating">
+                          <input type="number" 
+                                 class="form-control form-control-sm" 
+                                 name="items[<%= index %>][rating]"
+                                 value="<%= existingProc ? existingProc.rating || '' : '' %>"
+                                 readonly
+                                 style="background-color: #f8fafc; border-color: #e2e8f0; text-align: center; font-weight: 600;">
+                        </td>
+                        <td class="col-score">
+                          <input type="text" 
+                                 class="form-control form-control-sm" 
+                                 name="items[<%= index %>][score]"
+                                 value="<%= existingProc ? existingProc.score || '' : '' %>"
+                                 readonly
+                                 style="background-color: #f8fafc; border-color: #e2e8f0; text-align: center; font-weight: 600;">
+                        </td>
+                        <td class="col-include-report">
+                          <select class="form-select form-select-sm" name="items[<%= index %>][include_in_report]">
+                            <option value="no" <%= existingProc && existingProc.include_in_report === false ? 'selected' : (!existingProc ? 'selected' : '') %>>No</option>
+                            <option value="yes" <%= existingProc && existingProc.include_in_report === true ? 'selected' : '' %>>Yes</option>
+                          </select>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </form>
+        <% } %>
+        </div><!-- End auditProceduresContainer -->
+      </div>
+      
+      <div class="content-section" id="closing-meeting">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">
+              <i class="bi bi-people-fill"></i> Closing Meeting - Procedures by Team Member
+            </h5>
+            <span class="badge bg-primary" id="teamMemberCount">0 Team Members</span>
+          </div>
+          <div class="card-body-modern">
+            <div id="closingMeetingContent">
+              <!-- Content will be dynamically generated by JavaScript -->
+              <div class="text-center text-muted py-5">
+                <i class="bi bi-hourglass-split" style="font-size: 48px; opacity: 0.3;"></i>
+                <p class="mt-3">Loading closing meeting data...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Reporting Section -->
+    <div class="workflow-section" id="reporting">
+      <div class="sub-tabs">
+        <div class="sub-tab active" data-content="submit-issues">Submit Audit Issues</div>
+        <div class="sub-tab" data-content="management-comment">Management Comment</div>
+        <div class="sub-tab" data-content="finalize-report">Finalize Report</div>
+      </div>
+      
+      <div class="content-section active" id="submit-issues">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">
+              <i class="bi bi-exclamation-triangle-fill"></i> Submit Audit Issues
+            </h5>
+            
+          </div>
+          <div class="card-body-modern">
+            <div id="reportProceduresContainer">
+              <div class="text-center text-muted py-5">
+                <i class="bi bi-hourglass-split" style="font-size: 48px; opacity: 0.3;"></i>
+                <p class="mt-3">Click Refresh to load procedures marked for reporting</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-section" id="management-comment">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">
+              <i class="bi bi-chat-left-text"></i> Management Comment
+            </h5>
+            
+            </button>
+          </div>
+
+          <div style="padding: 16px 32px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 12px;">
+            
+            <button class="mgmt-filter-tab active" data-filter="unsent" onclick="filterManagementComments('unsent')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px;">
+              Unsent
+            </button>
+            <button class="mgmt-filter-tab" data-filter="sent" onclick="filterManagementComments('sent')" style="padding: 8px 16px; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px;">
+              Sent
+            </button>
+            <button class="mgmt-filter-tab" data-filter="commented" onclick="filterManagementComments('commented')" style="padding: 8px 16px; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px;">
+              Comment Received
+            </button>
+          </div>
+
+          <div class="card-body-modern">
+            <div id="managementCommentsContainer">
+              <div class="text-center text-muted py-5">
+                <i class="bi bi-chat-dots" style="font-size: 48px; opacity: 0.3;"></i>
+                <p class="mt-3">Loading approved issues...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="content-section" id="finalize-report">
+        <div class="card-modern">
+          <div class="card-header-modern">
+            <h5 class="card-title-modern"><i class="bi bi-file-earmark-text"></i> Finalize Report</h5>
+            <button onclick="generateReport()" class="btn btn-primary" style="background: #3b82f6; border: none;">
+              <i class="bi bi-file-earmark-word"></i> Generate Report
+            </button>
+          </div>
+          <div class="card-body-modern">
+            <div id="finalizeReportContainer">
+              <div class="text-center py-4">
+                <div class="spinner-border text-primary"></div>
+                <p class="mt-2">Loading issues...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Follow-up Section -->
+    <div class="workflow-section" id="followup">
+      <div class="card-modern">
+        <div class="card-header-modern">
+          <h5 class="card-title-modern"><i class="bi bi-arrow-repeat"></i> Follow-up Tracker</h5>
+        </div>
+        <div class="card-body-modern">
+          <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 0;">
+            <button class="filter-tab active" onclick="filterFollowupIssues('not-sent')" style="padding: 12px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 15px; color: #64748b; transition: all 0.2s; position: relative; bottom: -2px;">
+              Not Sent
+            </button>
+            <button class="filter-tab" onclick="filterFollowupIssues('sent')" style="padding: 12px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 15px; color: #64748b; transition: all 0.2s; position: relative; bottom: -2px;">
+              Sent for Follow-up
+            </button>
+            <button class="filter-tab" onclick="filterFollowupIssues('responded')" style="padding: 12px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 15px; color: #64748b; transition: all 0.2s; position: relative; bottom: -2px;">
+              Responded
+            </button>
+          </div>
+          
+          <div id="followupIssuesContainer">
+            <div class="text-center py-4">
+              <div class="spinner-border text-primary"></div>
+              <p class="mt-2">Loading follow-up issues...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  <!-- Working Paper View Modal -->
+  <div class="modal fade" id="wpViewModal" tabindex="-1" aria-labelledby="wpViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+          <h5 class="modal-title" id="wpViewModalLabel" style="font-weight: 600; color: #0f172a;">
+            <i class="bi bi-file-earmark-text"></i> <span id="wpModalTitle">Working Paper</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="wpModalBody" style="padding: 24px; min-height: 400px;">
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">Loading working paper...</p>
+          </div>
+        </div>
+        <div class="modal-footer" style="background: #f8fafc; border-top: 2px solid #e2e8f0;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<!-- Draft Issue Modal -->
+  <div class="modal fade" id="draftIssueModal" tabindex="-1" aria-labelledby="draftIssueModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header" style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+          <h5 class="modal-title" id="draftIssueModalLabel" style="font-weight: 600; color: #0f172a;">
+            <i class="bi bi-file-earmark-text-fill"></i> Draft Audit Issue
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="padding: 24px;">
+          <form id="draftIssueForm">
+            <input type="hidden" id="draft_procedure_id" name="procedure_id">
+            <input type="hidden" id="draft_audit_id" name="audit_id">
+            
+            <!-- Issue Title -->
+            <div class="mb-4">
+              <label for="issue_title" class="form-label" style="font-weight: 600; color: #1e293b;">
+                Issue Title <span class="text-danger">*</span>
+              </label>
+              <input type="text" 
+                     class="form-control" 
+                     id="issue_title" 
+                     name="issue_title" 
+                     placeholder="Enter a descriptive title for this issue"
+                     required
+                     style="border: 1px solid #cbd5e1; padding: 10px 14px;">
+            </div>
+            
+            <!-- Two Column Layout -->
+            <div class="row">
+              <!-- Criteria -->
+              <div class="col-md-6 mb-4">
+                <label for="criteria" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Criteria
+                </label>
+                <textarea class="form-control" 
+                          id="criteria" 
+                          name="criteria" 
+                          rows="4"
+                          placeholder="What is the standard, requirement, or expectation?"
+                          style="border: 1px solid #cbd5e1; padding: 10px 14px;"></textarea>
+              </div>
+              
+              <!-- Condition -->
+              <div class="col-md-6 mb-4">
+                <label for="condition" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Condition
+                </label>
+                <textarea class="form-control" 
+                          id="condition" 
+                          name="condition" 
+                          rows="4"
+                          placeholder="What is the actual situation found?"
+                          style="border: 1px solid #cbd5e1; padding: 10px 14px;"></textarea>
+              </div>
+            </div>
+            
+            <div class="row">
+              <!-- Cause -->
+              <div class="col-md-6 mb-4">
+                <label for="cause_issue" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Cause
+                </label>
+                <textarea class="form-control" 
+                          id="cause_issue" 
+                          name="cause" 
+                          rows="4"
+                          placeholder="Why did this issue occur?"
+                          style="border: 1px solid #cbd5e1; padding: 10px 14px;"></textarea>
+              </div>
+              
+              <!-- Consequence -->
+              <div class="col-md-6 mb-4">
+                <label for="consequence" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Consequence
+                </label>
+                <textarea class="form-control" 
+                          id="consequence" 
+                          name="consequence" 
+                          rows="4"
+                          placeholder="What is the impact or risk of this issue?"
+                          style="border: 1px solid #cbd5e1; padding: 10px 14px;"></textarea>
+              </div>
+            </div>
+            
+            <div class="row">
+              <!-- Corrective Action -->
+              <div class="col-md-8 mb-4">
+                <label for="corrective_action" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Corrective Action
+                </label>
+                <textarea class="form-control" 
+                          id="corrective_action" 
+                          name="corrective_action" 
+                          rows="3"
+                          placeholder="What action should be taken to address this issue?"
+                          style="border: 1px solid #cbd5e1; padding: 10px 14px;"></textarea>
+              </div>
+              
+              <!-- Corrective Date -->
+              <div class="col-md-4 mb-4">
+                <label for="corrective_date" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Target Completion Date
+                </label>
+                <input type="date" 
+                       class="form-control" 
+                       id="corrective_date" 
+                       name="corrective_date"
+                       style="border: 1px solid #cbd5e1; padding: 10px 14px;">
+              </div>
+            </div>
+            <!-- Comments Section (shown only for amendments) -->
+<div id="commentsSection" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 2px solid #e2e8f0;">
+  <h6 style="font-weight: 600; color: #0f172a; margin-bottom: 16px;">
+    <i class="bi bi-chat-left-text"></i> Manager Comments
+  </h6>
+  <div id="commentsList" class="mb-3"></div>
+</div>
+          </form>
+        </div>
+        <div class="modal-footer" style="background: #f8fafc; border-top: 2px solid #e2e8f0; display: flex; justify-content: space-between;">
+          <button type="button" 
+                  class="btn btn-success" 
+                  onclick="sendForVerify()"
+                  style="padding: 10px 24px; font-weight: 500;">
+            <i class="bi bi-send-check-fill"></i> Send for Verify
+          </button>
+          <div>
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" 
+                    class="btn btn-primary" 
+                    onclick="saveDraft()"
+                    style="padding: 10px 24px; font-weight: 500;">
+              <i class="bi bi-save"></i> Save Draft
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Main workflow tabs
+    document.querySelectorAll('.workflow-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.workflow-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        document.querySelectorAll('.workflow-section').forEach(s => s.classList.remove('active'));
+        const sectionId = this.getAttribute('data-section');
+        document.getElementById(sectionId).classList.add('active');
+      });
+    });
+    
+    // Auto-load Submit Audit Issues when clicked
+document.querySelector('.workflow-tab[data-section="reporting"]').addEventListener('click', function() {
+  setTimeout(() => {
+    const submitTab = document.querySelector('.sub-tab[data-content="submit-issues"]');
+    if (submitTab && submitTab.classList.contains('active')) {
+      loadReportProcedures();
+    }
+  }, 100);
+});
+
+document.querySelector('.sub-tab[data-content="submit-issues"]')?.addEventListener('click', function() {
+  loadReportProcedures();
+});
+// Store current filter for management comments
+    let currentManagementFilter = 'unsent';
+    let currentFollowupFilter = 'not-sent';
+    // Sub tabs
+    document.querySelectorAll('.sub-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        const parentSection = this.closest('.workflow-section');
+        
+        parentSection.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        parentSection.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        const contentId = this.getAttribute('data-content');
+        document.getElementById(contentId).classList.add('active');
+        
+        // Auto-load data when specific tabs are clicked
+        if (contentId === 'management-comment') {
+          // Reload with the last selected filter
+          filterManagementComments(currentManagementFilter);
+        } else if (contentId === 'finalize-report') {
+          loadFinalizeReport();
+        }
+      });
+    });
+    
+    
+
+// Load management comments when Reporting workflow tab becomes active
+document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventListener('click', function() {
+  setTimeout(() => {
+    const managementTab = document.querySelector('.sub-tab[data-content="management-comment"]');
+    if (managementTab && managementTab.classList.contains('active')) {
+      loadManagementComments('unsent');
+    }
+  }, 100);
+});
+
+    // Auto-calculate risk rating and score
+    document.getElementById('risk-assessment')?.addEventListener('input', function(e) {
+      if (e.target.classList.contains('likelihood') || e.target.classList.contains('impact')) {
+        const row = e.target.closest('tr');
+        const likelihood = parseInt(row.querySelector('.likelihood').value) || 0;
+        const impact = parseInt(row.querySelector('.impact').value) || 0;
+        const rating = likelihood * impact;
+        
+        let score = 'Low';
+        let scoreColor = 'success';
+        if (rating >= 7 && rating <= 14) {
+          score = 'Medium';
+          scoreColor = 'warning';
+        }
+        if (rating >= 15) {
+          score = 'High';
+          scoreColor = 'danger';
+        }
+        
+        row.querySelector('.rating').textContent = rating;
+        const scoreSpan = row.querySelector('.score');
+        scoreSpan.textContent = score;
+        scoreSpan.className = `score badge bg-${scoreColor}`;
+      }
+    });
+    
+    // EXCEL-LIKE COLUMN RESIZING WITH PERSISTENCE
+    function initializeResizableTable(tableId, storageKey) {
+      const table = document.getElementById(tableId);
+      if (!table) return;
+      
+      // Load saved column widths
+      const savedWidths = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      const headers = table.querySelectorAll('th');
+      headers.forEach((th, index) => {
+        if (savedWidths[index]) {
+          th.style.width = savedWidths[index] + 'px';
+        }
+      });
+      
+      const resizeHandles = table.querySelectorAll('.resize-handle');
+      let currentHandle = null;
+      let startX = 0;
+      let startWidth = 0;
+      let currentTh = null;
+      let columnIndex = 0;
+      
+      resizeHandles.forEach(handle => {
+        handle.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          currentHandle = this;
+          currentTh = this.parentElement;
+          columnIndex = this.getAttribute('data-column');
+          startX = e.clientX;
+          startWidth = currentTh.offsetWidth;
+          
+          currentTh.classList.add('resizing');
+          document.body.style.cursor = 'col-resize';
+          document.body.style.userSelect = 'none';
+        });
+      });
+      
+      document.addEventListener('mousemove', function(e) {
+        if (!currentHandle) return;
+        
+        const diff = e.clientX - startX;
+        const newWidth = Math.max(50, startWidth + diff); // Minimum width 50px
+        
+        currentTh.style.width = newWidth + 'px';
+      });
+      
+      document.addEventListener('mouseup', function() {
+        if (currentHandle) {
+          // Save the new width to localStorage
+          const newWidth = currentTh.offsetWidth;
+          savedWidths[columnIndex] = newWidth;
+          localStorage.setItem(storageKey, JSON.stringify(savedWidths));
+          
+          currentTh.classList.remove('resizing');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+          currentHandle = null;
+          currentTh = null;
+        }
+      });
+    }
+    
+    // Initialize resizable tables
+    initializeResizableTable('riskTable', 'riskTableColumnWidths');
+    initializeResizableTable('auditProceduresTable', 'auditProceduresTableColumnWidths');
+    
+    // Toast notification function
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      `;
+      
+      const icon = type === 'success' ? 'check-circle-fill' : type === 'error' ? 'x-circle-fill' : 'info-circle-fill';
+      toast.innerHTML = `<i class="bi bi-${icon}"></i> ${message}`;
+      
+      toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    function createToastContainer() {
+      const container = document.createElement('div');
+      container.id = 'toastContainer';
+      document.body.appendChild(container);
+      
+      // Add animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      return container;
+    }
+    
+    // Update Testing Procedures folders dynamically after Risk Assessment save
+    function updateTestingProcedures() {
+      const container = document.getElementById('testingProceduresFolders');
+      if (!container) return;
+      
+      // Fetch fresh data from server to get NEW risk_assessment IDs
+      fetch('/audits/<%= audit.id %>/get-selected-areas')
+        .then(response => response.json())
+        .then(data => {
+          const selectedAreas = data.selectedAreas || [];
+          
+          // Generate HTML
+          if (selectedAreas.length === 0) {
+            container.innerHTML = `
+              <div class="col-12">
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <i class="bi bi-exclamation-circle"></i>
+                  </div>
+                  <h5 class="empty-text">No Areas Selected</h5>
+                  <p class="text-muted">Please select areas in Risk Assessment first.</p>
+                </div>
+              </div>
+            `;
+          } else {
+            // Group by unique audit_area - keep the LATEST one (highest ID)
+            const uniqueAreas = {};
+            selectedAreas.forEach(area => {
+              if (!uniqueAreas[area.audit_area] || uniqueAreas[area.audit_area].id < area.id) {
+                uniqueAreas[area.audit_area] = area;
+              }
+            });
+            
+            let html = '';
+            Object.values(uniqueAreas).forEach(area => {
+              html += `
+                <div class="col-md-4">
+                  <a href="/audits/<%= audit.id %>/testing-procedures/${area.id}" class="folder-card">
+                    <div style="padding: 24px; text-align: center;">
+                      <i class="bi bi-folder-fill folder-icon"></i>
+                      <h6 style="margin-top: 16px; font-weight: 600; color: #0f172a;">
+                        ${area.audit_area}
+                      </h6>
+                      <p style="font-size: 13px; color: #64748b; margin: 0;">
+                        Assigned to: ${area.auditor_name || 'Unassigned'}
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              `;
+            });
+            container.innerHTML = html;
+          }
+        })
+        .catch(error => {
+          console.error('Error updating testing procedures:', error);
+        });
+    }
+    
+    // Update Audit Procedures table dynamically - FETCH FROM SERVER
+    function updateAuditProcedures() {
+      const container = document.getElementById('auditProceduresContainer');
+      if (!container) return;
+      
+      // Fetch complete audit procedures data from server
+      fetch('/audits/<%= audit.id %>/get-audit-procedures')
+        .then(response => response.json())
+        .then(data => {
+          const selectedAreas = data.selectedAreas || [];
+          const procedures = data.procedures || [];
+          const attachedWPs = data.attachedWPs || [];
+          
+          if (selectedAreas.length === 0) {
+            container.innerHTML = `
+              <div class="card-modern">
+                <div class="card-body-modern">
+                  <div class="empty-state">
+                    <div class="empty-icon">
+                      <i class="bi bi-exclamation-circle"></i>
+                    </div>
+                    <h5 class="empty-text">No Audit Areas Selected</h5>
+                    <p class="text-muted">Please complete Risk Assessment first.</p>
+                  </div>
+                </div>
+              </div>
+            `;
+            return;
+          }
+          
+          // Build table rows with actual data
+          let tableRows = '';
+          selectedAreas.forEach((area, idx) => {
+            const existingProc = procedures.find(p => p.risk_assessment_id === area.id);
+            // Match working papers by audit_area NAME instead of risk_assessment_id
+            // This way ALL rows with same audit_area name get the WPs from Testing Procedures
+            const areaWPs = attachedWPs.filter(wp => wp.audit_area === area.audit_area);
+            
+            tableRows += `
+              <tr>
+                <td class="col-audit-area-proc">
+                  <strong>${area.audit_area}</strong>
+                  <input type="hidden" name="items[${idx}][risk_assessment_id]" value="${area.id}">
+                  <input type="hidden" name="items[${idx}][procedure_id]" value="${existingProc ? existingProc.id : ''}">
+                </td>
+                <td class="col-procedure">
+                  <div class="procedure-text">${area.audit_procedure || '-'}</div>
+                </td>
+                <td class="col-record">
+                  <textarea class="form-control form-control-sm audit-textarea" 
+                            name="items[${idx}][record_of_work]" 
+                            rows="2"
+                            placeholder="Enter record of work...">${existingProc ? (existingProc.record_of_work || '') : ''}</textarea>
+                </td>
+                <td class="col-conclusion">
+                  <textarea class="form-control form-control-sm audit-textarea" 
+                            name="items[${idx}][conclusion]" 
+                            rows="2" 
+                            placeholder="Enter conclusion..." 
+                            required>${existingProc ? (existingProc.conclusion || '') : ''}</textarea>
+                </td>
+                <td class="col-result">
+                  <select class="form-select form-select-sm" name="items[${idx}][result]" required>
+                    <option value="">Select</option>
+                    <option value="pass" ${existingProc && existingProc.result === 'pass' ? 'selected' : ''}>Pass</option>
+                    <option value="fail" ${existingProc && existingProc.result === 'fail' ? 'selected' : ''}>Fail</option>
+                  </select>
+                </td>
+                <td class="col-cause">
+                  <textarea class="form-control form-control-sm audit-textarea" 
+                            name="items[${idx}][cause]" 
+                            rows="2"
+                            placeholder="Enter cause...">${existingProc ? (existingProc.cause || '') : ''}</textarea>
+                </td>
+                <td class="col-evidence">
+                  <input type="file" class="form-control form-control-sm" 
+                         name="items[${idx}][evidence]" 
+                         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                         style="font-size: 12px;">
+                  ${existingProc && existingProc.evidence_file ? `
+                    <input type="hidden" name="items[${idx}][existing_evidence]" value="${existingProc.evidence_file}">
+                    <small class="text-success d-block mt-1" style="font-size: 11px;">
+                      <i class="bi bi-check-circle"></i> Uploaded
+                    </small>
+                  ` : ''}
+                </td>
+                <td class="col-wp-link">
+                  ${existingProc && existingProc.working_paper_id ? `
+                    <!-- Already Linked - Show View and Unlink buttons -->
+                    <div style="display: flex; gap: 4px; align-items: center; justify-content: center;">
+                      <button type="button"
+                              class="btn btn-info btn-sm" 
+                              style="padding: 4px 10px; font-size: 12px;"
+                              onclick="viewWorkingPaper(<%= audit.id %>, ${area.id}, ${existingProc.working_paper_id}, '${(existingProc.working_paper_name || '').replace(/'/g, "\\'")}')"
+                              title="${existingProc.working_paper_name}">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button type="button" 
+                              class="btn btn-danger btn-sm" 
+                              style="padding: 4px 10px; font-size: 12px;"
+                              onclick="unlinkWorkingPaper(${existingProc.id}, <%= audit.id %>, ${area.id}, ${idx}, this)"
+                              title="Unlink Working Paper">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                  ` : (areaWPs.length > 0 ? `
+                    <!-- Not Linked - Show Dropdown and Link button -->
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                      <select class="form-select form-select-sm" 
+                              id="wp-select-${existingProc ? existingProc.id : 'new-' + idx}"
+                              style="font-size: 12px; flex: 1;">
+                        <option value="">Select WP...</option>
+                        ${areaWPs.map(wp => `<option value="${wp.working_paper_id}">${(wp.working_paper_name || '').replace(/"/g, '&quot;')}</option>`).join('')}
+                      </select>
+                      <button type="button" 
+                              class="btn btn-primary btn-sm" 
+                              style="padding: 2px 8px; font-size: 11px; white-space: nowrap;"
+                              onclick="linkWorkingPaper(${existingProc ? existingProc.id : 'null'}, ${area.id}, <%= audit.id %>, ${idx})"
+                              title="Link Working Paper">
+                        <i class="bi bi-link-45deg"></i> Link
+                      </button>
+                    </div>
+                  ` : `
+                    <!-- No working papers available -->
+                    <small class="text-muted" style="font-size: 11px;">
+                      <i class="bi bi-info-circle"></i> No WPs in Testing
+                    </small>
+                  `)}
+                </td>
+                <td class="col-assigned">
+                  <input type="text" class="form-control form-control-sm" 
+                         value="${area.auditor_name || 'Unassigned'}" 
+                         readonly style="background-color: #f8fafc; border-color: #e2e8f0;">
+                </td>
+                <td class="col-likelihood">
+                  <input type="number" 
+                         class="form-control form-control-sm" 
+                         name="items[${idx}][likelihood]"
+                         min="1" 
+                         max="5"
+                         value="${existingProc ? (existingProc.likelihood || '') : ''}"
+                         onchange="calculateRating(${idx})"
+                         placeholder="1-5"
+                         style="text-align: center;">
+                </td>
+                <td class="col-impact">
+                  <input type="number" 
+                         class="form-control form-control-sm" 
+                         name="items[${idx}][impact]"
+                         min="1" 
+                         max="5"
+                         value="${existingProc ? (existingProc.impact || '') : ''}"
+                         onchange="calculateRating(${idx})"
+                         placeholder="1-5"
+                         style="text-align: center;">
+                </td>
+                <td class="col-rating">
+                  <input type="number" 
+                         class="form-control form-control-sm" 
+                         name="items[${idx}][rating]"
+                         value="${existingProc ? (existingProc.rating || '') : ''}"
+                         readonly
+                         style="background-color: #f8fafc; border-color: #e2e8f0; text-align: center; font-weight: 600;">
+                </td>
+                <td class="col-score">
+                  <input type="text" 
+                         class="form-control form-control-sm" 
+                         name="items[${idx}][score]"
+                         value="${existingProc ? (existingProc.score || '') : ''}"
+                         readonly
+                         style="background-color: #f8fafc; border-color: #e2e8f0; text-align: center; font-weight: 600;">
+                </td>
+                <td class="col-include-report">
+                  <select class="form-select form-select-sm" name="items[${idx}][include_in_report]">
+                    <option value="no" ${existingProc && existingProc.include_in_report === false ? 'selected' : (!existingProc ? 'selected' : '')}>No</option>
+                    <option value="yes" ${existingProc && existingProc.include_in_report === true ? 'selected' : ''}>Yes</option>
+                  </select>
+                </td>
+              </tr>
+            `;
+          });
+          
+          container.innerHTML = `
+            <form action="/audits/field-work/<%= audit.id %>/save-all" method="POST" id="auditProceduresForm" enctype="multipart/form-data">
+              <div class="card-modern">
+                <div class="card-header-modern">
+                  <h5 class="card-title-modern"><i class="bi bi-clipboard-check"></i> Audit Procedures</h5>
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-save"></i> Save All Procedures
+                  </button>
+                </div>
+                
+                <div class="audit-procedures-container">
+                  <table class="table-audit-proc table-bordered" id="auditProceduresTable">
+                    <thead>
+                      <tr>
+                        <th class="col-audit-area-proc">Audit Area<div class="resize-handle" data-column="0"></div></th>
+                        <th class="col-procedure">Audit Procedure<div class="resize-handle" data-column="1"></div></th>
+                        <th class="col-record">Record of Work<div class="resize-handle" data-column="2"></div></th>
+                        <th class="col-conclusion">Conclusion<div class="resize-handle" data-column="3"></div></th>
+                        <th class="col-result">Result<div class="resize-handle" data-column="4"></div></th>
+                        <th class="col-cause">Cause<div class="resize-handle" data-column="5"></div></th>
+                        <th class="col-evidence">Evidence<div class="resize-handle" data-column="6"></div></th>
+                        <th class="col-wp-link">Working Paper<div class="resize-handle" data-column="7"></div></th>
+                        <th class="col-assigned">Assigned To<div class="resize-handle" data-column="8"></div></th>
+                        <th class="col-likelihood">Likelihood<div class="resize-handle" data-column="9"></div></th>
+                        <th class="col-impact">Impact<div class="resize-handle" data-column="10"></div></th>
+                        <th class="col-rating">Rating<div class="resize-handle" data-column="11"></div></th>
+                        <th class="col-score">Score<div class="resize-handle" data-column="12"></div></th>
+                        <th class="col-include-report">Include in Report</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${tableRows}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </form>
+          `;
+          
+          // Re-attach event listeners for the new form
+          attachAuditProceduresListeners();
+          
+          // Update workingPapersData for unlink functionality
+          selectedAreas.forEach((area, idx) => {
+            const existingProc = procedures.find(p => p.risk_assessment_id === area.id);
+            // Match working papers by audit_area NAME instead of risk_assessment_id
+            const areaWPs = attachedWPs.filter(wp => wp.audit_area === area.audit_area);
+            
+            workingPapersData[area.id] = {
+              procedureId: existingProc ? existingProc.id : null,
+              index: idx,
+              workingPapers: areaWPs.map(wp => ({ 
+                id: wp.working_paper_id, 
+                name: wp.working_paper_name 
+              }))
+            };
+          });
+          
+          // Update Closing Meeting too
+          updateClosingMeeting();
+        })
+        .catch(error => {
+          console.error('Error updating audit procedures:', error);
+        });
+    }
+    
+    // Re-attach event listeners for Audit Procedures form after dynamic update
+    function attachAuditProceduresListeners() {
+      const form = document.getElementById('auditProceduresForm');
+      if (!form) return;
+      
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+        submitBtn.disabled = true;
+        
+        fetch('/audits/field-work/<%= audit.id %>/save-all', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
+            submitBtn.classList.remove('btn-primary');
+            submitBtn.classList.add('btn-success');
+            showToast('Audit procedures saved successfully!', 'success');
+            
+            // Update Closing Meeting with new data
+            updateClosingMeeting();
+            
+            setTimeout(() => {
+              submitBtn.innerHTML = originalText;
+              submitBtn.classList.remove('btn-success');
+              submitBtn.classList.add('btn-primary');
+              submitBtn.disabled = false;
+            }, 1500);
+          } else {
+            throw new Error('Save failed');
+          }
+        })
+        .catch(error => {
+          submitBtn.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+          submitBtn.classList.remove('btn-primary');
+          submitBtn.classList.add('btn-danger');
+          showToast('Error saving audit procedures', 'error');
+          setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.classList.remove('btn-danger');
+            submitBtn.classList.add('btn-primary');
+            submitBtn.disabled = false;
+          }, 2000);
+        });
+      });
+      
+      // Re-initialize resizable table
+      initializeResizableTable('auditProceduresTable', 'auditProceduresTableColumnWidths');
+    }
+    
+    // AJAX submission for risk assessment
+    document.getElementById('riskForm')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+      submitBtn.disabled = true;
+      
+      fetch('/risk-assessment/<%= audit.id %>/save', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
+          submitBtn.classList.remove('btn-primary');
+          submitBtn.classList.add('btn-success');
+          showToast('Risk assessment saved successfully!', 'success');
+          
+          // Update Testing Procedures and Audit Procedures dynamically
+          updateTestingProcedures();
+          updateAuditProcedures();
+          
+          setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.classList.remove('btn-success');
+            submitBtn.classList.add('btn-primary');
+            submitBtn.disabled = false;
+          }, 1500);
+        } else {
+          throw new Error('Save failed');
+        }
+      })
+      .catch(error => {
+        submitBtn.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+        submitBtn.classList.remove('btn-primary');
+        submitBtn.classList.add('btn-danger');
+        showToast('Error saving risk assessment', 'error');
+        setTimeout(() => {
+          submitBtn.innerHTML = originalText;
+          submitBtn.classList.remove('btn-danger');
+          submitBtn.classList.add('btn-primary');
+          submitBtn.disabled = false;
+        }, 2000);
+      });
+    });
+    
+    // Store working papers data by risk assessment ID for dynamic restoration
+    const workingPapersData = {};
+    <% selectedAreas.forEach((area, index) => { 
+      const areaWPs = attachedWPs.filter(wp => Number(wp.risk_assessment_id) === Number(area.id));
+      const existingProc = procedures.find(p => p.risk_assessment_id === area.id);
+    %>
+      workingPapersData['<%= area.id %>'] = {
+        procedureId: <%= existingProc ? existingProc.id : 'null' %>,
+        index: <%= index %>,
+        workingPapers: [
+          <% areaWPs.forEach(wp => { %>
+            { id: <%= wp.working_paper_id %>, name: '<%= wp.working_paper_name %>' },
+          <% }) %>
+        ]
+      };
+    <% }) %>
+    
+    // Attach audit procedures form listeners on page load
+    attachAuditProceduresListeners();
+    
+    // Document Manager Functions
+    let docSaveTimeout;
+    
+    function addDocumentRow() {
+      const tbody = document.getElementById('documentTableBody');
+      const emptyRow = tbody.querySelector('.empty-row');
+      if (emptyRow) {
+        emptyRow.remove();
+      }
+      
+      const rowCount = tbody.querySelectorAll('tr').length;
+      const newRow = document.createElement('tr');
+      newRow.setAttribute('data-doc-id', 'new');
+      newRow.innerHTML = `
+        <td>${rowCount + 1}</td>
+        <td>
+          <input type="text" 
+                 class="form-control" 
+                 name="documents[${rowCount}][name]" 
+                 placeholder="Enter document name">
+          <input type="hidden" name="documents[${rowCount}][id]" value="">
+        </td>
+        <td>
+          <input type="text" 
+                 class="form-control" 
+                 name="documents[${rowCount}][ref_no]" 
+                 placeholder="Ref. No">
+        </td>
+        <td>
+          <input type="date" 
+                 class="form-control" 
+                 name="documents[${rowCount}][last_amended]">
+        </td>
+        <td>
+          <input type="file" 
+                 class="form-control form-control-sm" 
+                 name="documents[${rowCount}][file]">
+        </td>
+        <td class="text-center">
+          <span class="text-muted">-</span>
+        </td>
+        <td class="text-center">
+          <button type="button" 
+                  class="btn btn-danger btn-sm" 
+                  onclick="deleteDocumentRow(this, null)"
+                  title="Delete">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      `;
+      
+      tbody.appendChild(newRow);
+      updateDocRowNumbers();
+    }
+    
+    function deleteDocumentRow(button, docId) {
+      if (!confirm('Delete this document?')) return;
+      
+      const row = button.closest('tr');
+      const tbody = document.getElementById('documentTableBody');
+      
+      if (docId) {
+        // If it's an existing document, make an API call to delete
+        fetch('/audits/<%= audit.id %>/documents/' + docId + '/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            row.remove();
+            updateDocRowNumbers();
+            
+            // Show empty message if no rows left
+            if (tbody.querySelectorAll('tr').length === 0) {
+              tbody.innerHTML = `
+                <tr class="empty-row">
+                  <td colspan="7" class="text-center text-muted py-4">
+                    <i class="bi bi-folder2-open" style="font-size: 48px; opacity: 0.3;"></i>
+                    <p class="mt-2 mb-0">No documents yet. Click "Add Document" to start.</p>
+                  </td>
+                </tr>
+              `;
+            }
+            
+            showDocStatus('Document deleted', 'success');
+          } else {
+            showDocStatus('Error deleting document', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showDocStatus('Error deleting document', 'error');
+        });
+      } else {
+        // New row that hasn't been saved yet
+        row.remove();
+        updateDocRowNumbers();
+        
+        // Show empty message if no rows left
+        if (tbody.querySelectorAll('tr').length === 0) {
+          tbody.innerHTML = `
+            <tr class="empty-row">
+              <td colspan="7" class="text-center text-muted py-4">
+                <i class="bi bi-folder2-open" style="font-size: 48px; opacity: 0.3;"></i>
+                <p class="mt-2 mb-0">No documents yet. Click "Add Document" to start.</p>
+              </td>
+            </tr>
+          `;
+        }
+      }
+    }
+    
+    function updateDocRowNumbers() {
+      const tbody = document.getElementById('documentTableBody');
+      const rows = tbody.querySelectorAll('tr:not(.empty-row)');
+      rows.forEach((row, index) => {
+        row.querySelector('td:first-child').textContent = index + 1;
+      });
+    }
+    
+    function autoSaveDocuments() {
+      // Clear existing timeout
+      clearTimeout(docSaveTimeout);
+      
+      // Set new timeout for 1 second after user stops typing
+      docSaveTimeout = setTimeout(() => {
+        saveDocuments();
+      }, 1000);
+    }
+    
+    function saveDocuments(event) {
+      if (event) event.preventDefault();
+      
+      const form = document.getElementById('documentForm');
+      const formData = new FormData(form);
+      
+      showDocStatus('Saving...', 'info');
+      
+      fetch('/audits/<%= audit.id %>/documents/save', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showDocStatus('Saved successfully!', 'success');
+          
+          // Update file upload status for all rows
+          const tbody = document.getElementById('documentTableBody');
+          const rows = tbody.querySelectorAll('tr:not(.empty-row)');
+          
+          rows.forEach((row, index) => {
+            const fileInput = row.querySelector(`input[type="file"]`);
+            const fileStatusTd = row.cells[4]; // File upload status column
+            const viewActionTd = row.cells[5]; // View action column
+            
+            // If a file was selected, show uploaded status
+            if (fileInput && fileInput.files.length > 0) {
+              // Update file status column
+              const fileNameLabel = fileStatusTd.querySelector('small');
+              if (!fileNameLabel) {
+                fileStatusTd.innerHTML = `
+                  <small class="text-success">
+                    <i class="bi bi-check-circle"></i> File uploaded
+                  </small>
+                `;
+              }
+              
+              // Update view action column
+              if (viewActionTd.textContent.trim() === '-') {
+                viewActionTd.innerHTML = `
+                  <a href="#" 
+                     class="btn btn-info btn-sm"
+                     onclick="alert('File uploaded successfully! Refresh to view.'); return false;"
+                     title="View document">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                `;
+              }
+            }
+          });
+        } else {
+          showDocStatus('Error saving', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showDocStatus('Error saving', 'error');
+      });
+    }
+    
+    function showDocStatus(message, type) {
+      const statusDiv = document.getElementById('docSaveStatus');
+      let color = '#64748b';
+      let icon = 'bi-info-circle';
+      
+      if (type === 'success') {
+        color = '#22c55e';
+        icon = 'bi-check-circle-fill';
+      } else if (type === 'error') {
+        color = '#ef4444';
+        icon = 'bi-x-circle-fill';
+      }
+      
+      statusDiv.innerHTML = `<span style="color: ${color};"><i class="bi ${icon}"></i> ${message}</span>`;
+      
+      if (type === 'success' || type === 'error') {
+        setTimeout(() => {
+          statusDiv.innerHTML = '';
+        }, 3000);
+      }
+    }
+    
+    // Working Paper Link/Unlink Functions
+    async function viewWorkingPaper(auditId, riskAssessmentId, workingPaperId, workingPaperName) {
+      const modal = new bootstrap.Modal(document.getElementById('wpViewModal'));
+      const modalBody = document.getElementById('wpModalBody');
+      const modalTitle = document.getElementById('wpModalTitle');
+      
+      // Set title
+      modalTitle.textContent = workingPaperName;
+      
+      // Show loading state
+      modalBody.innerHTML = `
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading working paper...</p>
+        </div>
+      `;
+      
+      // Open modal
+      modal.show();
+      
+      try {
+        // Fetch working paper data
+        const response = await fetch(`/audits/${auditId}/working-paper-view/${riskAssessmentId}/${workingPaperId}`);
+        const data = await response.json();
+        
+        console.log('Working paper data:', data); // Debug log
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load working paper');
+        }
+        
+        // Build table HTML
+        let tableHTML = '<div class="table-responsive"><table class="table table-bordered table-sm">';
+        
+        // Table header
+        tableHTML += '<thead style="background: #f8fafc;"><tr>';
+        data.columns.forEach(col => {
+          // Try both 'name' and 'column_name' fields
+          const columnName = col.name || col.column_name || 'Unknown';
+          tableHTML += `<th style="font-weight: 600; color: #0f172a; padding: 12px;">${columnName}</th>`;
+        });
+        tableHTML += '</tr></thead>';
+        
+        // Table body
+        tableHTML += '<tbody>';
+        if (data.rows && data.rows.length > 0) {
+          data.rows.forEach(row => {
+            tableHTML += '<tr>';
+            data.columns.forEach(col => {
+              const columnName = col.name || col.column_name || 'Unknown';
+              const cellData = row.data || {};
+              const value = cellData[columnName] || '-';
+              tableHTML += `<td style="padding: 10px; vertical-align: middle;">${value}</td>`;
+            });
+            tableHTML += '</tr>';
+          });
+        } else {
+          tableHTML += `<tr><td colspan="${data.columns.length}" class="text-center text-muted py-4">No data entered yet</td></tr>`;
+        }
+        tableHTML += '</tbody></table></div>';
+        
+        modalBody.innerHTML = tableHTML;
+        
+      } catch (error) {
+        console.error('Error loading working paper:', error);
+        modalBody.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> 
+            Error loading working paper: ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    async function linkWorkingPaper(procedureId, riskAssessmentId, auditId, index) {
+      const selectId = procedureId ? `wp-select-${procedureId}` : `wp-select-new-${index}`;
+      const select = document.getElementById(selectId);
+      const workingPaperId = select.value;
+      
+      if (!workingPaperId) {
+        alert('Please select a working paper first');
+        return;
+      }
+      
+      // If procedure doesn't exist yet, we need to create it first
+      if (!procedureId) {
+        alert('Please save the audit procedure first before linking a working paper');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/audits/${auditId}/audit-procedures/${procedureId}/link-wp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ working_paper_id: workingPaperId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Get working paper name from select
+          const select = document.getElementById(procedureId ? `wp-select-${procedureId}` : `wp-select-new-${index}`);
+          const wpName = select.options[select.selectedIndex].text;
+          
+          // Update the cell to show linked state
+          const cell = select.closest('td');
+          cell.innerHTML = `
+            <div style="display: flex; gap: 4px; align-items: center; justify-content: center;">
+              <button type="button"
+                      class="btn btn-info btn-sm" 
+                      style="padding: 4px 10px; font-size: 12px;"
+                      onclick="viewWorkingPaper(${auditId}, ${riskAssessmentId}, ${workingPaperId}, '${wpName}')"
+                      title="${wpName}">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button type="button" 
+                      class="btn btn-danger btn-sm" 
+                      style="padding: 4px 10px; font-size: 12px;"
+                      onclick="unlinkWorkingPaper(${procedureId}, ${auditId}, ${riskAssessmentId}, ${index}, this)"
+                      title="Unlink Working Paper">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          `;
+          
+          // Show success toast
+          showToast('Working paper linked successfully!', 'success');
+        } else {
+          showToast('Error linking working paper: ' + (data.error || 'Unknown error'), 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error linking working paper', 'error');
+      }
+    }
+    
+    async function unlinkWorkingPaper(procedureId, auditId, riskAssessmentId, index, button) {
+      if (!confirm('Are you sure you want to unlink this working paper?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/audits/${auditId}/audit-procedures/${procedureId}/unlink-wp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Find the cell
+          const cell = button.closest('td');
+          
+          // Get working papers data for this risk assessment
+          const wpData = workingPapersData[riskAssessmentId];
+          
+          if (wpData && wpData.workingPapers.length > 0) {
+            // Restore the dropdown with available working papers
+            let optionsHtml = '<option value="">Select WP...</option>';
+            wpData.workingPapers.forEach(wp => {
+              optionsHtml += `<option value="${wp.id}">${wp.name}</option>`;
+            });
+            
+            cell.innerHTML = `
+              <div style="display: flex; gap: 4px; align-items: center;">
+                <select class="form-select form-select-sm" 
+                        id="wp-select-${procedureId}"
+                        style="font-size: 12px; flex: 1;">
+                  ${optionsHtml}
+                </select>
+                <button type="button" 
+                        class="btn btn-primary btn-sm" 
+                        style="padding: 2px 8px; font-size: 11px; white-space: nowrap;"
+                        onclick="linkWorkingPaper(${procedureId}, ${riskAssessmentId}, ${auditId}, ${index})"
+                        title="Link Working Paper">
+                  <i class="bi bi-link-45deg"></i> Link
+                </button>
+              </div>
+            `;
+          } else {
+            // No working papers available
+            cell.innerHTML = `
+              <small class="text-muted" style="font-size: 11px;">
+                <i class="bi bi-info-circle"></i> No WPs in Testing
+              </small>
+            `;
+          }
+          
+          // Show success toast
+          showToast('Working paper unlinked successfully!', 'success');
+        } else {
+          showToast('Error unlinking working paper: ' + (data.error || 'Unknown error'), 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error unlinking working paper', 'error');
+      }
+    }
+    
+    // Calculate rating and score for Audit Procedures
+    function calculateRating(index) {
+      const form = document.getElementById('auditProceduresForm');
+      
+      // Get likelihood and impact values
+      const likelihoodInput = form.querySelector(`input[name="items[${index}][likelihood]"]`);
+      const impactInput = form.querySelector(`input[name="items[${index}][impact]"]`);
+      const ratingInput = form.querySelector(`input[name="items[${index}][rating]"]`);
+      const scoreInput = form.querySelector(`input[name="items[${index}][score]"]`);
+      
+      const likelihood = parseInt(likelihoodInput.value) || 0;
+      const impact = parseInt(impactInput.value) || 0;
+      
+      // Calculate rating (multiplication)
+      if (likelihood > 0 && impact > 0) {
+        const rating = likelihood * impact;
+        ratingInput.value = rating;
+        
+        // Calculate score based on rating
+        let score = '';
+        if (rating >= 1 && rating <= 6) {
+          score = 'Low';
+          scoreInput.style.backgroundColor = '#dbeafe';
+          scoreInput.style.color = '#1e40af';
+        } else if (rating >= 7 && rating <= 14) {
+          score = 'Medium';
+          scoreInput.style.backgroundColor = '#fef3c7';
+          scoreInput.style.color = '#92400e';
+        } else if (rating >= 15 && rating <= 25) {
+          score = 'High';
+          scoreInput.style.backgroundColor = '#fee2e2';
+          scoreInput.style.color = '#991b1b';
+        }
+        
+        scoreInput.value = score;
+      } else {
+        // Clear if either value is empty
+        ratingInput.value = '';
+        scoreInput.value = '';
+        scoreInput.style.backgroundColor = '#f8fafc';
+        scoreInput.style.color = '#0f172a';
+      }
+    }
+    
+    // Auto-calculate rating for existing rows on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('auditProceduresForm');
+      if (form) {
+        const rows = form.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+          const likelihoodInput = form.querySelector(`input[name="items[${index}][likelihood]"]`);
+          const impactInput = form.querySelector(`input[name="items[${index}][impact]"]`);
+          
+          if (likelihoodInput && impactInput && likelihoodInput.value && impactInput.value) {
+            calculateRating(index);
+          }
+        });
+        
+        // Generate Closing Meeting on load
+        updateClosingMeeting();
+        
+        // Add event listeners to update Closing Meeting when form changes
+        form.addEventListener('input', updateClosingMeeting);
+        form.addEventListener('change', updateClosingMeeting);
+      }
+    });
+    
+    // Update Closing Meeting dynamically from Audit Procedures form
+    function updateClosingMeeting() {
+      const form = document.getElementById('auditProceduresForm');
+      const container = document.getElementById('closingMeetingContent');
+      const teamCountBadge = document.getElementById('teamMemberCount');
+      
+      if (!form || !container) return;
+      
+      // Collect all procedure data from form
+      const rows = form.querySelectorAll('tbody tr');
+      const procedures = [];
+      
+      rows.forEach((row, index) => {
+        const auditArea = row.querySelector('td:first-child strong')?.textContent.trim() || 'Unknown Area';
+        const procedureText = row.querySelector('.procedure-text')?.textContent.trim() || '-';
+        const conclusion = form.querySelector(`textarea[name="items[${index}][conclusion]"]`)?.value || '-';
+        const result = form.querySelector(`select[name="items[${index}][result]"]`)?.value || '';
+        const cause = form.querySelector(`textarea[name="items[${index}][cause]"]`)?.value || '-';
+        const auditor = row.querySelector('.col-assigned input')?.value || 'Unassigned';
+        
+        // Get working paper info from the row
+        const wpViewBtn = row.querySelector('.col-wp-link button.btn-info');
+        let workingPaperId = null;
+        let workingPaperName = null;
+        let riskAssessmentId = null;
+        
+        if (wpViewBtn) {
+          const onclick = wpViewBtn.getAttribute('onclick');
+          const matches = onclick.match(/viewWorkingPaper\((\d+),\s*(\d+),\s*(\d+),\s*'([^']*)'/);
+          if (matches) {
+            riskAssessmentId = matches[2];
+            workingPaperId = matches[3];
+            workingPaperName = matches[4];
+          }
+        }
+        
+        procedures.push({
+          auditArea,
+          procedureText,
+          conclusion,
+          result,
+          cause,
+          auditor,
+          workingPaperId,
+          workingPaperName,
+          riskAssessmentId
+        });
+      });
+      
+      // Group by auditor
+      const byAuditor = {};
+      procedures.forEach(proc => {
+        if (!byAuditor[proc.auditor]) {
+          byAuditor[proc.auditor] = [];
+        }
+        byAuditor[proc.auditor].push(proc);
+      });
+      
+      // Sort procedures within each auditor: Pass first, Fail last
+      Object.keys(byAuditor).forEach(auditor => {
+        byAuditor[auditor].sort((a, b) => {
+          const resultOrder = { 'pass': 0, 'fail': 1, '': 2 };
+          const resultA = (a.result || '').toLowerCase();
+          const resultB = (b.result || '').toLowerCase();
+          
+          if (resultOrder[resultA] !== resultOrder[resultB]) {
+            return resultOrder[resultA] - resultOrder[resultB];
+          }
+          
+          return a.auditArea.localeCompare(b.auditArea);
+        });
+      });
+      
+      // Update team member count
+      const auditorCount = Object.keys(byAuditor).length;
+      teamCountBadge.textContent = `${auditorCount} Team Member${auditorCount !== 1 ? 's' : ''}`;
+      
+      // Generate HTML
+      if (auditorCount === 0) {
+        container.innerHTML = `
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-exclamation-circle" style="font-size: 48px; opacity: 0.3;"></i>
+            <p class="mt-3">No audit procedures yet. Complete Audit Procedures first.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '<div class="accordion" id="closingMeetingAccordion">';
+      
+      Object.keys(byAuditor).forEach((auditorName, auditorIndex) => {
+        const auditorProcs = byAuditor[auditorName];
+        const passCount = auditorProcs.filter(p => p.result.toLowerCase() === 'pass').length;
+        const failCount = auditorProcs.filter(p => p.result.toLowerCase() === 'fail').length;
+        
+        // Group by audit area
+        const byArea = {};
+        auditorProcs.forEach(proc => {
+          if (!byArea[proc.auditArea]) {
+            byArea[proc.auditArea] = [];
+          }
+          byArea[proc.auditArea].push(proc);
+        });
+        
+        html += `
+          <div class="accordion-item" style="border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; overflow: hidden;">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" 
+                      type="button" 
+                      data-bs-toggle="collapse" 
+                      data-bs-target="#auditor${auditorIndex}"
+                      style="background: #f8fafc; border: none; padding: 20px 24px; font-weight: 600; color: #0f172a;">
+                <div style="display: flex; align-items: center; gap: 16px; width: 100%;">
+                  <i class="bi bi-person-circle" style="font-size: 24px; color: #3b82f6;"></i>
+                  <div style="flex: 1;">
+                    <div style="font-size: 16px; font-weight: 600; color: #0f172a;">
+                      ${auditorName}
+                    </div>
+                    <div style="font-size: 13px; color: #64748b; margin-top: 4px;">
+                      ${auditorProcs.length} procedures
+                      ${passCount > 0 || failCount > 0 ? '• ' : ''}
+                      ${passCount > 0 ? `<span style="color: #22c55e;">${passCount} Pass</span>` : ''}
+                      ${failCount > 0 ? `• <span style="color: #ef4444;">${failCount} Fail</span>` : ''}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </h2>
+            <div id="auditor${auditorIndex}" 
+                 class="accordion-collapse collapse" 
+                 data-bs-parent="#closingMeetingAccordion">
+              <div class="accordion-body" style="padding: 24px;">
+        `;
+        
+        Object.keys(byArea).forEach((areaName, areaIndex) => {
+          const areaProcs = byArea[areaName];
+          const areaPassCount = areaProcs.filter(p => p.result.toLowerCase() === 'pass').length;
+          const areaFailCount = areaProcs.filter(p => p.result.toLowerCase() === 'fail').length;
+          
+          html += `
+            <div style="${areaIndex > 0 ? 'margin-top: 32px;' : ''}">
+              <div style="background: #dbeafe; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <h6 style="margin: 0; font-weight: 600; color: #1e40af;">
+                    <i class="bi bi-folder-fill"></i> ${areaName}
+                  </h6>
+                  <div style="font-size: 13px;">
+                    ${areaPassCount > 0 ? `<span class="badge" style="background: #22c55e;">${areaPassCount} Pass</span>` : ''}
+                    ${areaFailCount > 0 ? `<span class="badge" style="background: #ef4444; margin-left: 8px;">${areaFailCount} Fail</span>` : ''}
+                    ${areaPassCount === 0 && areaFailCount === 0 ? '<span class="badge bg-secondary">Not Evaluated</span>' : ''}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="table-responsive">
+                <table class="table table-sm" style="font-size: 13px;">
+                  <thead style="background: #f8fafc;">
+                    <tr>
+                      <th style="width: 30%;">Audit Procedure</th>
+                      <th style="width: 20%;">Conclusion</th>
+                      <th style="width: 12%;">Result</th>
+                      <th style="width: 18%;">Cause</th>
+                      <th style="width: 20%;">Working Paper</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+          
+          areaProcs.forEach(proc => {
+            const result = proc.result.toLowerCase();
+            let resultBadge = 'secondary';
+            let resultIcon = 'question-circle';
+            let resultText = 'Not Set';
+            
+            if (result === 'pass') {
+              resultBadge = 'success';
+              resultIcon = 'check-circle-fill';
+              resultText = 'Pass';
+            } else if (result === 'fail') {
+              resultBadge = 'danger';
+              resultIcon = 'x-circle-fill';
+              resultText = 'Fail';
+            }
+            
+            html += `
+              <tr style="${result === 'fail' ? 'background: #fef2f2;' : ''}">
+                <td>
+                  <div style="font-weight: 500; color: #0f172a;">
+                    ${proc.procedureText}
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size: 12px; color: #64748b;">
+                    ${proc.conclusion}
+                  </div>
+                </td>
+                <td>
+                  <span class="badge bg-${resultBadge}">
+                    <i class="bi bi-${resultIcon}"></i> ${resultText}
+                  </span>
+                </td>
+                <td>
+                  <div style="font-size: 12px; color: #64748b;">
+                    ${proc.cause}
+                  </div>
+                </td>
+                <td>
+                  ${proc.workingPaperId && proc.workingPaperName ? `
+                    <button type="button"
+                            class="btn btn-sm btn-primary" 
+                            style="padding: 4px 10px; font-size: 12px;"
+                            onclick="viewWorkingPaper(<%= audit.id %>, ${proc.riskAssessmentId}, ${proc.workingPaperId}, '${proc.workingPaperName}')"
+                            title="${proc.workingPaperName}">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  ` : '<span class="text-muted" style="font-size: 12px;">-</span>'}
+                </td>
+              </tr>
+            `;
+          });
+          
+          html += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        });
+        
+        html += `
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+    
+    // ==================== SUBMIT AUDIT ISSUES FUNCTIONS ====================
+    
+    // Load procedures marked for inclusion in report
+    async function loadReportProcedures() {
+      const container = document.getElementById('reportProceduresContainer');
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading procedures...</p>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch(`/audits/<%= audit.id %>/get-report-procedures`);
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load procedures');
+        }
+        
+        if (data.procedures.length === 0) {
+          container.innerHTML = `
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-info-circle" style="font-size: 48px; opacity: 0.3;"></i>
+              <p class="mt-3">No procedures marked for inclusion in report</p>
+              <p class="text-sm">Go to Audit Procedures and mark procedures with "Include in Report = Yes"</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Build the table
+        let html = `
+          <div class="table-responsive">
+            <table class="table table-hover" style="background: white; border-radius: 8px; overflow: hidden;">
+              <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Audit Area</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Audit Procedure</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Conclusion</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Result</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569; text-align: center;">Working Paper</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        
+        data.procedures.forEach(proc => {
+          const hasDraft = proc.issue_id !== null;
+const isAmendment = proc.status === 'sent_for_amendment';
+         
+          
+          html += `
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 14px; color: #334155; font-weight: 500;">${proc.audit_area || 'N/A'}</td>
+              <td style="padding: 14px; color: #475569;">${proc.audit_procedure || 'N/A'}</td>
+              <td style="padding: 14px; color: #475569; max-width: 300px;">
+                <div style="max-height: 60px; overflow-y: auto;">
+                  ${proc.conclusion || 'Not provided'}
+                </div>
+              </td>
+              <td style="padding: 14px;">
+                <span class="badge ${proc.result === 'pass' ? 'bg-success' : 'bg-danger'}">
+                  ${proc.result ? proc.result.toUpperCase() : 'N/A'}
+                </span>
+              </td>
+              <td style="padding: 14px; text-align: center;">
+                ${proc.working_paper_id ? `
+                  <button type="button"
+                          class="btn btn-info btn-sm" 
+                          style="padding: 6px 12px; font-size: 13px;"
+                          onclick="viewWorkingPaper(${auditId}, ${proc.risk_assessment_id}, ${proc.working_paper_id}, '${proc.working_paper_name}')"
+                          title="${proc.working_paper_name}">
+                    <i class="bi bi-eye"></i> View
+                  </button>
+                ` : '<small class="text-muted">No WP</small>'}
+              </td>
+              <td style="padding: 14px; text-align: center;">
+                <button type="button" 
+                        class="btn ${hasDraft ? 'btn-warning' : 'btn-primary'} btn-sm"
+                        style="padding: 6px 16px; font-weight: 500;"
+                        onclick="openDraftModal(${proc.procedure_id}, '${proc.audit_area}', '${proc.audit_procedure}')">
+                  <i class="bi ${hasDraft ? 'bi-pencil-square' : 'bi-plus-circle'}"></i> 
+                  ${isAmendment ? 'Amend' : (hasDraft ? 'Edit Draft' : 'Create Draft')}
+                </button>
+            
+              </td>
+            </tr>
+          `;
+        });
+        
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+        
+        container.innerHTML = html;
+        
+      } catch (error) {
+        console.error('Error loading report procedures:', error);
+        container.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> Error loading procedures: ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // ==================== SUBMIT AUDIT ISSUES FUNCTIONS ====================
+    
+    // Define auditId from EJS template
+    const auditId = <%= audit.id %>;
+    
+    // Load procedures marked for inclusion in report
+    async function loadReportProcedures() {
+      const container = document.getElementById('reportProceduresContainer');
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-muted">Loading procedures...</p>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch(`/audits/${auditId}/get-report-procedures`);
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load procedures');
+        }
+        
+        if (data.procedures.length === 0) {
+          container.innerHTML = `
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-info-circle" style="font-size: 48px; opacity: 0.3;"></i>
+              <p class="mt-3">No procedures marked for inclusion in report</p>
+              <p class="text-sm">Go to Audit Procedures and mark procedures with "Include in Report = Yes"</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Build the table
+        let html = `
+          <div class="table-responsive">
+            <table class="table table-hover" style="background: white; border-radius: 8px; overflow: hidden;">
+              <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <tr>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Audit Area</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Audit Procedure</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Conclusion</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569;">Result</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569; text-align: center;">Working Paper</th>
+                  <th style="padding: 14px; font-weight: 600; color: #475569; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        
+        data.procedures.forEach(proc => {
+          const hasDraft = proc.issue_id !== null;
+const isAmendment = proc.status === 'sent_for_amendment';
+         
+          
+          html += `
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+              <td style="padding: 14px; color: #334155; font-weight: 500;">${proc.audit_area || 'N/A'}</td>
+              <td style="padding: 14px; color: #475569;">${proc.audit_procedure || 'N/A'}</td>
+              <td style="padding: 14px; color: #475569; max-width: 300px;">
+                <div style="max-height: 60px; overflow-y: auto;">
+                  ${proc.conclusion || 'Not provided'}
+                </div>
+              </td>
+              <td style="padding: 14px;">
+                <span class="badge ${proc.result === 'pass' ? 'bg-success' : 'bg-danger'}">
+                  ${proc.result ? proc.result.toUpperCase() : 'N/A'}
+                </span>
+              </td>
+              <td style="padding: 14px; text-align: center;">
+                ${proc.working_paper_id ? `
+                  <button type="button"
+                          class="btn btn-info btn-sm" 
+                          style="padding: 6px 12px; font-size: 13px;"
+                          onclick="viewWorkingPaper(${auditId}, ${proc.risk_assessment_id}, ${proc.working_paper_id}, '${proc.working_paper_name}')"
+                          title="${proc.working_paper_name}">
+                    <i class="bi bi-eye"></i> View
+                  </button>
+                ` : '<small class="text-muted">No WP</small>'}
+              </td>
+              <td style="padding: 14px; text-align: center;">
+                <button type="button" 
+                        class="btn ${hasDraft ? 'btn-warning' : 'btn-primary'} btn-sm"
+                        style="padding: 6px 16px; font-weight: 500;"
+                        onclick="openDraftModal(${proc.procedure_id}, '${proc.audit_area}', '${proc.audit_procedure}')">
+                  <i class="bi ${hasDraft ? 'bi-pencil-square' : 'bi-plus-circle'}"></i> 
+                 ${isAmendment ? 'Amend' : (hasDraft ? 'Edit Draft' : 'Create Draft')}
+                </button>
+             
+              </td>
+            </tr>
+          `;
+        });
+        
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+        
+        container.innerHTML = html;
+        
+      } catch (error) {
+        console.error('Error loading report procedures:', error);
+        container.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> Error loading procedures: ${error.message}
+          </div>
+        `;
+      }
+    }
+    
+    // Open draft modal and load existing draft if available
+    async function openDraftModal(procedureId, auditArea, auditProcedure) {
+      // Set procedure ID
+      document.getElementById('draft_procedure_id').value = procedureId;
+      document.getElementById('draft_audit_id').value = auditId;
+      
+      // Update modal title
+      document.getElementById('draftIssueModalLabel').innerHTML = `
+        <i class="bi bi-file-earmark-text-fill"></i> Draft Audit Issue
+        <br><small style="font-size: 14px; font-weight: 400; color: #64748b;">
+          ${auditArea} - ${auditProcedure}
+        </small>
+      `;
+      
+      // Reset form
+      document.getElementById('draftIssueForm').reset();
+      
+      // Try to load existing draft
+      try {
+        const response = await fetch(`/audits/${auditId}/issues/${procedureId}/draft`);
+        const data = await response.json();
+        
+        if (data.success && data.issue) {
+          // Populate form with existing draft
+          document.getElementById('issue_title').value = data.issue.issue_title || '';
+          document.getElementById('criteria').value = data.issue.criteria || '';
+          document.getElementById('condition').value = data.issue.condition || '';
+          document.getElementById('cause_issue').value = data.issue.cause || '';
+          document.getElementById('consequence').value = data.issue.consequence || '';
+          document.getElementById('corrective_action').value = data.issue.corrective_action || '';
+          document.getElementById('corrective_date').value = data.issue.corrective_date ? 
+            data.issue.corrective_date.split('T')[0] : '';
+            // Load and show comments if amendment
+if (data.issue && data.issue.status === 'sent_for_amendment') {
+  loadIssueComments(data.issue.id);
+  document.getElementById('commentsSection').style.display = 'block';
+} else {
+  document.getElementById('commentsSection').style.display = 'none';
+}
+        }
+      } catch (error) {
+        console.error('Error loading existing draft:', error);
+      }
+      
+      // Show modal
+      const modal = new bootstrap.Modal(document.getElementById('draftIssueModal'));
+      modal.show();
+    }
+    
+    // Load comments for an issue
+async function loadIssueComments(issueId) {
+  try {
+    const response = await fetch(`/issues/${issueId}/comments`);
+    const comments = await response.json();
+    
+    const commentsList = document.getElementById('commentsList');
+    
+    if (comments.length === 0) {
+      commentsList.innerHTML = '<p class="text-muted">No comments yet</p>';
+      return;
+    }
+    
+    let html = '';
+    comments.forEach(comment => {
+      html += `
+        <div class="card mb-2" style="border: 1px solid #e2e8f0;">
+          <div class="card-body" style="padding: 12px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <strong style="color: #0f172a;">${comment.commented_by}</strong>
+              <small class="text-muted">${new Date(comment.commented_at).toLocaleString()}</small>
+            </div>
+            ${comment.field_name ? `<div class="text-muted small mb-1">On: ${comment.field_name}</div>` : ''}
+            ${comment.selected_text ? `<div class="text-muted small mb-1">Selected: "${comment.selected_text}"</div>` : ''}
+            <div style="color: #475569;">${comment.comment}</div>
+          </div>
+        </div>
+      `;
+    });
+    
+    commentsList.innerHTML = html;
+  } catch (error) {
+    console.error('Error loading comments:', error);
+    document.getElementById('commentsList').innerHTML = '<p class="text-danger">Error loading comments</p>';
+  }
+}
+
+    // Save draft issue
+    async function saveDraft() {
+      const form = document.getElementById('draftIssueForm');
+      
+      // Basic validation
+      const issueTitle = document.getElementById('issue_title').value.trim();
+      if (!issueTitle) {
+        showToast('Please enter an issue title', 'warning');
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const procedureId = document.getElementById('draft_procedure_id').value;
+      const auditId = document.getElementById('draft_audit_id').value;
+      
+      try {
+        const response = await fetch(`/audits/${auditId}/issues/${procedureId}/save-draft`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            issue_title: formData.get('issue_title'),
+            criteria: formData.get('criteria'),
+            condition: formData.get('condition'),
+            cause: formData.get('cause'),
+            consequence: formData.get('consequence'),
+            corrective_action: formData.get('corrective_action'),
+            corrective_date: formData.get('corrective_date')
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+         showToast('Draft saved successfully', 'success');
+bootstrap.Modal.getInstance(document.getElementById('draftIssueModal')).hide();
+loadReportProcedures();
+          // Don't close modal - user can continue editing
+        } else {
+          throw new Error(data.error || 'Failed to save draft');
+        }
+      } catch (error) {
+        console.error('Error saving draft:', error);
+        showToast('Error saving draft: ' + error.message, 'danger');
+      }
+    }
+    
+    // Send issue for verification
+    async function sendForVerify() {
+      const form = document.getElementById('draftIssueForm');
+      
+      // Validation
+      const issueTitle = document.getElementById('issue_title').value.trim();
+      if (!issueTitle) {
+        showToast('Please enter an issue title before sending for verification', 'warning');
+        return;
+      }
+      
+      // Confirm action
+      if (!confirm('Are you sure you want to send this issue for verification? You won\'t be able to edit it until it\'s approved or sent back for amendment.')) {
+        return;
+      }
+      
+      const formData = new FormData(form);
+      const procedureId = document.getElementById('draft_procedure_id').value;
+      const auditId = document.getElementById('draft_audit_id').value;
+      
+      try {
+        const response = await fetch(`/audits/${auditId}/issues/${procedureId}/send-for-verify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            issue_title: formData.get('issue_title'),
+            criteria: formData.get('criteria'),
+            condition: formData.get('condition'),
+            cause: formData.get('cause'),
+            consequence: formData.get('consequence'),
+            corrective_action: formData.get('corrective_action'),
+            corrective_date: formData.get('corrective_date')
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue sent for verification successfully', 'success');
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('draftIssueModal')).hide();
+          // Reload procedures list
+          loadReportProcedures();
+        } else {
+          throw new Error(data.error || 'Failed to send for verification');
+        }
+      } catch (error) {
+        console.error('Error sending for verification:', error);
+        showToast('Error sending for verification: ' + error.message, 'danger');
+      }
+    }
+    
+    // Helper function for toast notifications
+    function showToast(message, type = 'info') {
+      // Remove any existing toasts
+      const existingToast = document.querySelector('.custom-toast');
+      if (existingToast) {
+        existingToast.remove();
+      }
+      
+      // Create toast
+      const toast = document.createElement('div');
+      toast.className = `custom-toast alert alert-${type}`;
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        animation: slideInRight 0.3s ease-out;
+      `;
+      
+      const icon = {
+        success: 'check-circle-fill',
+        danger: 'exclamation-triangle-fill',
+        warning: 'exclamation-circle-fill',
+        info: 'info-circle-fill'
+      }[type] || 'info-circle-fill';
+      
+      toast.innerHTML = `
+        <i class="bi bi-${icon} me-2"></i>${message}
+      `;
+      
+      document.body.appendChild(toast);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    // Add CSS animation for toast
+    if (!document.getElementById('toast-animations')) {
+      const style = document.createElement('style');
+      style.id = 'toast-animations';
+      style.textContent = `
+        @keyframes slideInRight {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+
+    // ==================== END SUBMIT AUDIT ISSUES FUNCTIONS ====================
+
+async function loadManagementComments(filter = 'all') {
+  const container = document.getElementById('managementCommentsContainer');
+  container.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2">Loading...</p></div>';
+  
+  try {
+    const response = await fetch(`/issues/management-comments/<%= audit.id %>`);
+    const data = await response.json();
+    
+    if (!data.success || !data.issues || data.issues.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox" style="font-size: 48px; opacity: 0.3;"></i><p class="mt-3">No approved issues yet</p></div>';
+      return;
+    }
+    
+    // Filter issues based on selected filter
+    let filteredIssues = data.issues;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (filter === 'unsent') {
+      filteredIssues = data.issues.filter(issue => !issue.sent_for_commenting);
+    } else if (filter === 'sent') {
+      // Only show issues that are sent, not commented, AND not past due
+      filteredIssues = data.issues.filter(issue => {
+        const isPastDue = issue.comment_due_date && new Date(issue.comment_due_date) < today;
+        return issue.sent_for_commenting && issue.recent_comment_count === 0 && !isPastDue;
+      });
+    } else if (filter === 'commented') {
+      // Show issues that either have comments OR are past due with no comments
+      filteredIssues = data.issues.filter(issue => {
+        const isPastDue = issue.comment_due_date && new Date(issue.comment_due_date) < today;
+        return issue.sent_for_commenting && (issue.recent_comment_count > 0 || (issue.recent_comment_count === 0 && isPastDue));
+      });
+    }
+    
+    if (filteredIssues.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox" style="font-size: 48px; opacity: 0.3;"></i><p class="mt-3">No issues found for this filter</p></div>';
+      return;
+    }
+    
+    let html = '<div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">';
+    html += '<table style="width: 100%; border-collapse: collapse;">';
+    html += '<thead style="background: #f8fafc;"><tr>';
+    html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ISSUE TITLE</th>';
+    html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">AUDIT AREA</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">COMMENTS</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">SENT STATUS</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">DUE DATE</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ACTION</th>';
+    html += '</tr></thead><tbody>';
+    
+    filteredIssues.forEach(issue => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isPastDue = issue.comment_due_date && new Date(issue.comment_due_date) < today;
+      const commentCount = issue.comments ? issue.comments.filter(c => !c.is_auditor_response).length : 0;
+      const resendCount = issue.resend_count || 0;
+      
+      let sentStatus, sentColor;
+      if (filter === 'commented' && isPastDue && issue.recent_comment_count === 0) {
+        sentStatus = 'NO COMMENT';
+        sentColor = '#ef4444';
+      } else if (filter === 'commented') {
+        sentStatus = 'COMMENTED';
+        sentColor = '#8b5cf6';
+      } else if (!issue.sent_for_commenting) {
+        sentStatus = 'NOT SENT';
+        sentColor = '#94a3b8';
+      } else if (resendCount > 1) {
+        sentStatus = 'RESENT';
+        sentColor = '#f59e0b';
+      } else {
+        sentStatus = 'SENT';
+        sentColor = '#10b981';
+      }
+      
+      const dueDate = issue.comment_due_date ? new Date(issue.comment_due_date).toLocaleDateString() : '-';
+      
+      html += '<tr style="border-bottom: 1px solid #f1f5f9;">';
+      html += '<td style="padding: 16px;"><div style="font-weight: 600; color: #0f172a;">' + issue.issue_title + '</div></td>';
+      html += '<td style="padding: 16px; color: #334155;">' + (issue.audit_area || 'N/A') + '</td>';
+      html += '<td style="padding: 16px; text-align: center;"><span style="background: #eff6ff; color: #3b82f6; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">' + commentCount + '</span></td>';
+      html += '<td style="padding: 16px; text-align: center;"><span style="background: ' + sentColor + '; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">' + sentStatus + '</span></td>';
+      html += '<td style="padding: 16px; text-align: center; color: #334155; font-weight: 500;">' + dueDate + '</td>';
+      html += '<td style="padding: 16px; text-align: center;"><button onclick="openManagementCommentModal(' + issue.id + ', \'' + filter + '\')" style="background: #3b82f6; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 13px;"><i class="bi bi-gear"></i> Actions</button></td>';
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  } catch (error) {
+    console.error('Error loading management comments:', error);
+    container.innerHTML = '<div class="alert alert-danger">Error loading comments</div>';
+  }
+}
+
+function filterManagementComments(filter) {
+  // Update active button
+  document.querySelectorAll('.mgmt-filter-tab').forEach(btn => {
+    if (btn.getAttribute('data-filter') === filter) {
+      btn.style.background = '#3b82f6';
+      btn.style.color = 'white';
+      btn.classList.add('active');
+    } else {
+      btn.style.background = '#f1f5f9';
+      btn.style.color = '#475569';
+      btn.classList.remove('active');
+    }
+  });
+  
+  // Load with filter
+  currentManagementFilter = filter;
+loadManagementComments(filter);
+}
+
+async function openManagementCommentModal(issueId, filter) {
+  try {
+    const response = await fetch(`/issues/${issueId}/details`);
+    const issue = await response.json();
+    
+    const commentsResponse = await fetch(`/issues/management-comments/<%= audit.id %>`);
+    const commentsData = await commentsResponse.json();
+    const issueWithComments = commentsData.issues.find(i => i.id === issueId);
+    
+    const modal = document.createElement('div');
+    modal.id = 'managementCommentModal';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;';
+    
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 16px; width: 90%; max-width: 900px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+        <div style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+          <h4 style="margin: 0; font-weight: 700; color: #0f172a;">${issue.issue_title}</h4>
+          <button onclick="closeManagementCommentModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">&times;</button>
+        </div>
+        
+        <div style="flex: 1; overflow-y: auto; padding: 32px;">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+              <strong style="font-size: 12px; color: #64748b;">CRITERIA</strong>
+              <p style="margin: 4px 0 0 0; font-size: 14px;">${issue.criteria || 'N/A'}</p>
+            </div>
+            <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+              <strong style="font-size: 12px; color: #64748b;">CONDITION</strong>
+              <p style="margin: 4px 0 0 0; font-size: 14px;">${issue.condition || 'N/A'}</p>
+            </div>
+            <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+              <strong style="font-size: 12px; color: #64748b;">CAUSE</strong>
+              <p style="margin: 4px 0 0 0; font-size: 14px;">${issue.cause || 'N/A'}</p>
+            </div>
+            <div style="padding: 12px; background: #f8fafc; border-radius: 8px;">
+              <strong style="font-size: 12px; color: #64748b;">CONSEQUENCE</strong>
+              <p style="margin: 4px 0 0 0; font-size: 14px;">${issue.consequence || 'N/A'}</p>
+            </div>
+          </div>
+          
+          <div style="background: #eff6ff; padding: 16px; border-radius: 8px; border-left: 3px solid #3b82f6; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i class="bi bi-chat-left-text" style="color: #3b82f6;"></i>
+              <strong style="font-size: 14px; color: #1e40af;">Management Comments (${issueWithComments?.comments?.length || 0})</strong>
+            </div>
+            <div id="commentsList">
+              ${issueWithComments?.comments?.length > 0 ? issueWithComments.comments.map(c => `
+                <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 8px; ${c.is_auditor_response ? 'border-left: 3px solid #f59e0b;' : ''}">
+                  ${c.is_auditor_response ? '<div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-bottom: 4px;">AUDITOR RESPONSE</div>' : ''}
+                  <p style="margin: 0; font-size: 14px; color: #334155;">${c.comment}</p>
+                  ${c.attachment_path ? `<a href="${c.attachment_path}" target="_blank" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #3b82f6; font-size: 12px;"><i class="bi bi-paperclip"></i> View Attachment</a>` : ''}
+                  <p style="margin: 4px 0 0 0; font-size: 12px; color: #94a3b8;"><strong>${c.commented_by_name}</strong> • ${new Date(c.created_at).toLocaleString()}</p>
+                </div>
+              `).join('') : '<p style="margin: 0; font-size: 13px; color: #64748b;">No comments yet</p>'}
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 16px;">
+            <label style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block;">RESPONSE MESSAGE (for resend)</label>
+            <textarea id="resendComment" rows="3" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;" placeholder="Explain why you're resending..."></textarea>
+          </div>
+        </div>
+        
+        <div style="padding: 20px 32px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; justify-content: flex-end;">
+  ${filter === 'commented' ? `
+    <button onclick="includeInReport(${issueId}, true)" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+      <i class="bi bi-check-circle"></i> Include in Report
+    </button>
+    <button onclick="includeInReport(${issueId}, false)" style="background: #64748b; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+      <i class="bi bi-x-circle"></i> Exclude
+    </button>
+    <button onclick="openResendModal(${issueId})" style="background: #f59e0b; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+      <i class="bi bi-arrow-clockwise"></i> Resend
+    </button>
+  ` : ''}
+  ${filter === 'unsent' ? `
+    <button onclick="openSendForCommentingModal(${issueId})" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+      <i class="bi bi-send"></i> Send for Commenting
+    </button>
+  ` : ''}
+</div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  } catch (error) {
+    console.error('Error opening modal:', error);
+    showToast('Error loading issue details', 'danger');
+  }
+}
+
+function closeManagementCommentModal() {
+  const modal = document.getElementById('managementCommentModal');
+  if (modal) modal.remove();
+}
+
+async function includeInReport(issueId, include) {
+  try {
+    const endpoint = include ? 'include-in-report' : 'exclude-from-report';
+    const response = await fetch(`/issues/${issueId}/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      closeManagementCommentModal();
+      loadManagementComments('unsent');
+    }
+  } catch (error) {
+    console.error('Error updating report status:', error);
+    showToast('Error updating status', 'danger');
+  }
+}
+
+async function resendForComment(issueId) {
+  const comment = document.getElementById('resendComment').value.trim();
+  
+  if (!comment) {
+    showToast('Please enter a message explaining why you\'re resending', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/resend-for-comment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      closeManagementCommentModal();
+      loadManagementComments('unsent');
+    }
+  } catch (error) {
+    console.error('Error resending:', error);
+    showToast('Error resending issue', 'danger');
+  }
+  }
+
+  function openResendModal(issueId) {
+  const modal = document.createElement('div');
+  modal.id = 'resendModal';
+  modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+  
+  modal.innerHTML = `
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 500px; overflow: hidden;">
+      <div style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0; background: #f59e0b; color: white;">
+        <h4 style="margin: 0; font-weight: 700;"><i class="bi bi-arrow-clockwise"></i> Resend for Commenting</h4>
+      </div>
+      
+      <div style="padding: 32px;">
+        <div style="margin-bottom: 24px;">
+          <label style="font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block;">Comment Due Date *</label>
+          <input type="date" id="resendDueDate" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;" min="${new Date().toISOString().split('T')[0]}" required>
+        </div>
+        
+        <div style="margin-bottom: 24px;">
+          <label style="font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block;">Message (Optional)</label>
+          <textarea id="resendMessage" rows="3" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;" placeholder="Explain why you're resending..."></textarea>
+        </div>
+        
+        <div style="background: #fef3c7; padding: 16px; border-radius: 8px; border-left: 3px solid #f59e0b;">
+          <p style="margin: 0; font-size: 13px; color: #92400e;">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Note:</strong> This will send the issue back to auditee for additional comments.
+          </p>
+        </div>
+      </div>
+      
+      <div style="padding: 20px 32px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; justify-content: flex-end;">
+        <button onclick="closeResendModal()" style="background: #e2e8f0; color: #475569; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+          Cancel
+        </button>
+        <button onclick="confirmResend(${issueId})" style="background: #f59e0b; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+          <i class="bi bi-check-circle"></i> Confirm Resend
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
+function closeResendModal() {
+  const modal = document.getElementById('resendModal');
+  if (modal) modal.remove();
+}
+
+async function confirmResend(issueId) {
+  const dueDate = document.getElementById('resendDueDate').value;
+  const message = document.getElementById('resendMessage').value.trim();
+  
+  if (!dueDate) {
+    showToast('Please select a due date', 'warning');
+    return;
+  }
+  
+  if (!message) {
+    showToast('Please write a respond message before resending', 'warning');
+    return;
+  }
+  try {
+    const response = await fetch(`/issues/${issueId}/resend-for-comment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment: message, due_date: dueDate })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      closeResendModal();
+      closeManagementCommentModal();
+      loadManagementComments('commented');
+    } else {
+      showToast(data.error || 'Failed to resend', 'danger');
+    }
+  } catch (error) {
+    console.error('Error resending:', error);
+    showToast('Error resending issue', 'danger');
+  }
+}
+
+function openSendForCommentingModal(issueId) {
+  closeManagementCommentModal();
+  
+  const modal = document.createElement('div');
+  modal.id = 'sendForCommentingModal';
+  modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;';
+  
+  modal.innerHTML = `
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 500px; overflow: hidden;">
+      <div style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0; background: #3b82f6; color: white;">
+        <h4 style="margin: 0; font-weight: 700;"><i class="bi bi-send"></i> Send for Commenting</h4>
+      </div>
+      
+      <div style="padding: 32px;">
+        <div style="margin-bottom: 24px;">
+          <label style="font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 8px; display: block;">Comment Due Date *</label>
+          <input type="date" id="commentDueDate" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;" min="${new Date().toISOString().split('T')[0]}" required>
+        </div>
+        
+        <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border-left: 3px solid #3b82f6; margin-bottom: 24px;">
+          <p style="margin: 0; font-size: 13px; color: #475569;">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Note:</strong> Auditee will receive notification and can comment until the due date.
+          </p>
+        </div>
+      </div>
+      
+      <div style="padding: 20px 32px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; justify-content: flex-end;">
+        <button onclick="closeSendForCommentingModal()" style="background: #e2e8f0; color: #475569; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+          Cancel
+        </button>
+        <button onclick="sendEmailNotification(${issueId})" style="background: #f59e0b; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+          <i class="bi bi-envelope"></i> Send Email
+        </button>
+        <button onclick="confirmSendForCommenting(${issueId})" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+          <i class="bi bi-check-circle"></i> Confirm
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
+function closeSendForCommentingModal() {
+  const modal = document.getElementById('sendForCommentingModal');
+  if (modal) modal.remove();
+}
+
+async function confirmSendForCommenting(issueId) {
+  const dueDate = document.getElementById('commentDueDate').value;
+  
+  if (!dueDate) {
+    showToast('Please select a due date', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/audits/issues/${issueId}/send-for-commenting`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ due_date: dueDate })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      closeSendForCommentingModal();
+      loadManagementComments('unsent');
+    } else {
+      showToast(data.error || 'Failed to send for commenting', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error sending for commenting', 'danger');
+  }
+}
+
+async function sendEmailNotification(issueId) {
+  const dueDate = document.getElementById('commentDueDate').value;
+  
+  if (!dueDate) {
+    showToast('Please select a due date first', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/audits/issues/${issueId}/send-email-notification`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ due_date: dueDate })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Email sent successfully', 'success');
+    } else {
+      showToast(data.error || 'Failed to send email', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error sending email', 'danger');
+  }
+}
+
+// ==================== FINALIZE REPORT FUNCTIONS ====================
+
+async function loadFinalizeReport() {
+  const container = document.getElementById('finalizeReportContainer');
+  container.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2">Loading...</p></div>';
+  
+  try {
+    const response = await fetch(`/issues/finalize-report/<%= audit.id %>`);
+    const data = await response.json();
+    
+    if (!data.success || !data.issues || data.issues.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox" style="font-size: 48px; opacity: 0.3;"></i><p class="mt-3">No issues marked for inclusion in report</p></div>';
+      return;
+    }
+    
+    let html = '<div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">';
+    html += '<table style="width: 100%; border-collapse: collapse;">';
+    html += '<thead style="background: #f8fafc;"><tr>';
+    html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ISSUE TITLE</th>';
+    html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">AUDIT AREA</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">RATING</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">CORRECTIVE DATE *</th>';
+    html += '</tr></thead><tbody>';
+    
+    data.issues.forEach(issue => {
+      const currentDate = issue.corrective_date ? new Date(issue.corrective_date).toISOString().split('T')[0] : '';
+      
+      html += '<tr style="border-bottom: 1px solid #f1f5f9;">';
+      html += '<td style="padding: 16px;"><div style="font-weight: 600; color: #0f172a;">' + issue.issue_title + '</div></td>';
+      html += '<td style="padding: 16px; color: #334155;">' + (issue.audit_area || 'N/A') + '</td>';
+      html += '<td style="padding: 16px; text-align: center;"><span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">' + (issue.score || 'N/A') + '</span></td>';
+      html += '<td style="padding: 16px; text-align: center;"><input type="date" id="corrective-date-' + issue.id + '" value="' + currentDate + '" onchange="saveCorrectiveDate(' + issue.id + ')" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;" required></td>';
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  } catch (error) {
+    console.error('Error loading finalize report:', error);
+    container.innerHTML = '<div class="alert alert-danger">Error loading issues</div>';
+  }
+}
+
+async function saveCorrectiveDate(issueId) {
+  const dateInput = document.getElementById(`corrective-date-${issueId}`);
+  const date = dateInput.value;
+  
+  if (!date) {
+    showToast('Please select a corrective date', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/corrective-date`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ corrective_date: date })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Corrective date saved', 'success');
+    } else {
+      showToast(data.error || 'Failed to save date', 'danger');
+    }
+  } catch (error) {
+    console.error('Error saving corrective date:', error);
+    showToast('Error saving date', 'danger');
+  }
+}
+
+async function generateReport() {
+  try {
+    // Check if all issues have corrective dates
+    const response = await fetch(`/issues/finalize-report/<%= audit.id %>`);
+    const data = await response.json();
+    
+    if (!data.success || !data.issues || data.issues.length === 0) {
+      showToast('No issues to include in report', 'warning');
+      return;
+    }
+    
+    const missingDates = data.issues.filter(issue => !issue.corrective_date);
+    if (missingDates.length > 0) {
+      showToast('Please set corrective dates for all issues before generating report', 'warning');
+      return;
+    }
+    
+    // Generate report
+    showToast('Generating report...', 'info');
+    
+    window.location.href = `/issues/generate-report/<%= audit.id %>`;
+    
+    setTimeout(() => {
+      showToast('Report generated successfully', 'success');
+    }, 2000);
+  } catch (error) {
+    console.error('Error generating report:', error);
+    showToast('Error generating report', 'danger');
+  }
+}
+
+// ==================== END FINALIZE REPORT FUNCTIONS ====================
+
+// ==================== FOLLOW-UP FUNCTIONS ====================
+
+async function loadFollowupIssues(filter = 'not-sent') {
+  const container = document.getElementById('followupIssuesContainer');
+  container.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div><p class="mt-2">Loading...</p></div>';
+  
+  try {
+    const response = await fetch(`/issues/followup-issues/<%= audit.id %>`);
+    const data = await response.json();
+    
+    if (!data.success) {
+      container.innerHTML = '<div class="alert alert-danger">Error loading issues</div>';
+      return;
+    }
+    
+    // Filter issues based on selected filter
+    let filteredIssues = data.issues;
+    
+    if (filter === 'not-sent') {
+      filteredIssues = data.issues.filter(issue => !issue.sent_for_followup);
+    } else if (filter === 'sent') {
+      filteredIssues = data.issues.filter(issue => issue.sent_for_followup && !issue.followup_responded);
+    } else if (filter === 'responded') {
+      filteredIssues = data.issues.filter(issue => issue.sent_for_followup && issue.followup_responded);
+    }
+    
+    if (filteredIssues.length === 0) {
+      container.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox" style="font-size: 48px; opacity: 0.3;"></i><p class="mt-3">No issues found for this filter</p></div>';
+      return;
+    }
+    
+    let html = '<div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">';
+    html += '<table style="width: 100%; border-collapse: collapse;">';
+    html += '<thead style="background: #f8fafc;"><tr>';
+    html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ISSUE TITLE</th>';
+    html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">AUDIT AREA</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">RATING</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">STATUS</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">DUE DATE</th>';
+    html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ACTION</th>';
+    html += '</tr></thead><tbody>';
+    
+    filteredIssues.forEach(issue => {
+      let statusBadge, statusColor;
+      if (!issue.sent_for_followup) {
+        statusBadge = 'NOT SENT';
+        statusColor = '#94a3b8';
+      } else if (issue.followup_responded) {
+        statusBadge = 'RESPONDED';
+        statusColor = '#10b981';
+      } else {
+        statusBadge = 'PENDING';
+        statusColor = '#f59e0b';
+      }
+      
+      const dueDate = issue.followup_due_date ? new Date(issue.followup_due_date).toLocaleDateString() : '-';
+      
+      html += '<tr style="border-bottom: 1px solid #f1f5f9;">';
+      html += '<td style="padding: 16px;"><div style="font-weight: 600; color: #0f172a;">' + issue.issue_title + '</div></td>';
+      html += '<td style="padding: 16px; color: #334155;">' + (issue.audit_area || 'N/A') + '</td>';
+      html += '<td style="padding: 16px; text-align: center;"><span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">' + (issue.score || 'N/A') + '</span></td>';
+      html += '<td style="padding: 16px; text-align: center;"><span style="background: ' + statusColor + '; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">' + statusBadge + '</span></td>';
+      html += '<td style="padding: 16px; text-align: center; color: #334155; font-weight: 500;">' + dueDate + '</td>';
+      html += '<td style="padding: 16px; text-align: center;"><button onclick="openFollowupModal(' + issue.id + ', \'' + filter + '\')" style="background: #3b82f6; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 13px;"><i class="bi bi-gear"></i> Actions</button></td>';
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  } catch (error) {
+    console.error('Error loading follow-up issues:', error);
+    container.innerHTML = '<div class="alert alert-danger">Error loading issues</div>';
+  }
+}
+
+function filterFollowupIssues(filter) {
+  document.querySelectorAll('#followup .filter-tab').forEach(tab => {
+    tab.classList.remove('active');
+    tab.style.color = '#64748b';
+    tab.style.borderBottomColor = 'transparent';
+  });
+  
+  // Find and activate the correct tab based on filter
+  const filterMap = {
+    'not-sent': 0,
+    'sent': 1,
+    'responded': 2
+  };
+  
+  const tabs = document.querySelectorAll('#followup .filter-tab');
+  const activeTab = tabs[filterMap[filter]];
+  if (activeTab) {
+    activeTab.classList.add('active');
+    activeTab.style.color = '#3b82f6';
+    activeTab.style.borderBottomColor = '#3b82f6';
+  }
+  
+  // Save the current filter
+  currentFollowupFilter = filter;
+  
+  loadFollowupIssues(filter);
+}
+
+async function openFollowupModal(issueId, filter) {
+  try {
+    const response = await fetch(`/issues/${issueId}/details`);
+    const issue = await response.json();
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal fade show';
+    modal.style.display = 'block';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    
+    let actionsHtml = '';
+    if (!issue.sent_for_followup) {
+      // Not sent yet
+      actionsHtml = `
+        <div class="mb-3">
+          <label class="form-label">Follow-up Due Date *</label>
+          <input type="date" id="followup-due-date" class="form-control" required>
+        </div>
+        <button onclick="sendForFollowup(${issueId})" class="btn btn-primary">
+          <i class="bi bi-send"></i> Send for Follow-up
+        </button>
+      `;
+    } else if (issue.followup_responded) {
+      // Load response history
+      const historyResponse = await fetch(`/issues/${issueId}/followup-history`);
+      const historyData = await historyResponse.json();
+      const history = historyData.history || [];
+      
+      let historyHtml = '';
+      if (history.length > 0) {
+        historyHtml = `
+          <div class="mb-3">
+            <strong style="color: #0f172a; font-size: 14px;">Response History (${history.length}):</strong>
+            <div style="margin-top: 12px;">
+        `;
+        
+        history.forEach((resp, index) => {
+          historyHtml += `
+            <div style="background: ${index === 0 ? '#f0fdf4' : '#f8fafc'}; padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid ${index === 0 ? '#22c55e' : '#cbd5e1'};">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <div>
+                  <strong style="color: #0f172a; font-size: 13px;">${resp.responded_by_name || 'Auditee'}</strong>
+                  ${index === 0 ? '<span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">Latest</span>' : ''}
+                </div>
+                <span style="color: #64748b; font-size: 12px;">${new Date(resp.responded_at).toLocaleString()}</span>
+              </div>
+              <div style="color: #334155; font-size: 13px; margin-bottom: 8px;">${resp.response}</div>
+              ${resp.evidence_path ? `
+                <a href="${resp.evidence_path}" target="_blank" style="color: #3b82f6; text-decoration: none; font-size: 13px;">
+                  <i class="bi bi-paperclip"></i> View Evidence
+                </a>
+              ` : ''}
+            </div>
+          `;
+        });
+        
+        historyHtml += `
+            </div>
+          </div>
+        `;
+      }
+      
+      actionsHtml = `
+        <div class="alert alert-success mb-3">
+          <i class="bi bi-check-circle"></i> Auditee has responded to this follow-up
+        </div>
+        
+        ${historyHtml}
+        
+        <hr style="margin: 20px 0;">
+        
+        <div id="resend-section-${issueId}" style="display: none;">
+          <div class="mb-3">
+            <label class="form-label">New Due Date *</label>
+            <input type="date" id="resend-due-date-${issueId}" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Message to Auditee</label>
+            <textarea id="resend-message-${issueId}" class="form-control" rows="3" placeholder="Optional message..."></textarea>
+          </div>
+          <button onclick="confirmResendFollowup(${issueId})" class="btn btn-warning">
+            <i class="bi bi-arrow-repeat"></i> Confirm Resend
+          </button>
+          <button onclick="cancelResendFollowup(${issueId})" class="btn btn-secondary">
+            Cancel
+          </button>
+        </div>
+        
+        <div id="action-buttons-${issueId}">
+          <button onclick="markFollowupResolved(${issueId})" class="btn btn-success" style="margin-right: 8px;">
+            <i class="bi bi-check-circle"></i> Mark as Resolved
+          </button>
+          <button onclick="showResendSection(${issueId})" class="btn btn-warning">
+            <i class="bi bi-arrow-repeat"></i> Resend for Follow-up
+          </button>
+        </div>
+      `;
+    } else {
+      // Sent but not responded yet
+      actionsHtml = `
+        <div class="alert alert-warning">
+          <i class="bi bi-clock"></i> Waiting for auditee response
+        </div>
+        <p><strong>Due Date:</strong> ${issue.followup_due_date ? new Date(issue.followup_due_date).toLocaleDateString() : 'N/A'}</p>
+      `;
+    }
+    
+    modal.innerHTML = `
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header" style="background: #f8fafc;">
+            <h5 class="modal-title"><i class="bi bi-arrow-repeat"></i> Follow-up: ${issue.issue_title}</h5>
+            <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <strong>Audit Area:</strong> ${issue.audit_area || 'N/A'}
+            </div>
+            <div class="mb-3">
+              <strong>Corrective Action:</strong> ${issue.corrective_action || 'N/A'}
+            </div>
+            <div class="mb-3">
+              <strong>Target Date:</strong> ${issue.corrective_date ? new Date(issue.corrective_date).toLocaleDateString() : 'N/A'}
+            </div>
+            <hr>
+            ${actionsHtml}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error loading issue details', 'danger');
+  }
+}
+
+function showResendSection(issueId) {
+  document.getElementById(`resend-section-${issueId}`).style.display = 'block';
+  document.getElementById(`action-buttons-${issueId}`).style.display = 'none';
+}
+
+function cancelResendFollowup(issueId) {
+  document.getElementById(`resend-section-${issueId}`).style.display = 'none';
+  document.getElementById(`action-buttons-${issueId}`).style.display = 'block';
+}
+
+async function confirmResendFollowup(issueId) {
+  const dueDate = document.getElementById(`resend-due-date-${issueId}`).value;
+  const message = document.getElementById(`resend-message-${issueId}`).value;
+  
+  if (!dueDate) {
+    showToast('Please select a due date', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/resend-followup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ due_date: dueDate, message: message })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Resent for follow-up successfully', 'success');
+      document.querySelector('.modal')?.remove();
+      filterFollowupIssues(currentFollowupFilter);
+    } else {
+      showToast(data.error || 'Failed to resend', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error resending for follow-up', 'danger');
+  }
+}
+
+async function markFollowupResolved(issueId) {
+  if (!confirm('Mark this issue as resolved?')) return;
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/resolve-followup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Issue marked as resolved', 'success');
+      document.querySelector('.modal')?.remove();
+      filterFollowupIssues(currentFollowupFilter);
+    } else {
+      showToast(data.error || 'Failed to mark as resolved', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error marking as resolved', 'danger');
+  }
+}
+
+async function sendForFollowup(issueId) {
+  const dueDate = document.getElementById('followup-due-date').value;
+  
+  if (!dueDate) {
+    showToast('Please select a due date', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/send-for-followup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ due_date: dueDate })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Sent for follow-up successfully', 'success');
+      document.querySelector('.modal')?.remove();
+      loadFollowupIssues('sent');
+      
+      // Switch to "Sent for Follow-up" tab
+      document.querySelectorAll('.filter-tab-minimal').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.filter-tab-minimal')[1].classList.add('active');
+    } else {
+      showToast(data.error || 'Failed to send', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error sending for follow-up', 'danger');
+  }
+}
+
+function showResendSection(issueId) {
+  document.getElementById(`resend-section-${issueId}`).style.display = 'block';
+  document.getElementById(`action-buttons-${issueId}`).style.display = 'none';
+}
+
+function cancelResendFollowup(issueId) {
+  document.getElementById(`resend-section-${issueId}`).style.display = 'none';
+  document.getElementById(`action-buttons-${issueId}`).style.display = 'block';
+}
+
+async function confirmResendFollowup(issueId) {
+  const dueDate = document.getElementById(`resend-due-date-${issueId}`).value;
+  const message = document.getElementById(`resend-message-${issueId}`).value;
+  
+  if (!dueDate) {
+    showToast('Please select a due date', 'warning');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/resend-followup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ due_date: dueDate, message: message })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Resent for follow-up successfully', 'success');
+      document.querySelector('.modal')?.remove();
+      filterFollowupIssues(currentFollowupFilter);
+    } else {
+      showToast(data.error || 'Failed to resend', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error resending for follow-up', 'danger');
+  }
+}
+
+async function markFollowupResolved(issueId) {
+  if (!confirm('Mark this issue as resolved?')) return;
+  
+  try {
+    const response = await fetch(`/issues/${issueId}/resolve-followup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Issue marked as resolved', 'success');
+      document.querySelector('.modal')?.remove();
+      filterFollowupIssues(currentFollowupFilter);
+    } else {
+      showToast(data.error || 'Failed to mark as resolved', 'danger');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showToast('Error marking as resolved', 'danger');
+  }
+}
+
+// Auto-load when Follow-up tab becomes active
+document.querySelector('.workflow-tab[data-section="followup"]')?.addEventListener('click', function() {
+  filterFollowupIssues(currentFollowupFilter);
+});
+
+// ==================== END FOLLOW-UP FUNCTIONS ====================
+
+  </script>
+</body>
+</html>

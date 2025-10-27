@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/messages') %>
+  
+  <div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><i class="bi bi-calendar3"></i> <%= audit.audit_name %></h1>
+      <a href="/audits" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Audits
+      </a>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Audit Details</h5>
+          </div>
+          <div class="card-body">
+            <table class="table table-borderless">
+              <tr>
+                <th width="200">Audit Name:</th>
+                <td><%= audit.audit_name %></td>
+              </tr>
+              <tr>
+                <th>Auditee:</th>
+                <td><%= audit.auditee_name %></td>
+              </tr>
+              <tr>
+                <th>Team Leader:</th>
+                <td><%= audit.team_leader_name %></td>
+              </tr>
+              <tr>
+                <th>Start Date:</th>
+                <td><%= new Date(audit.start_date).toLocaleDateString() %></td>
+              </tr>
+              <tr>
+                <th>End Date:</th>
+                <td><%= new Date(audit.end_date).toLocaleDateString() %></td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+                <td>
+                  <span class="badge bg-<%= audit.status === 'completed' ? 'success' : 'primary' %>">
+                    <%= audit.status %>
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Audit Workflow</h5>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              <a href="/risk-assessment/<%= audit.id %>" class="list-group-item list-group-item-action">
+                <i class="bi bi-shield-check"></i> Risk Assessment
+              </a>
+              <a href="/field-work/<%= audit.id %>" class="list-group-item list-group-item-action">
+                <i class="bi bi-clipboard-data"></i> Field Work & Testing
+              </a>
+              <a href="/reports/<%= audit.id %>" class="list-group-item list-group-item-action">
+                <i class="bi bi-file-text"></i> Reporting
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Team Members</h5>
+          </div>
+          <div class="card-body">
+            <% if (team.length === 0) { %>
+              <p class="text-muted">No team members assigned</p>
+            <% } else { %>
+              <ul class="list-unstyled">
+                <% team.forEach(member => { %>
+                  <li class="mb-2">
+                    <i class="bi bi-person-circle"></i>
+                    <strong><%= member.name %></strong><br>
+                    <small class="text-muted"><%= member.email %></small><br>
+                    <span class="badge bg-secondary"><%= member.role %></span>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fafbfc;
+    }
+    
+    .main-content {
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .wp-table {
+      min-width: 1200px;
+    }
+    
+    .wp-table th {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      font-weight: 600;
+    }
+    
+    .wp-table td {
+      border: 1px solid #e2e8f0;
+      padding: 8px;
+    }
+    
+    .wp-table input,
+    .wp-table select,
+    .wp-table textarea {
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px;
+      width: 100%;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <%- include('../partials/messages') %>
+    
+    <div class="card-modern">
+      <div class="card-header p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1"><i class="bi bi-file-earmark-text"></i> <%= attachment.wp_name %></h5>
+            <small class="text-muted"><strong>Audit Area:</strong> <%= attachment.audit_area %></small>
+          </div>
+          <a href="/testing-procedures/<%= auditId %>/<%= areaId %>" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+          </a>
+        </div>
+      </div>
+      
+      <div class="card-body p-4">
+        <form action="/testing-procedures/<%= auditId %>/<%= areaId %>/fill/<%= attachment.id %>" method="POST" id="wpForm">
+          <div class="table-container">
+            <table class="table wp-table" id="dataTable">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <% columns.forEach(col => { %>
+                    <th><%= col.column_name %></th>
+                  <% }) %>
+                  <% if (attachment.allow_row_insert) { %>
+                    <th style="width: 80px;">Action</th>
+                  <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (data.length === 0) { %>
+                  <tr>
+                    <td>1</td>
+                    <% columns.forEach((col, colIndex) => { %>
+                      <td>
+                        <% if (col.column_type === 'text') { %>
+                          <input type="text" name="rows[0][<%= colIndex %>]" class="form-control">
+                        <% } else if (col.column_type === 'number') { %>
+                          <input type="number" name="rows[0][<%= colIndex %>]" class="form-control">
+                        <% } else if (col.column_type === 'date') { %>
+                          <input type="date" name="rows[0][<%= colIndex %>]" class="form-control">
+                        <% } else if (col.column_type === 'select') { %>
+                          <select name="rows[0][<%= colIndex %>]" class="form-select">
+                            <option value="">Select...</option>
+                            <% 
+                            let options = [];
+                            try {
+                              options = JSON.parse(col.options);
+                            } catch(e) {
+                              options = col.options ? col.options.split('\n') : [];
+                            }
+                            %>
+                            <% options.forEach(opt => { %>
+                              <option value="<%= opt %>"><%= opt %></option>
+                            <% }) %>
+                          </select>
+                        <% } else if (col.column_type === 'formula') { %>
+                          <input type="text" readonly class="form-control bg-light formula-field" data-formula="<%= col.formula %>">
+                        <% } %>
+                      </td>
+                    <% }) %>
+                    <% if (attachment.allow_row_insert) { %>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteRow(this)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    <% } %>
+                  </tr>
+                <% } else { %>
+                  <% data.forEach((row, rowIndex) => { 
+                    const rowData = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+                  %>
+                    <tr>
+                      <td><%= rowIndex + 1 %></td>
+                      <% columns.forEach((col, colIndex) => { %>
+                        <td>
+                          <% if (col.column_type === 'text') { %>
+                            <input type="text" name="rows[<%= rowIndex %>][<%= colIndex %>]" class="form-control" value="<%= rowData[colIndex] || '' %>">
+                          <% } else if (col.column_type === 'number') { %>
+                            <input type="number" name="rows[<%= rowIndex %>][<%= colIndex %>]" class="form-control" value="<%= rowData[colIndex] || '' %>">
+                          <% } else if (col.column_type === 'date') { %>
+                            <input type="date" name="rows[<%= rowIndex %>][<%= colIndex %>]" class="form-control" value="<%= rowData[colIndex] || '' %>">
+                          <% } else if (col.column_type === 'select') { %>
+                            <select name="rows[<%= rowIndex %>][<%= colIndex %>]" class="form-select">
+                              <option value="">Select...</option>
+                              <% 
+                              let options = [];
+                              try {
+                                options = JSON.parse(col.options);
+                              } catch(e) {
+                                options = col.options ? col.options.split('\n') : [];
+                              }
+                              %>
+                              <% options.forEach(opt => { %>
+                                <option value="<%= opt %>" <%= rowData[colIndex] === opt ? 'selected' : '' %>><%= opt %></option>
+                              <% }) %>
+                            </select>
+                          <% } else if (col.column_type === 'formula') { %>
+                            <input type="text" readonly class="form-control bg-light formula-field" data-formula="<%= col.formula %>" value="<%= rowData[colIndex] || '' %>">
+                          <% } %>
+                        </td>
+                      <% }) %>
+                      <% if (attachment.allow_row_insert) { %>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-danger" onclick="deleteRow(this)">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </td>
+                      <% } %>
+                    </tr>
+                  <% }) %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="mt-3">
+            <% if (attachment.allow_row_insert) { %>
+              <button type="button" class="btn btn-secondary" onclick="addRow()">
+                <i class="bi bi-plus-circle"></i> Add Row
+              </button>
+            <% } %>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save"></i> Save Working Paper
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const columns = <%- JSON.stringify(columns) %>;
+    const allowRowInsert = <%= attachment.allow_row_insert %>;
+    
+    function addRow() {
+      const tbody = document.querySelector('#dataTable tbody');
+      const rowCount = tbody.rows.length;
+      const newRow = tbody.insertRow();
+      
+      // Row number
+      const cell0 = newRow.insertCell();
+      cell0.textContent = rowCount + 1;
+      
+      // Data cells
+      columns.forEach((col, colIndex) => {
+        const cell = newRow.insertCell();
+        
+        if (col.column_type === 'text') {
+          cell.innerHTML = `<input type="text" name="rows[${rowCount}][${colIndex}]" class="form-control">`;
+        } else if (col.column_type === 'number') {
+          cell.innerHTML = `<input type="number" name="rows[${rowCount}][${colIndex}]" class="form-control">`;
+        } else if (col.column_type === 'date') {
+          cell.innerHTML = `<input type="date" name="rows[${rowCount}][${colIndex}]" class="form-control">`;
+        } else if (col.column_type === 'select') {
+          let options = [];
+          try {
+            options = JSON.parse(col.options);
+          } catch(e) {
+            options = col.options ? col.options.split('\n') : [];
+          }
+          let html = `<select name="rows[${rowCount}][${colIndex}]" class="form-select"><option value="">Select...</option>`;
+          options.forEach(opt => {
+            html += `<option value="${opt}">${opt}</option>`;
+          });
+          html += '</select>';
+          cell.innerHTML = html;
+        } else if (col.column_type === 'formula') {
+          cell.innerHTML = `<input type="text" readonly class="form-control bg-light formula-field" data-formula="${col.formula}">`;
+        }
+      });
+      
+      // Delete button
+      if (allowRowInsert) {
+        const deleteCell = newRow.insertCell();
+        deleteCell.innerHTML = `<button type="button" class="btn btn-sm btn-danger" onclick="deleteRow(this)"><i class="bi bi-trash"></i></button>`;
+      }
+      
+      updateRowNumbers();
+    }
+    
+    function deleteRow(btn) {
+      if (confirm('Delete this row?')) {
+        btn.closest('tr').remove();
+        updateRowNumbers();
+      }
+    }
+    
+    function updateRowNumbers() {
+      const rows = document.querySelectorAll('#dataTable tbody tr');
+      rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+      });
+    }
+  </script>
+</body>
+</html>

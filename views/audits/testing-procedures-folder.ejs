@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Testing Procedures - <%= folderName %> | Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fafbfc;
+      color: #1e293b;
+    }
+    
+    /* Top Navigation Bar */
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .nav-brand i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    
+    .nav-link.active {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      min-height: 100vh;
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb-custom {
+      background: white;
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .breadcrumb-custom a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .breadcrumb-custom a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Folder Header Card */
+    .folder-header-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    
+    .folder-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .folder-icon-large {
+      font-size: 32px;
+      color: #fbbf24;
+    }
+    
+    .folder-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #64748b;
+      font-size: 13px;
+    }
+    
+    .detail-value {
+      color: #0f172a;
+      font-weight: 500;
+    }
+    
+    /* Card Modern */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    
+    .card-header-modern {
+      padding: 20px 32px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-title-modern {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-body-modern {
+      padding: 32px;
+    }
+    
+    /* Working Paper Tables - SAME AS AUDIT PROCEDURES */
+    .wp-table-container {
+      overflow-x: auto;
+      margin: 0;
+      background: white;
+      border-radius: 0 0 16px 16px;
+    }
+    
+    .wp-table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .wp-table-container::-webkit-scrollbar-track {
+      background: #f8fafc;
+    }
+    
+    .wp-table-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .table-wp {
+      margin: 0;
+      width: 100%;
+      min-width: 1200px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    
+    .table-wp th {
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      font-size: 13px;
+      text-align: left;
+      background: #f8fafc;
+      position: relative;
+      user-select: none;
+    }
+    
+    .table-wp th .resize-handle {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 10;
+    }
+    
+    .table-wp th .resize-handle:hover {
+      background: #3b82f6;
+    }
+    
+    .table-wp th.resizing {
+      border-right: 2px solid #3b82f6;
+    }
+    
+    .table-wp td {
+      padding: 12px;
+      vertical-align: top;
+      border: 1px solid #e2e8f0;
+      background: white;
+    }
+    
+    .table-wp tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* Form Controls in Table */
+    .table-wp .form-control,
+    .table-wp .form-select {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    
+    .table-wp .form-control:focus,
+    .table-wp .form-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .table-wp textarea {
+      min-height: 60px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    /* Buttons */
+    .btn {
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    
+    .btn-success {
+      background: #22c55e;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #16a34a;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    
+    .btn-sm {
+      padding: 6px 16px;
+      font-size: 14px;
+    }
+    
+    .btn-lg {
+      padding: 14px 32px;
+      font-size: 16px;
+    }
+    
+    /* Badge */
+    .badge {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge.bg-danger {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .badge.bg-warning {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    
+    .badge.bg-success {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 64px 32px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    
+    /* Modal Styling */
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+    }
+    
+    .modal-header {
+      border-bottom: 1px solid #e2e8f0;
+      padding: 24px;
+    }
+    
+    .modal-body {
+      padding: 24px;
+    }
+    
+    .modal-footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="/dashboard" class="nav-brand">
+      <i class="bi bi-clipboard-check"></i>
+      Audit Portal
+    </a>
+    
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/auditees" class="nav-link">Auditees</a>
+      <a href="/audits" class="nav-link active">Audits</a>
+      <a href="/working-papers" class="nav-link">Working Papers</a>
+      <a href="/issues" class="nav-link">Issues</a>
+      <% if (user && (user.role === 'manager' || user.role === 'head_of_audit')) { %>
+        <a href="/verify" class="nav-link">Verify</a>
+      <% } %>
+    </div>
+    
+    <div class="user-menu">
+      <div class="user-avatar">
+        <%= user ? user.name.charAt(0).toUpperCase() : 'U' %>
+      </div>
+      <span style="font-weight: 500;"><%= user ? user.name : 'User' %></span>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-custom">
+      <a href="/audits">Audits</a> / 
+      <a href="/audits/<%= audit.id %>"><%= audit.audit_name %></a> / 
+      Testing Procedures / 
+      <strong><%= folderName %></strong>
+    </div>
+    
+    <!-- Folder Header -->
+    <div class="folder-header-card">
+      <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div>
+          <h1 class="folder-title">
+            <i class="bi bi-folder-fill folder-icon-large"></i>
+            <%= folderName %>
+          </h1>
+          
+          <div class="folder-details">
+            <div class="detail-item">
+              <span class="detail-label">Risk Level</span>
+              <span class="detail-value">
+                <span class="badge bg-<%= riskScore === 'High' ? 'danger' : riskScore === 'Medium' ? 'warning' : 'success' %>">
+                  <%= riskScore %>
+                </span>
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Assigned Auditor</span>
+              <span class="detail-value"><%= auditorName || 'Unassigned' %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Working Papers Attached</span>
+              <span class="detail-value"><%= attachedWPs.length %> paper(s)</span>
+            </div>
+          </div>
+        </div>
+        
+        <a href="/audits/<%= audit.id %>" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Back to Workspace
+        </a>
+      </div>
+    </div>
+    
+    <!-- Attach Working Paper Button -->
+    <div style="margin-bottom: 24px;">
+      <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#attachModal">
+        <i class="bi bi-plus-circle"></i> Attach Working Paper
+      </button>
+    </div>
+    
+    <!-- Working Papers with Full Tables -->
+    <% if (attachedWPs.length === 0) { %>
+      <div class="card-modern">
+        <div class="card-body-modern">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-file-earmark"></i>
+            </div>
+            <h5 class="empty-text">No Working Papers Attached</h5>
+            <p style="color: #64748b;">Click the button above to attach working papers to this folder</p>
+          </div>
+        </div>
+      </div>
+    <% } else { %>
+      <!-- Display Each Working Paper as Full Table -->
+      <% attachedWPs.forEach((attached, wpIndex) => { 
+        const wp = workingPapersWithData.find(w => w.id === attached.working_paper_id);
+        if (!wp) return;
+      %>
+        <div class="card-modern" id="wp-section-<%= wp.id %>">
+          <!-- Working Paper Header -->
+          <div class="card-header-modern">
+            <h5 class="card-title-modern">
+              <i class="bi bi-file-earmark-spreadsheet"></i> <%= wp.name %>
+              <small style="font-weight: 400; color: #64748b; margin-left: 8px;">(<%= wp.columns.length %> columns)</small>
+            </h5>
+            <button class="btn btn-danger btn-sm" 
+                    onclick="detachWP(<%= wp.id %>)"
+                    title="Remove from folder">
+              <i class="bi bi-trash"></i> Remove
+            </button>
+          </div>
+          
+          <!-- Working Paper Table -->
+          <form id="wpForm<%= wp.id %>" onsubmit="saveWorkingPaper(event, <%= wp.id %>)">
+            <div class="wp-table-container">
+              <table class="table-wp">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <% wp.columns.forEach(col => { %>
+                      <th style="min-width: <%= col.column_type === 'text' ? '200px' : '150px' %>;">
+                        <%= col.column_name %>
+                        <% if (col.column_type === 'formula') { %>
+                          <small class="d-block" style="font-weight: 400; color: #64748b;">Formula</small>
+                        <% } %>
+                      </th>
+                    <% }) %>
+                    <% if (wp.allow_row_insert) { %>
+                      <th style="width: 80px;">Actions</th>
+                    <% } %>
+                  </tr>
+                </thead>
+                <tbody id="tbody<%= wp.id %>">
+                  <% 
+                    const rowsToShow = wp.rows.length === 0 ? [{ id: 'new', data: {} }] : wp.rows;
+                  %>
+                  <% rowsToShow.forEach((row, rowIndex) => { %>
+                    <tr data-row-id="<%= row.id || rowIndex %>">
+                      <td><%= rowIndex + 1 %></td>
+                      <% wp.columns.forEach(col => { 
+                        const cellValue = row.data ? row.data[col.column_name] : '';
+                      %>
+                        <td>
+                          <% if (col.column_type === 'text') { %>
+                            <textarea name="rows[<%= rowIndex %>][<%= col.column_name %>]" 
+                                      placeholder="Enter text..." 
+                                      class="form-control"><%= cellValue || '' %></textarea>
+                          
+                          <% } else if (col.column_type === 'number') { %>
+                            <input type="number" 
+                                   name="rows[<%= rowIndex %>][<%= col.column_name %>]" 
+                                   value="<%= cellValue || '' %>" 
+                                   placeholder="0"
+                                   class="form-control"
+                                   step="any">
+                          
+                          <% } else if (col.column_type === 'date') { %>
+                            <input type="date" 
+                                   name="rows[<%= rowIndex %>][<%= col.column_name %>]" 
+                                   value="<%= cellValue || '' %>"
+                                   class="form-control">
+                          
+                          <% } else if (col.column_type === 'select') { %>
+                            <select name="rows[<%= rowIndex %>][<%= col.column_name %>]" class="form-select">
+                              <option value="">Select...</option>
+                              <% 
+                              let options = [];
+                              if (Array.isArray(col.options)) {
+                                options = col.options;
+                              } else if (typeof col.options === 'string') {
+                                try {
+                                  options = JSON.parse(col.options);
+                                } catch(e) {
+                                  options = col.options.split('\n').filter(o => o.trim());
+                                }
+                              }
+                              %>
+                              <% options.forEach(opt => { %>
+                                <option value="<%= opt %>" <%= cellValue === opt ? 'selected' : '' %>><%= opt %></option>
+                              <% }) %>
+                            </select>
+                          
+                          <% } else if (col.column_type === 'formula') { %>
+                            <input type="text" 
+                                   readonly 
+                                   class="form-control" 
+                                   style="background-color: #f8fafc;" 
+                                   placeholder="Calculated"
+                                   value="<%= cellValue || '' %>">
+                          
+                          <% } else { %>
+                            <input type="text" 
+                                   name="rows[<%= rowIndex %>][<%= col.column_name %>]" 
+                                   placeholder="Enter value..."
+                                   class="form-control"
+                                   value="<%= cellValue || '' %>">
+                          <% } %>
+                        </td>
+                      <% }) %>
+                      <% if (wp.allow_row_insert) { %>
+                        <td style="text-align: center;">
+                          <button type="button" 
+                                  class="btn btn-danger btn-sm" 
+                                  onclick="deleteRow(this)" 
+                                  title="Delete row">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </td>
+                      <% } %>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="card-body-modern">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <% if (wp.allow_row_insert) { %>
+                    <button type="button" 
+                            class="btn btn-secondary" 
+                            data-wp-id="<%= wp.id %>"
+                            data-columns="<%= encodeURIComponent(JSON.stringify(wp.columns)) %>"
+                            onclick="addRow(this)">
+                      <i class="bi bi-plus-circle"></i> Add Row
+                    </button>
+                  <% } %>
+                </div>
+                <button type="submit" class="btn btn-success btn-lg">
+                  <i class="bi bi-save"></i> Save <%= wp.name %>
+                </button>
+              </div>
+              <div id="saveStatus<%= wp.id %>" style="margin-top: 12px; font-weight: 600;"></div>
+            </div>
+          </form>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+  
+  <!-- Attach Modal -->
+  <div class="modal fade" id="attachModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-paperclip"></i> Attach Working Paper
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <% if (allWorkingPapers.length === 0) { %>
+            <div class="text-center py-4">
+              <i class="bi bi-file-earmark" style="font-size: 48px; color: #cbd5e1;"></i>
+              <p class="mt-3 text-muted">No working papers available. Create one first.</p>
+              <a href="/working-papers/create" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle"></i> Create Working Paper
+              </a>
+            </div>
+          <% } else { %>
+            <p class="text-muted mb-3">
+              Select working papers to attach. You can attach as many as you need.
+            </p>
+            <div class="list-group">
+              <% allWorkingPapers.forEach(wp => { 
+                const isAttached = attachedWPs.some(a => a.working_paper_id === wp.id);
+              %>
+                <div class="list-group-item">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex-grow: 1;">
+                      <h6 style="margin-bottom: 4px;">
+                        <%= wp.name %>
+                        <% if (isAttached) { %>
+                          <span class="badge bg-success ms-2">
+                            <i class="bi bi-check-circle"></i> Attached
+                          </span>
+                        <% } %>
+                      </h6>
+                      <small class="text-muted">
+                        <i class="bi bi-columns"></i> <%= wp.column_count %> columns
+                        <% if (wp.allow_row_insert) { %>
+                          | <i class="bi bi-plus-square"></i> Allows adding rows
+                        <% } %>
+                      </small>
+                    </div>
+                    <% if (!isAttached) { %>
+                      <button class="btn btn-primary btn-sm" 
+                              onclick="attachWP(<%= wp.id %>, '<%= wp.name %>')">
+                        <i class="bi bi-plus-circle"></i> Attach
+                      </button>
+                    <% } else { %>
+                      <button class="btn btn-secondary btn-sm" disabled>
+                        <i class="bi bi-check"></i> Already Attached
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Attach Working Paper
+    function attachWP(wpId, wpName) {
+      fetch('/audits/<%= audit.id %>/testing-procedures/<%= riskAssessmentId %>/attach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ working_paper_id: wpId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(`"${wpName}" attached successfully!`);
+          location.reload();
+        } else {
+          alert('Failed to attach working paper');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error attaching working paper');
+      });
+    }
+    
+    // Detach Working Paper
+    function detachWP(wpId) {
+      if (!confirm('Remove this working paper from this folder?')) return;
+      
+      fetch('/audits/<%= audit.id %>/testing-procedures/<%= riskAssessmentId %>/detach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ working_paper_id: wpId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Working paper removed successfully!');
+          location.reload();
+        } else {
+          alert('Failed to remove working paper');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error removing working paper');
+      });
+    }
+    
+    // Add Row
+    function addRow(button) {
+      // Get data from button attributes
+      const wpId = button.getAttribute('data-wp-id');
+      const columnsJson = decodeURIComponent(button.getAttribute('data-columns'));
+      const columns = JSON.parse(columnsJson);
+      
+      const tbody = document.getElementById('tbody' + wpId);
+      const rowCount = tbody.querySelectorAll('tr').length;
+      
+      let newRow = '<tr data-row-id="new-' + Date.now() + '">';
+      newRow += '<td>' + (rowCount + 1) + '</td>';
+      
+      columns.forEach(col => {
+        newRow += '<td>';
+        if (col.column_type === 'text') {
+          newRow += '<textarea name="rows[' + rowCount + '][' + col.column_name + ']" placeholder="Enter text..." class="form-control"></textarea>';
+        } else if (col.column_type === 'number') {
+          newRow += '<input type="number" name="rows[' + rowCount + '][' + col.column_name + ']" placeholder="0" step="any" class="form-control">';
+        } else if (col.column_type === 'date') {
+          newRow += '<input type="date" name="rows[' + rowCount + '][' + col.column_name + ']" class="form-control">';
+        } else if (col.column_type === 'select' && col.options) {
+          // Handle different option formats
+          let options = [];
+          if (Array.isArray(col.options)) {
+            options = col.options;
+          } else if (typeof col.options === 'string') {
+            try {
+              options = JSON.parse(col.options);
+            } catch (e) {
+              options = col.options.split('\n').filter(opt => opt.trim());
+            }
+          }
+          newRow += '<select name="rows[' + rowCount + '][' + col.column_name + ']" class="form-select"><option value="">Select...</option>';
+          options.forEach(opt => {
+            newRow += '<option value="' + opt + '">' + opt + '</option>';
+          });
+          newRow += '</select>';
+        } else if (col.column_type === 'formula') {
+          newRow += '<input type="text" value="" readonly class="form-control" style="background-color: #f8fafc;" placeholder="Calculated">';
+        } else {
+          newRow += '<input type="text" name="rows[' + rowCount + '][' + col.column_name + ']" placeholder="Enter value..." class="form-control">';
+        }
+        newRow += '</td>';
+      });
+      
+      newRow += '<td style="text-align: center;"><button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)" title="Delete row"><i class="bi bi-trash"></i></button></td>';
+      newRow += '</tr>';
+      
+      tbody.insertAdjacentHTML('beforeend', newRow);
+      updateRowNumbers(wpId);
+    }
+    
+    // Delete Row
+    function deleteRow(btn) {
+      if (confirm('Delete this row?')) {
+        const tbody = btn.closest('tbody');
+        const wpId = tbody.id.replace('tbody', '');
+        btn.closest('tr').remove();
+        updateRowNumbers(wpId);
+      }
+    }
+    
+    // Update row numbers after add/delete
+    function updateRowNumbers(wpId) {
+      const tbody = document.getElementById('tbody' + wpId);
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach((row, index) => {
+        row.querySelector('td:first-child').textContent = index + 1;
+      });
+    }
+    
+    // Save Working Paper
+    function saveWorkingPaper(event, wpId) {
+      event.preventDefault();
+      
+      const form = event.target;
+      const formData = new FormData(form);
+      const statusSpan = document.getElementById('saveStatus' + wpId);
+      const submitBtn = form.querySelector('button[type="submit"]');
+      
+      // Convert FormData to JSON object
+      const rowsData = {};
+      for (let [key, value] of formData.entries()) {
+        // Parse field names like "rows[0][column_name]"
+        const match = key.match(/rows\[(\d+)\]\[(.+)\]/);
+        if (match) {
+          const rowIndex = match[1];
+          const columnName = match[2];
+          
+          if (!rowsData[rowIndex]) {
+            rowsData[rowIndex] = {};
+          }
+          rowsData[rowIndex][columnName] = value;
+        }
+      }
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+      statusSpan.innerHTML = '';
+      
+      fetch('/audits/<%= audit.id %>/testing-procedures/<%= riskAssessmentId %>/save-wp/' + wpId, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rows: rowsData })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          statusSpan.innerHTML = '<span style="color: #22c55e;"><i class="bi bi-check-circle-fill"></i> Saved successfully!</span>';
+          submitBtn.innerHTML = '<i class="bi bi-save"></i> Save';
+          submitBtn.disabled = false;
+          setTimeout(() => { statusSpan.innerHTML = ''; }, 3000);
+        } else {
+          throw new Error('Save failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        statusSpan.innerHTML = '<span style="color: #ef4444;"><i class="bi bi-x-circle-fill"></i> Error saving</span>';
+        submitBtn.innerHTML = '<i class="bi bi-save"></i> Save';
+        submitBtn.disabled = false;
+      });
+    }
+  </script>
+</body>
+</html>

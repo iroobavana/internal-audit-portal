@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .top-nav {
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+
+    .page-header {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      background: white;
+      border-bottom: 1px solid #e9ecef;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px 12px 0 0 !important;
+    }
+
+    .card-header h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-footer {
+      background: white;
+      border-top: 1px solid #e9ecef;
+      padding: 1.25rem 1.5rem;
+    }
+    
+    .column-builder {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .column-item {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .column-item:hover {
+      border-color: #1a73e8;
+      box-shadow: 0 2px 8px rgba(26, 115, 232, 0.1);
+    }
+    
+    .column-item .remove-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border-radius: 6px;
+    }
+    
+    .preview-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .preview-table th {
+      background: #1a73e8;
+      color: white;
+      padding: 0.75rem;
+      text-align: left;
+      border: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .preview-table th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .preview-table th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+    
+    .preview-table td {
+      padding: 0.75rem;
+      border: 1px solid #dee2e6;
+      border-top: none;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1a73e8 0%, #174ea6 100%);
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-secondary {
+      border-radius: 6px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+    }
+
+    .btn-danger {
+      border-radius: 6px;
+    }
+
+    .sticky-top {
+      position: sticky;
+      top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/messages') %>
+  
+  <div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-1"><i class="bi bi-pencil-square me-2"></i>Edit Working Paper</h2>
+          <p class="text-muted mb-0">Update working paper structure and properties</p>
+        </div>
+        <a href="/working-papers/<%= workingPaper.id %>/view" class="btn btn-secondary">
+          <i class="bi bi-x-lg me-1"></i> Cancel
+        </a>
+      </div>
+    </div>
+    
+    <form action="/working-papers/<%= workingPaper.id %>/update" method="POST" id="wpForm">
+      <div class="row">
+        <!-- Left Side - Builder -->
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header">
+              <h5>Working Paper Configuration</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-4">
+                <label for="name" class="form-label fw-semibold">Working Paper Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%= workingPaper.name %>" required>
+              </div>
+              
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Allow Row Insertion</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_yes" value="true" <%= workingPaper.allow_row_insert ? 'checked' : '' %>>
+                  <label class="form-check-label" for="allow_yes">
+                    Yes - Auditors can add rows during field work
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_no" value="false" <%= !workingPaper.allow_row_insert ? 'checked' : '' %>>
+                  <label class="form-check-label" for="allow_no">
+                    No - Fixed structure
+                  </label>
+                </div>
+              </div>
+              
+              <hr>
+              
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Properties</h5>
+                <button type="button" class="btn btn-primary btn-sm" id="addColumnBtn">
+                  <i class="bi bi-plus-circle me-1"></i> Add Property
+                </button>
+              </div>
+              
+              <div id="columnsContainer">
+                <!-- Existing columns will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Side - Preview -->
+        <div class="col-lg-5">
+          <div class="card sticky-top">
+            <div class="card-header">
+              <h5>Preview</h5>
+            </div>
+            <div class="card-body">
+              <div id="previewArea">
+                <p class="text-muted text-center">Add properties to see preview</p>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-success w-100">
+                <i class="bi bi-save me-2"></i> Update Working Paper
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let columnCount = 0;
+    
+    const columnTypes = [
+      { value: 'text', label: 'Text', icon: 'bi-fonts' },
+      { value: 'number', label: 'Number', icon: 'bi-123' },
+      { value: 'date', label: 'Date', icon: 'bi-calendar3' },
+      { value: 'select', label: 'Select (Single)', icon: 'bi-check-circle' },
+      { value: 'multiselect', label: 'Multi-Select', icon: 'bi-check2-square' },
+      { value: 'file', label: 'File Upload', icon: 'bi-paperclip' },
+      { value: 'url', label: 'URL', icon: 'bi-link-45deg' },
+      { value: 'formula', label: 'Formula', icon: 'bi-calculator' }
+    ];
+    
+    // Load existing columns
+    const existingColumns = <%- JSON.stringify(columns) %>;
+    
+    existingColumns.forEach((col, index) => {
+      let options = [];
+      try {
+        options = JSON.parse(col.options);
+      } catch(e) {}
+      
+      addColumn(col.column_name, col.column_type, options.join('\n'), col.formula);
+    });
+    
+    document.getElementById('addColumnBtn').addEventListener('click', function() {
+      addColumn();
+    });
+    
+    function addColumn(name = '', type = '', options = '', formula = '') {
+      columnCount++;
+      const columnDiv = document.createElement('div');
+      columnDiv.className = 'column-item';
+      columnDiv.dataset.columnIndex = columnCount;
+      
+      columnDiv.innerHTML = `
+        <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="removeColumn(${columnCount})">
+          <i class="bi bi-x"></i>
+        </button>
+        
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Property Name</label>
+            <input type="text" class="form-control column-name" name="columns[${columnCount}][name]" value="${name}" required placeholder="e.g., Item Description">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Property Type</label>
+            <select class="form-select column-type" name="columns[${columnCount}][type]" required onchange="handleTypeChange(${columnCount})">
+              <option value="">- Select Type -</option>
+              ${columnTypes.map(t => `<option value="${t.value}" ${t.value === type ? 'selected' : ''}>${t.label}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        
+        <div class="options-container" id="options-${columnCount}" style="display: ${type === 'select' || type === 'multiselect' ? 'block' : 'none'};">
+          <label class="form-label fw-semibold">Options (one per line)</label>
+          <textarea class="form-control" name="columns[${columnCount}][options]" rows="3" placeholder="Option 1\nOption 2\nOption 3">${options}</textarea>
+          <small class="text-muted">Enter each option on a new line</small>
+        </div>
+        
+        <div class="formula-container" id="formula-${columnCount}" style="display: ${type === 'formula' ? 'block' : 'none'};">
+          <label class="form-label fw-semibold">Formula</label>
+          <input type="text" class="form-control" name="columns[${columnCount}][formula]" value="${formula}" placeholder="e.g., col1 + col2 or col1 * col2">
+          <small class="text-muted">Use col1, col2, etc. Operators: +, -, *, /</small>
+        </div>
+      `;
+      
+      document.getElementById('columnsContainer').appendChild(columnDiv);
+      updatePreview();
+      
+      // Add event listeners for real-time preview
+      columnDiv.querySelector('.column-name').addEventListener('input', updatePreview);
+      columnDiv.querySelector('.column-type').addEventListener('change', updatePreview);
+    }
+    
+    function removeColumn(index) {
+      const column = document.querySelector(`[data-column-index="${index}"]`);
+      column.remove();
+      updatePreview();
+    }
+    
+    function handleTypeChange(index) {
+      const select = document.querySelector(`[data-column-index="${index}"] .column-type`);
+      const type = select.value;
+      
+      const optionsDiv = document.getElementById(`options-${index}`);
+      const formulaDiv = document.getElementById(`formula-${index}`);
+      
+      optionsDiv.style.display = (type === 'select' || type === 'multiselect') ? 'block' : 'none';
+      formulaDiv.style.display = (type === 'formula') ? 'block' : 'none';
+      
+      const optionsTextarea = optionsDiv.querySelector('textarea');
+      const formulaInput = formulaDiv.querySelector('input');
+      
+      if (optionsTextarea) {
+        optionsTextarea.required = (type === 'select' || type === 'multiselect');
+      }
+      if (formulaInput) {
+        formulaInput.required = (type === 'formula');
+      }
+      
+      updatePreview();
+    }
+    
+    function updatePreview() {
+      const columns = document.querySelectorAll('.column-item');
+      const previewArea = document.getElementById('previewArea');
+      
+      if (columns.length === 0) {
+        previewArea.innerHTML = '<p class="text-muted text-center">Add properties to see preview</p>';
+        return;
+      }
+      
+      let tableHTML = '<div style="overflow-x: auto;"><table class="preview-table"><thead><tr>';
+      
+      columns.forEach((column, index) => {
+        const name = column.querySelector('.column-name').value || `Column ${index + 1}`;
+        const type = column.querySelector('.column-type').value;
+        const typeIcon = columnTypes.find(t => t.value === type)?.icon || 'bi-square';
+        
+        tableHTML += `<th><i class="${typeIcon}"></i> ${name}</th>`;
+      });
+      
+      tableHTML += '</tr></thead><tbody><tr>';
+      
+      columns.forEach((column) => {
+        const type = column.querySelector('.column-type').value;
+        let cellContent = '-';
+        
+        switch(type) {
+          case 'text': cellContent = '<input type="text" class="form-control form-control-sm" disabled>'; break;
+          case 'number': cellContent = '<input type="number" class="form-control form-control-sm" disabled>'; break;
+          case 'date': cellContent = '<input type="date" class="form-control form-control-sm" disabled>'; break;
+          case 'select': cellContent = '<select class="form-select form-select-sm" disabled><option>Select...</option></select>'; break;
+          case 'multiselect': cellContent = '<select class="form-select form-select-sm" multiple disabled><option>Select...</option></select>'; break;
+          case 'file': cellContent = '<input type="file" class="form-control form-control-sm" disabled>'; break;
+          case 'url': cellContent = '<input type="url" class="form-control form-control-sm" placeholder="https://" disabled>'; break;
+          case 'formula': cellContent = '<span class="badge bg-secondary">Auto-calculated</span>'; break;
+        }
+        
+        tableHTML += `<td>${cellContent}</td>`;
+      });
+      
+      tableHTML += '</tr></tbody></table></div>';
+      
+      previewArea.innerHTML = tableHTML;
+    }
+    
+    // Initial preview
+    updatePreview();
+  </script>
+</body>
+</html>

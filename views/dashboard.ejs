@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .main-content {
+      margin-left: 260px;
+      min-height: 100vh;
+      padding: 32px;
+    }
+    
+    .page-header {
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    
+    .page-subtitle {
+      font-size: 16px;
+      color: #64748b;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .stat-icon.blue {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      color: #3b82f6;
+    }
+    
+    .stat-icon.green {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      color: #22c55e;
+    }
+    
+    .stat-icon.purple {
+      background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+      color: #a855f7;
+    }
+    
+    .stat-icon.orange {
+      background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+      color: #f97316;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    
+    .stat-change {
+      font-size: 14px;
+      color: #22c55e;
+      font-weight: 500;
+    }
+    
+    .stat-change.negative {
+      color: #ef4444;
+    }
+    
+    .quick-actions {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 32px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 20px;
+    }
+    
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .action-btn i {
+      font-size: 24px;
+    }
+    
+    .recent-section {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .recent-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .recent-item:hover {
+      background: #f8fafc;
+    }
+    
+    .recent-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      color: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      font-size: 18px;
+    }
+    
+    .recent-content {
+      flex: 1;
+    }
+    
+    .recent-title {
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    
+    .recent-meta {
+      font-size: 14px;
+      color: #64748b;
+    }
+    
+    .badge-custom {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/sidebar') %>
+  
+  <div class="main-content">
+    <%- include('partials/messages') %>
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">Welcome back, <%= user.name %>! 👋</h1>
+      <p class="page-subtitle">Here's what's happening with your audits today.</p>
+    </div>
+    
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-label">Total Audits</div>
+            <div class="stat-value"><%= stats.totalAudits || 0 %></div>
+            <div class="stat-change">
+              <i class="bi bi-arrow-up"></i> 12% from last month
+            </div>
+          </div>
+          <div class="stat-icon blue">
+            <i class="bi bi-clipboard-check"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-label">Active Audits</div>
+            <div class="stat-value"><%= stats.activeAudits || 0 %></div>
+            <div class="stat-change">
+              <i class="bi bi-arrow-up"></i> In progress
+            </div>
+          </div>
+          <div class="stat-icon green">
+            <i class="bi bi-play-circle"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-label">Pending Issues</div>
+            <div class="stat-value"><%= stats.pendingIssues || 0 %></div>
+            <div class="stat-change negative">
+              <i class="bi bi-arrow-down"></i> 3 need attention
+            </div>
+          </div>
+          <div class="stat-icon orange">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-label">Completed</div>
+            <div class="stat-value"><%= stats.completedAudits || 0 %></div>
+            <div class="stat-change">
+              <i class="bi bi-arrow-up"></i> 5 this month
+            </div>
+          </div>
+          <div class="stat-icon purple">
+            <i class="bi bi-check-circle"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="action-grid">
+        <% if (user.role === 'head_of_audit') { %>
+          <a href="/audits/create" class="action-btn">
+            <i class="bi bi-plus-circle"></i>
+            <span>Create Audit</span>
+          </a>
+          <a href="/auditees/create" class="action-btn">
+            <i class="bi bi-building"></i>
+            <span>Add Auditee</span>
+          </a>
+        <% } %>
+        <a href="/audits" class="action-btn">
+          <i class="bi bi-list-ul"></i>
+          <span>View Audits</span>
+        </a>
+        <a href="/working-papers/create" class="action-btn">
+          <i class="bi bi-file-earmark-plus"></i>
+          <span>New Working Paper</span>
+        </a>
+        <a href="/issues-register" class="action-btn">
+          <i class="bi bi-journal-text"></i>
+          <span>Issues Register</span>
+        </a>
+        <a href="/audits/calendar/view" class="action-btn">
+          <i class="bi bi-calendar3"></i>
+          <span>Calendar View</span>
+        </a>
+        <a href="/audits/audit-universe" class="action-btn">
+  <i class="bi bi-grid-3x3-gap"></i>
+  <span>Audit Universe</span>
+</a>
+      </div>
+    </div>
+    
+    <!-- Recent Audits -->
+    <div class="recent-section">
+      <h2 class="section-title">Recent Audits</h2>
+      <% if (recentAudits && recentAudits.length > 0) { %>
+        <% recentAudits.forEach(audit => { %>
+          <a href="/audits/<%= audit.id %>" class="recent-item">
+            <div class="recent-icon">
+              <i class="bi bi-folder"></i>
+            </div>
+            <div class="recent-content">
+              <div class="recent-title"><%= audit.audit_name %></div>
+              <div class="recent-meta">
+                <%= audit.auditee_name %> • <%= new Date(audit.start_date).toLocaleDateString() %>
+              </div>
+            </div>
+            <span class="badge-custom badge-success">Active</span>
+          </a>
+        <% }) %>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-inbox"></i>
+          </div>
+          <div class="empty-text">No audits yet. Create your first audit to get started!</div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
