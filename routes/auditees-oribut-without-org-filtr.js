@@ -26,10 +26,9 @@ router.get('/', ensureHeadOfAudit, async (req, res) => {
       SELECT a.*, COUNT(DISTINCT d.id) as department_count
       FROM auditees a
       LEFT JOIN auditee_departments d ON a.id = d.auditee_id
-      WHERE a.organization_id = $1
       GROUP BY a.id
       ORDER BY a.created_at DESC
-    `, [req.user.organization_id]);
+    `);
     
     res.render('auditees/list', {
       title: 'Auditees',
@@ -80,16 +79,16 @@ router.post('/create', ensureHeadOfAudit, async (req, res) => {
       
       // Create user account for auditee
       const userResult = await client.query(
-        'INSERT INTO users (name, email, password, role, organization_id) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-        [name, official_email, hashedPassword, 'auditee', req.user.organization_id]
+        'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id',
+        [name, official_email, hashedPassword, 'auditee']
       );
       
       const userId = userResult.rows[0].id;
       
       // Insert auditee
       const auditeeResult = await client.query(
-        'INSERT INTO auditees (name, official_email, created_by, user_id, organization_id) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-        [name, official_email, req.user.id, userId, req.user.organization_id]
+        'INSERT INTO auditees (name, official_email, created_by, user_id) VALUES ($1, $2, $3, $4) RETURNING id',
+        [name, official_email, req.user.id, userId]
       );
       
       const auditeeId = auditeeResult.rows[0].id;
@@ -144,8 +143,8 @@ router.get('/:id', ensureHeadOfAudit, async (req, res) => {
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
     const auditeeResult = await pool.query(
-      'SELECT * FROM auditees WHERE id = $1 AND organization_id = $2',
-      [req.params.id, req.user.organization_id]
+      'SELECT * FROM auditees WHERE id = $1',
+      [req.params.id]
     );
     
     if (auditeeResult.rows.length === 0) {
@@ -178,8 +177,8 @@ router.get('/:id/edit', ensureHeadOfAudit, async (req, res) => {
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
     const auditeeResult = await pool.query(
-      'SELECT * FROM auditees WHERE id = $1 AND organization_id = $2',
-      [req.params.id, req.user.organization_id]
+      'SELECT * FROM auditees WHERE id = $1',
+      [req.params.id]
     );
     
     if (auditeeResult.rows.length === 0) {
@@ -277,8 +276,8 @@ router.get('/:id/audit-universe', ensureHeadOfAudit, async (req, res) => {
     res.set('Expires', '0');
     
     const auditeeResult = await pool.query(
-      'SELECT * FROM auditees WHERE id = $1 AND organization_id = $2',
-      [req.params.id, req.user.organization_id]
+      'SELECT * FROM auditees WHERE id = $1',
+      [req.params.id]
     );
     
     if (auditeeResult.rows.length === 0) {
@@ -366,7 +365,6 @@ router.post('/:id/audit-universe', ensureHeadOfAudit, async (req, res) => {
     res.json({ success: false, error: 'Error adding audit universe entry' });
   }
 });
-
 // Update audit universe entry
 router.put('/:id/audit-universe/:entryId', ensureHeadOfAudit, async (req, res) => {
   const { field, value } = req.body;
@@ -390,7 +388,6 @@ router.put('/:id/audit-universe/:entryId', ensureHeadOfAudit, async (req, res) =
     res.json({ success: false, error: 'Error updating entry' });
   }
 });
-
 // Send credentials email
 router.post('/send-credentials', ensureHeadOfAudit, async (req, res) => {
   const { email, name, password } = req.body;

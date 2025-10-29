@@ -49,13 +49,6 @@ app.use((req, res, next) => {
 });
 // OPTIMIZATION: Apply cache middleware to all routes
 app.use(noCacheMiddleware);
-
-// Loader.io verification
-app.get('/loaderio-263612549815603b1e30df2590e72b2b.txt', (req, res) => {
-  res.type('text/plain');
-  res.send('loaderio-263612549815603b1e30df2590e72b2b');
-});
-
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));

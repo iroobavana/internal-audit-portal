@@ -190,16 +190,6 @@
     .btn-secondary:hover {
       background: #e2e8f0;
     }
-
-    .btn-success {
-      background: #10b981;
-      color: white;
-    }
-
-    .btn-success:hover {
-      background: #059669;
-      transform: translateY(-1px);
-    }
     
     .stats-row {
       display: flex;
@@ -239,19 +229,6 @@
       font-size: 32px;
       font-weight: 700;
     }
-
-    .load-more-container {
-      text-align: center;
-      padding: 24px;
-      border-top: 1px solid #e2e8f0;
-      background: #f8fafc;
-    }
-
-    .load-info {
-      color: #64748b;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
   </style>
 </head>
 <body>
@@ -275,16 +252,16 @@
     <!-- Statistics -->
     <div class="stats-row">
       <div class="stat-box blue">
-        <div class="stat-label">Showing</div>
-        <div class="stat-value" id="showing-count">5</div>
+        <div class="stat-label">Total Entries</div>
+        <div class="stat-value" id="total-count"><%= universe.length %></div>
       </div>
       <div class="stat-box green">
-        <div class="stat-label">Total Entries</div>
-        <div class="stat-value"><%= universe.length %></div>
-      </div>
-      <div class="stat-box orange">
         <div class="stat-label">Auditees</div>
         <div class="stat-value"><%= auditees.length %></div>
+      </div>
+      <div class="stat-box orange">
+        <div class="stat-label">Audit Areas</div>
+        <div class="stat-value" id="areas-count">-</div>
       </div>
     </div>
     
@@ -316,17 +293,18 @@
     </div>
     
     <!-- Audit Universe Table -->
-    <div class="card-modern">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="font-size: 18px; font-weight: 600; color: #0f172a; margin: 0;">Audit Universe Data</h3>
-        <button onclick="exportToExcel()" class="btn btn-primary">
-          <i class="bi bi-file-earmark-excel"></i>
-          Export to Excel
-        </button>
-      </div>
-      
-      <div class="table-container">
-        <table class="table-modern" id="universe-table">
+    <!-- Audit Universe Table -->
+<div class="card-modern">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 style="font-size: 18px; font-weight: 600; color: #0f172a; margin: 0;">Audit Universe Data</h3>
+    <button onclick="exportToExcel()" class="btn btn-primary">
+      <i class="bi bi-file-earmark-excel"></i>
+      Export to Excel
+    </button>
+  </div>
+  
+  <div class="table-container">
+    <table class="table-modern" id="universe-table">
           <thead>
             <tr>
               <th>Auditee</th>
@@ -340,8 +318,8 @@
           </thead>
           <tbody>
             <% if (universe.length > 0) { %>
-              <% universe.forEach((entry, index) => { %>
-                <tr data-auditee="<%= entry.auditee_name %>" data-index="<%= index %>" class="universe-row" style="<%= index >= 5 ? 'display: none;' : '' %>">
+              <% universe.forEach(entry => { %>
+                <tr data-auditee="<%= entry.auditee_name %>" class="universe-row">
                   <td>
                     <div style="font-weight: 600; color: #0f172a;">
                       <%= entry.auditee_name || 'N/A' %>
@@ -376,18 +354,6 @@
           </tbody>
         </table>
       </div>
-
-      <% if (universe.length > 5) { %>
-      <div class="load-more-container" id="load-more-section">
-        <div class="load-info">
-          Showing <strong>5</strong> of <strong><%= universe.length %></strong> entries
-        </div>
-        <button onclick="loadAllData()" class="btn btn-success" id="load-all-btn">
-          <i class="bi bi-arrow-down-circle"></i>
-          Load All Data
-        </button>
-      </div>
-      <% } %>
       
       <div id="no-results" style="display: none;">
         <div class="empty-state">
@@ -408,50 +374,38 @@
     const tableBody = document.querySelector('#universe-table tbody');
     const rows = document.querySelectorAll('.universe-row');
     const noResults = document.getElementById('no-results');
-    const showingCount = document.getElementById('showing-count');
-    const loadMoreSection = document.getElementById('load-more-section');
+    const totalCount = document.getElementById('total-count');
     
-    let allDataLoaded = false;
-    const totalRows = <%= universe.length %>;
-    
-    // Load all data function
-    function loadAllData() {
-      rows.forEach(row => {
-        row.style.display = '';
-      });
-      allDataLoaded = true;
-      if (loadMoreSection) {
-        loadMoreSection.style.display = 'none';
-      }
-      showingCount.textContent = totalRows;
-      filterTable(); // Reapply filters if any
-    }
+    // Calculate unique audit areas
+    const uniqueAreas = new Set();
+    rows.forEach(row => {
+      const area = row.querySelector('td:nth-child(3)').textContent.trim();
+      if (area && area !== 'N/A') uniqueAreas.add(area);
+    });
+    document.getElementById('areas-count').textContent = uniqueAreas.size;
     
     function filterTable() {
       const auditeeValue = auditeeFilter.value.toLowerCase();
       const searchValue = searchInput.value.toLowerCase();
       let visibleCount = 0;
       
-      rows.forEach((row, index) => {
+      rows.forEach(row => {
         const auditee = row.getAttribute('data-auditee').toLowerCase();
         const rowText = row.textContent.toLowerCase();
         
         const matchesAuditee = !auditeeValue || auditee.includes(auditeeValue);
         const matchesSearch = !searchValue || rowText.includes(searchValue);
         
-        // If all data is loaded OR if it's in first 5, check filters
-        if (allDataLoaded || index < 5) {
-          if (matchesAuditee && matchesSearch) {
-            row.style.display = '';
-            visibleCount++;
-          } else {
-            row.style.display = 'none';
-          }
+        if (matchesAuditee && matchesSearch) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
         }
       });
       
-      // Update showing count
-      showingCount.textContent = visibleCount;
+      // Update total count
+      totalCount.textContent = visibleCount;
       
       // Show/hide no results message
       if (visibleCount === 0) {
@@ -473,42 +427,42 @@
     searchInput.addEventListener('input', filterTable);
 
     // Export to Excel function
-    function exportToExcel() {
-      // Get visible rows only
-      const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
-      
-      if (visibleRows.length === 0) {
-        alert('No data to export!');
-        return;
-      }
-      
-      // Create CSV content
-      let csv = 'Auditee,Department,Audit Area,Process,Inherent Risk,Control Measure,Audit Procedure\n';
-      
-      visibleRows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        const rowData = Array.from(cells).map(cell => {
-          let text = cell.textContent.trim();
-          // Escape commas and quotes
-          text = text.replace(/"/g, '""');
-          return `"${text}"`;
-        });
-        csv += rowData.join(',') + '\n';
-      });
-      
-      // Create download link
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      
-      link.setAttribute('href', url);
-      link.setAttribute('download', 'audit_universe_' + new Date().toISOString().split('T')[0] + '.csv');
-      link.style.visibility = 'hidden';
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+function exportToExcel() {
+  // Get visible rows only
+  const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+  
+  if (visibleRows.length === 0) {
+    alert('No data to export!');
+    return;
+  }
+  
+  // Create CSV content
+  let csv = 'Auditee,Department,Audit Area,Process,Inherent Risk,Control Measure,Audit Procedure\n';
+  
+  visibleRows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const rowData = Array.from(cells).map(cell => {
+      let text = cell.textContent.trim();
+      // Escape commas and quotes
+      text = text.replace(/"/g, '""');
+      return `"${text}"`;
+    });
+    csv += rowData.join(',') + '\n';
+  });
+  
+  // Create download link
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'audit_universe_' + new Date().toISOString().split('T')[0] + '.csv');
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
   </script>
 </body>
 </html>

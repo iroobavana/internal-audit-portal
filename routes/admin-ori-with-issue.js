@@ -96,27 +96,8 @@ router.post('/users', ensureSystemAdmin, async (req, res) => {
   try {
     const { name, email, password, role, organization_id } = req.body;
     
-    // Validate required fields
-    if (!name || !email || !password || !role || !organization_id) {
-      req.flash('error_msg', 'All fields are required');
-      return res.redirect('/admin/users');
-    }
-    
-    // Check if email already exists
-    const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [email]
-    );
-    
-    if (existingUser.rows.length > 0) {
-      req.flash('error_msg', 'Email already exists');
-      return res.redirect('/admin/users');
-    }
-    
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Insert user
     await pool.query(
       'INSERT INTO users (name, email, password, role, organization_id) VALUES ($1, $2, $3, $4, $5)',
       [name, email, hashedPassword, role, organization_id]
@@ -126,7 +107,7 @@ router.post('/users', ensureSystemAdmin, async (req, res) => {
     res.redirect('/admin/users');
   } catch (error) {
     console.error('Error creating user:', error);
-    req.flash('error_msg', 'Error creating user: ' + error.message);
+    req.flash('error_msg', 'Error creating user');
     res.redirect('/admin/users');
   }
 });

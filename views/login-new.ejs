@@ -300,7 +300,7 @@
       align-items: center;
       justify-content: center;
       z-index: 99999;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.3s ease;
     }
 
     .login-transition-overlay.active {
@@ -318,8 +318,8 @@
     }
 
     .checkmark-circle {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       background: rgba(59, 130, 246, 0.15);
       backdrop-filter: blur(10px);
@@ -327,8 +327,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 24px;
-      animation: scaleIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      margin: 0 auto 32px;
+      animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
     }
 
@@ -347,13 +347,14 @@
     }
 
     .checkmark {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       display: block;
       stroke-width: 3;
       stroke: white;
       stroke-miterlimit: 10;
+      animation: fill 0.4s ease-in-out 0.4s forwards;
     }
 
     .checkmark-circle-svg {
@@ -363,7 +364,7 @@
       stroke-miterlimit: 10;
       stroke: #3b82f6;
       fill: none;
-      animation: stroke 0.4s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
     }
 
     .checkmark-check {
@@ -371,7 +372,7 @@
       stroke-dasharray: 48;
       stroke-dashoffset: 48;
       stroke: white;
-      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
     }
 
     @keyframes stroke {
@@ -379,44 +380,33 @@
     }
 
     .transition-text {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: slideUpFast 0.3s ease 0.2s both;
+      animation: slideUp 0.5s ease 0.3s both;
     }
 
     .transition-subtext {
-      font-size: 14px;
+      font-size: 16px;
       color: #94a3b8;
-      animation: slideUpFast 0.3s ease 0.3s both;
-    }
-
-    @keyframes slideUpFast {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      animation: slideUp 0.5s ease 0.5s both;
     }
 
     .loading-dots {
       display: inline-flex;
-      gap: 6px;
-      margin-top: 16px;
+      gap: 8px;
+      margin-top: 24px;
     }
 
     .loading-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: #3b82f6;
-      animation: bounce 1s infinite ease-in-out both;
+      animation: bounce 1.4s infinite ease-in-out both;
     }
 
     .loading-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -448,7 +438,7 @@
       background: #3b82f6;
       border-radius: 50%;
       opacity: 0.4;
-      animation: float-up 2s infinite ease-in-out;
+      animation: float-up 3s infinite ease-in-out;
     }
 
     @keyframes float-up {
@@ -545,6 +535,8 @@
           <i class="bi bi-box-arrow-in-right"></i> Sign In
         </button>
       </form>
+
+
     </div>
   </div>
 
@@ -572,7 +564,7 @@
   <script>
     function createParticles() {
       const particlesContainer = document.getElementById('particles');
-      const particleCount = 15;
+      const particleCount = 25;
       
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
@@ -585,8 +577,8 @@
         particle.style.left = Math.random() * 100 + '%';
         particle.style.bottom = '-10px';
         
-        particle.style.animationDelay = Math.random() * 2 + 's';
-        particle.style.animationDuration = (Math.random() * 1 + 2) + 's';
+        particle.style.animationDelay = Math.random() * 3 + 's';
+        particle.style.animationDuration = (Math.random() * 2 + 3) + 's';
         
         particlesContainer.appendChild(particle);
       }
@@ -599,10 +591,9 @@
       overlay.classList.add('active');
       createParticles();
       
-      // Wait 800ms for quick animation, then submit the form
       setTimeout(() => {
         e.target.submit();
-      }, 800);
+      }, 2000);
     });
   </script>
 </body>

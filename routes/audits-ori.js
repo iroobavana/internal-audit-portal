@@ -270,46 +270,26 @@ router.get('/audit-universe-all', async (req, res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
-    
-    // Build query based on user role
-    let universeQuery = `
+    const universeResult = await pool.query(`
       SELECT 
         au.*,
         a.name as auditee_name,
-        ad.department_name,
-        o.name as organization_name
+        ad.department_name
       FROM audit_universe au
       LEFT JOIN auditees a ON au.auditee_id = a.id
       LEFT JOIN auditee_departments ad ON au.department_id = ad.id
-      LEFT JOIN organizations o ON a.organization_id = o.id
-    `;
+      ORDER BY a.name, ad.department_name, au.audit_area
+    `);
     
-    let auditeesQuery = `SELECT id, name FROM auditees`;
-    let queryParams = [];
-    
-    // If not system admin, filter by organization
-    if (req.user.role !== 'system_admin') {
-      universeQuery += ` WHERE a.organization_id = $1`;
-      auditeesQuery += ` WHERE organization_id = $1`;
-      queryParams = [req.user.organization_id];
-    }
-    
-    universeQuery += ` ORDER BY a.name, ad.department_name, au.audit_area`;
-    auditeesQuery += ` ORDER BY name`;
-    
-    const universeResult = await pool.query(universeQuery, queryParams);
-    const auditeesResult = await pool.query(auditeesQuery, queryParams);
-    
-    // Get list of all organizations for filter
-    const organizationsResult = await pool.query(`
-      SELECT id, name FROM organizations ORDER BY name
+    // Get list of all auditees for filter
+    const auditeesResult = await pool.query(`
+      SELECT id, name FROM auditees ORDER BY name
     `);
     
     res.render('audits/audit-universe-all', {
       title: 'Audit Universe',
       universe: universeResult.rows,
       auditees: auditeesResult.rows,
-      organizations: organizationsResult.rows,
       user: req.user
     });
   } catch (error) {

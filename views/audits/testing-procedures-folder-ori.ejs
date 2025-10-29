@@ -848,25 +848,11 @@
             <p class="text-muted mb-3">
               Select working papers to attach. You can attach as many as you need.
             </p>
-            
-            <!-- Search Bar -->
-            <div style="margin-bottom: 20px;">
-              <input type="text" 
-                     id="workingPaperSearch" 
-                     class="form-control" 
-                     placeholder="🔍 Search working papers..." 
-                     style="padding-left: 16px;"
-                     onkeyup="filterWorkingPapers()">
-            </div>
-            
-            <div class="list-group" id="workingPapersList">
-              <% allWorkingPapers.forEach((wp, index) => { 
+            <div class="list-group">
+              <% allWorkingPapers.forEach(wp => { 
                 const isAttached = attachedWPs.some(a => a.working_paper_id === wp.id);
-                const displayStyle = index < 5 ? 'block' : 'none';
               %>
-                <div class="list-group-item wp-item" 
-                     style="display: <%= displayStyle %>;" 
-                     data-wp-name="<%= wp.name.toLowerCase() %>">
+                <div class="list-group-item">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="flex-grow: 1;">
                       <h6 style="margin-bottom: 4px;">
@@ -898,16 +884,6 @@
                 </div>
               <% }) %>
             </div>
-            
-            <!-- Load All Button (only show if there are more than 5 working papers) -->
-            <% if (allWorkingPapers.length > 5) { %>
-              <button id="loadAllBtn" 
-                      class="add-row-btn" 
-                      style="margin-top: 16px;"
-                      onclick="loadAllWorkingPapers()">
-                <i class="bi bi-arrow-down-circle"></i> Load All (<%= allWorkingPapers.length - 5 %> more)
-              </button>
-            <% } %>
           <% } %>
         </div>
       </div>
@@ -949,54 +925,6 @@
       setTimeout(() => {
         notification.remove();
       }, 400);
-    }
-
-    // Load All Working Papers Function
-    function loadAllWorkingPapers() {
-      const allItems = document.querySelectorAll('.wp-item');
-      allItems.forEach(item => {
-        item.style.display = 'block';
-      });
-      
-      // Hide the Load All button
-      const loadAllBtn = document.getElementById('loadAllBtn');
-      if (loadAllBtn) {
-        loadAllBtn.style.display = 'none';
-      }
-    }
-
-    // Filter Working Papers Function
-    function filterWorkingPapers() {
-      const searchInput = document.getElementById('workingPaperSearch');
-      const searchTerm = searchInput.value.toLowerCase();
-      const allItems = document.querySelectorAll('.wp-item');
-      
-      let visibleCount = 0;
-      
-      allItems.forEach(item => {
-        const wpName = item.getAttribute('data-wp-name');
-        
-        if (wpName.includes(searchTerm)) {
-          item.style.display = 'block';
-          visibleCount++;
-        } else {
-          item.style.display = 'none';
-        }
-      });
-      
-      // Hide load all button when searching
-      const loadAllBtn = document.getElementById('loadAllBtn');
-      if (loadAllBtn) {
-        if (searchTerm.length > 0) {
-          loadAllBtn.style.display = 'none';
-        } else {
-          // Show load all button only if there are hidden items
-          const totalItems = allItems.length;
-          if (totalItems > 5 && visibleCount <= 5) {
-            loadAllBtn.style.display = 'block';
-          }
-        }
-      }
     }
 
     // Attach Working Paper
