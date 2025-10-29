@@ -1,20 +1,13 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
-
+const express = require("express");
+const path = require("path");
 const app = express();
 
-// Required for __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // ✅ Loader.io verification route
-app.get("/loaderio-263612549815603b1e30df2590e72b2b.txt", (req, res) => {
+app.get("loaderio-263612549815603b1e30df2590e72b2b.txt", (req, res) => {
   res.sendFile(path.join(__dirname, "loaderio-263612549815603b1e30df2590e72b2b.txt"));
 });
 
-// ...your other app routes
-
+// ...the rest of your routes here
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
