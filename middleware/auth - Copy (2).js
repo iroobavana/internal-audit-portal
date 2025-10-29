@@ -50,30 +50,22 @@ function ensureSystemAdmin(req, res, next) {
   return ensureRole('system_admin')(req, res, next);
 }
 
-// Import database pool
-const pool = require('../config/database');
-
 // Middleware to attach organization name to user object for views
 async function attachOrganizationName(req, res, next) {
   if (req.isAuthenticated() && req.user.organization_id && req.user.role !== 'system_admin') {
     try {
-      console.log('Fetching org name for user:', req.user.name, 'org_id:', req.user.organization_id);
-      const result = await pool.query(
+      const db = req.app.get('db'); // Get database connection
+      const result = await db.query(
         'SELECT name FROM organizations WHERE id = $1',
         [req.user.organization_id]
       );
       
       if (result.rows.length > 0) {
         req.user.organization_name = result.rows[0].name;
-        console.log('Organization name set to:', req.user.organization_name);
-      } else {
-        console.log('No organization found with id:', req.user.organization_id);
       }
     } catch (error) {
       console.error('Error fetching organization name:', error);
     }
-  } else {
-    console.log('Skipping org fetch - authenticated:', req.isAuthenticated(), 'has org_id:', !!req.user?.organization_id, 'role:', req.user?.role);
   }
   next();
 }

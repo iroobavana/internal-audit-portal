@@ -396,10 +396,10 @@
     }
 
     .table-modern {
+      width: 100%;
       border-collapse: collapse;
       table-layout: auto;
       min-width: 1200px;
-      width: auto;
     }
 
     .table-modern thead {
@@ -468,8 +468,7 @@
 
     .table-modern td textarea {
       min-height: 60px;
-      resize: none;
-      overflow: hidden;
+      resize: vertical;
     }
 
     .table-modern td textarea:focus,
@@ -606,23 +605,6 @@
 <body>
   <%- include('../partials/sidebar') %>
   
-  <!-- Immediate Script to Highlight Audits - Runs Before Page Fully Loads -->
-  <script>
-    (function() {
-      // Find and highlight the Audits menu item immediately
-      const auditsLink = document.querySelector('a[href="/audits"]');
-      if (auditsLink) {
-        // Remove active class from all menu items
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-          link.classList.remove('active');
-        });
-        
-        // Add active class to Audits
-        auditsLink.classList.add('active');
-      }
-    })();
-  </script>
-  
   <div class="main-content">
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>
@@ -633,7 +615,7 @@
           <i class="bi bi-house-door"></i> Audit Workspace
         </a>
         <span style="color: #cbd5e1; margin: 0 8px;">/</span>
-        <a href="/audits/<%= audit.id %>">Testing Procedures</a>
+        <a href="/audits/<%= audit.id %>/testing-procedures">Testing Procedures</a>
         <span style="color: #cbd5e1; margin: 0 8px;">/</span>
         <span style="color: #64748b;"><%= folderName %></span>
       </nav>
@@ -1029,14 +1011,6 @@
         field.addEventListener('input', () => autoSave(wpId));
         field.addEventListener('change', () => autoSave(wpId));
         field.addEventListener('blur', () => autoSave(wpId, true));
-        
-        // Add auto-resize to textareas
-        if (field.tagName === 'TEXTAREA') {
-          field.addEventListener('input', function() {
-            autoResizeTextarea(this);
-          });
-          autoResizeTextarea(field);
-        }
       });
       
       showNotification('New row added', 'success');
@@ -1068,13 +1042,7 @@
     // Auto-save functionality
     let saveTimeouts = {};
     
-    // Auto-resize textarea function
-    function autoResizeTextarea(textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
-    }
-    
-    // Initialize auto-save and auto-resize on page load
+    // Initialize auto-save on page load
     document.addEventListener('DOMContentLoaded', function() {
       // Add event listeners to all form fields for auto-save
       document.querySelectorAll('form[id^="wpForm"]').forEach(form => {
@@ -1085,17 +1053,6 @@
           field.addEventListener('input', () => autoSave(wpId));
           field.addEventListener('change', () => autoSave(wpId));
           field.addEventListener('blur', () => autoSave(wpId, true)); // Save immediately on blur
-          
-          // Add auto-resize to textareas
-          if (field.tagName === 'TEXTAREA') {
-            // Resize on input
-            field.addEventListener('input', function() {
-              autoResizeTextarea(this);
-            });
-            
-            // Initial resize for existing content
-            autoResizeTextarea(field);
-          }
         });
       });
     });
@@ -1162,105 +1119,36 @@
       });
     }
 
-    // Resizable Columns with Persistence
+    // Resizable Columns
     document.addEventListener('DOMContentLoaded', function() {
       const resizers = document.querySelectorAll('.resizer');
       
-      // Load saved column widths for all tables
-      document.querySelectorAll('.table-modern').forEach(table => {
-        const form = table.closest('form');
-        if (form) {
-          const wpId = form.id.replace('wpForm', '');
-          loadColumnWidths(wpId, table);
-        }
-      });
-      
       resizers.forEach(resizer => {
-        let startX, startWidth, th, table, startTableWidth;
+        let startX, startWidth, th;
         
         resizer.addEventListener('mousedown', function(e) {
           e.preventDefault();
           th = this.parentElement;
-          table = th.closest('.table-modern');
           startX = e.pageX;
           startWidth = th.offsetWidth;
-          startTableWidth = table.offsetWidth;
           
           document.addEventListener('mousemove', doDrag);
           document.addEventListener('mouseup', stopDrag);
         });
         
         function doDrag(e) {
-          const diff = e.pageX - startX;
-          const newWidth = startWidth + diff;
-          
-          if (newWidth > 50) {
-            th.style.width = newWidth + 'px';
-            
-            // Increase table width to accommodate the change
-            const newTableWidth = startTableWidth + diff;
-            table.style.width = newTableWidth + 'px';
+          const width = startWidth + (e.pageX - startX);
+          if (width > 50) {
+            th.style.width = width + 'px';
           }
         }
         
         function stopDrag() {
           document.removeEventListener('mousemove', doDrag);
           document.removeEventListener('mouseup', stopDrag);
-          
-          // Save column widths and table width after resizing
-          const form = table.closest('form');
-          if (form) {
-            const wpId = form.id.replace('wpForm', '');
-            saveColumnWidths(wpId, table);
-          }
         }
       });
     });
-    
-    // Save column widths and table width to localStorage
-    function saveColumnWidths(wpId, table) {
-      const widths = {};
-      const headers = table.querySelectorAll('thead th');
-      
-      headers.forEach((th, index) => {
-        if (th.style.width) {
-          widths[index] = th.style.width;
-        }
-      });
-      
-      // Also save table width
-      widths.tableWidth = table.style.width || 'auto';
-      
-      const key = `columnWidths_wp_${wpId}`;
-      localStorage.setItem(key, JSON.stringify(widths));
-    }
-    
-    // Load column widths and table width from localStorage
-    function loadColumnWidths(wpId, table) {
-      const key = `columnWidths_wp_${wpId}`;
-      const savedWidths = localStorage.getItem(key);
-      
-      if (savedWidths) {
-        try {
-          const widths = JSON.parse(savedWidths);
-          const headers = table.querySelectorAll('thead th');
-          
-          // Restore table width first
-          if (widths.tableWidth && widths.tableWidth !== 'auto') {
-            table.style.width = widths.tableWidth;
-          }
-          
-          // Then restore column widths
-          headers.forEach((th, index) => {
-            if (widths[index]) {
-              th.style.width = widths[index];
-            }
-          });
-        } catch (e) {
-          console.error('Error loading column widths:', e);
-        }
-      }
-    }
   </script>
 </body>
 </html>

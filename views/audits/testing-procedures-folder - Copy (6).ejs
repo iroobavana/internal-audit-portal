@@ -606,23 +606,6 @@
 <body>
   <%- include('../partials/sidebar') %>
   
-  <!-- Immediate Script to Highlight Audits - Runs Before Page Fully Loads -->
-  <script>
-    (function() {
-      // Find and highlight the Audits menu item immediately
-      const auditsLink = document.querySelector('a[href="/audits"]');
-      if (auditsLink) {
-        // Remove active class from all menu items
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-          link.classList.remove('active');
-        });
-        
-        // Add active class to Audits
-        auditsLink.classList.add('active');
-      }
-    })();
-  </script>
-  
   <div class="main-content">
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer"></div>

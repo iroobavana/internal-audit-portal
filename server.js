@@ -5,6 +5,8 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const path = require('path');
 const methodOverride = require('method-override');
+const { noCacheMiddleware } = require('./middleware/cache');
+const { attachOrganizationName } = require('./middleware/auth');
 require('dotenv').config();
 const app = express();
 // Passport config
@@ -34,6 +36,7 @@ app.use(
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(attachOrganizationName);
 // Connect flash
 app.use(flash());
 // Global variables
@@ -44,6 +47,8 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
+// OPTIMIZATION: Apply cache middleware to all routes
+app.use(noCacheMiddleware);
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));

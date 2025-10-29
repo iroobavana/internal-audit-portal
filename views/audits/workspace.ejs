@@ -44,7 +44,7 @@
     
     .audit-details {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 24px;
     }
     
@@ -67,7 +67,33 @@
       font-weight: 600;
       color: #0f172a;
     }
-    
+    /* Auto-Expanding Textarea Styles */
+.auto-expand-textarea {
+  min-height: 60px;
+  max-height: 500px;
+  overflow-y: hidden;
+  resize: vertical;
+  padding: 12px;
+  line-height: 1.6;
+  font-size: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auto-expand-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.auto-expand-textarea:disabled {
+  background-color: #f8fafc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
     /* Workflow Tabs */
     .workflow-tabs {
       display: grid;
@@ -591,21 +617,39 @@
       background: #cbd5e1;
       border-radius: 2px;
     }
-    
+    /* Result Column Colors - Pass/Fail */
+.col-result select.result-pass {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  font-weight: 600;
+  
+}
+
+.col-result select.result-fail {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  font-weight: 600;
+  
+}
+
+.col-result select {
+  text-align: center;
+}
     /* Audit Procedures Column Widths */
     .col-audit-area-proc { width: 150px; }
-    .col-procedure { width: 200px; }
+    .col-procedure { width: 220px; }
     .col-record { width: 220px; }
     .col-conclusion { width: 220px; }
     .col-result { width: 100px; text-align: center; }
     .col-cause { width: 180px; }
     .col-evidence { width: 150px; }
-    .col-wp-link { width: 180px; }
-    .col-assigned { width: 140px; }
+    .col-wp-link { width: 200px; }
+    .col-assigned { width: 160px; }
     .col-likelihood { width: 100px; text-align: center; }
     .col-impact { width: 100px; text-align: center; }
     .col-rating { width: 100px; text-align: center; }
     .col-score { width: 100px; text-align: center; }
+    .col-include-report { width: 150px; text-align: center; }
     
     /* Folder Cards */
 .folder-card {
@@ -1191,13 +1235,38 @@
     <%- include('../partials/messages') %>
     
     <!-- Audit Info Card -->
-    <div class="audit-info-card">
-      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
-        <h1 class="audit-title"><%= audit.audit_name %></h1>
-        <a href="/audits" class="btn btn-secondary">
-          <i class="bi bi-arrow-left"></i> Back to Audits
-        </a>
-      </div>
+    <!-- Audit Info Card -->
+<div class="audit-info-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <h1 class="audit-title" style="margin-bottom: 0;"><%= audit.audit_name %></h1>
+      
+    </div>
+    
+    <% 
+      const isTeamLeader = audit.team_leader_id === user.id;
+      const isHeadOrManager = user.role === 'head_of_audit' || user.role === 'manager';
+      const canToggleCompletion = isTeamLeader || isHeadOrManager;
+      const isCompleted = audit.status === 'completed';
+    %>
+    
+    <% if (canToggleCompletion) { %>
+      <button 
+        id="toggleCompletionBtn" 
+        onclick="toggleAuditCompletion()"
+        class="btn <%= isCompleted ? 'btn-warning' : 'btn-success' %>"
+        style="padding: 12px 24px; font-weight: 600; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <i class="bi <%= isCompleted ? 'bi-arrow-counterclockwise' : 'bi-check-circle' %>"></i>
+        <%= isCompleted ? 'Mark as Incomplete' : 'Mark as Completed' %>
+      </button>
+    <% } %>
+    
+    <% if (isCompleted && !canToggleCompletion) { %>
+      <span class="badge bg-success" style="padding: 12px 20px; font-size: 14px; border-radius: 10px;">
+        <i class="bi bi-check-circle"></i> Completed
+      </span>
+    <% } %>
+  </div>
       
       <div class="audit-details">
         <div class="detail-item">
@@ -1210,11 +1279,15 @@
         </div>
         <div class="detail-item">
           <span class="detail-label">Start Date:</span>
-          <span class="detail-value"><%= new Date(audit.start_date).toLocaleDateString() %></span>
+         <span class="detail-value">
+  <%= new Date(audit.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) %>
+</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Finish Date:</span>
-          <span class="detail-value"><%= new Date(audit.finish_date).toLocaleDateString() %></span>
+          <span class="detail-value">
+  <%= new Date(audit.end_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) %>
+</span>
         </div>
       </div>
     </div>
@@ -1580,9 +1653,43 @@
           </div>
         <% } else { %>
           <form action="/audits/field-work/<%= audit.id %>/save-all" method="POST" id="auditProceduresForm" enctype="multipart/form-data">
-            <div class="card-modern">
-              <div class="card-header-modern">
-                <h5 class="card-title-modern"><i class="bi bi-clipboard-check"></i> Audit Procedures</h5>
+  
+  <!-- Statistics Card -->
+<div class="card-modern" style="margin-bottom: 12px; background: white; border: 1px solid #e2e8f0;">
+  <div class="card-body-modern" style="padding: 12px;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        
+        <!-- Total Procedures -->
+        <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 4px;">TOTAL PROCEDURES</div>
+  <div id="total-procedures" style="font-size: 22px; font-weight: 700; color: #0f172a;">0</div>
+</div>
+        
+        <!-- Pass Count -->
+        <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 4px;">PASS</div>
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <div id="pass-count" style="font-size: 22px; font-weight: 700; color: #15803d;">0</div>
+    <div id="pass-percentage" style="font-size: 14px; font-weight: 600; color: #15803d; background: #dcfce7; padding: 2px 8px; border-radius: 6px;">0%</div>
+  </div>
+</div>
+        
+        <!-- Fail Count -->
+        <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 4px;">FAIL</div>
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <div id="fail-count" style="font-size: 22px; font-weight: 700; color: #991b1b;">0</div>
+    <div id="fail-percentage" style="font-size: 14px; font-weight: 600; color: #991b1b; background: #fee2e2; padding: 2px 8px; border-radius: 6px;">0%</div>
+  </div>
+</div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="card-modern">
+    <div class="card-header-modern">
+      <h5 class="card-title-modern"><i class="bi bi-clipboard-check"></i> Audit Procedures</h5>
                 <button type="submit" class="btn btn-primary btn-sm">
                   <i class="bi bi-save"></i> Save All Procedures
                 </button>
@@ -1872,18 +1979,17 @@
             </button>
           </div>
 
-          <div style="padding: 16px 32px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 12px;">
-            
-            <button class="mgmt-filter-tab active" data-filter="unsent" onclick="filterManagementComments('unsent')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px;">
-              Unsent
-            </button>
-            <button class="mgmt-filter-tab" data-filter="sent" onclick="filterManagementComments('sent')" style="padding: 8px 16px; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px;">
-              Sent
-            </button>
-            <button class="mgmt-filter-tab" data-filter="commented" onclick="filterManagementComments('commented')" style="padding: 8px 16px; background: #f1f5f9; color: #475569; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 13px;">
-              Comment Received
-            </button>
-          </div>
+          <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 0; padding-left: 32px; padding-right: 32px; padding-top: 16px;">
+  <button class="mgmt-filter-tab active" data-filter="unsent" onclick="filterManagementComments('unsent')" style="padding: 12px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 15px; color: #64748b; transition: all 0.2s; position: relative; bottom: -2px;">
+    Unsent
+  </button>
+  <button class="mgmt-filter-tab" data-filter="sent" onclick="filterManagementComments('sent')" style="padding: 12px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 15px; color: #64748b; transition: all 0.2s; position: relative; bottom: -2px;">
+    Sent
+  </button>
+  <button class="mgmt-filter-tab" data-filter="commented" onclick="filterManagementComments('commented')" style="padding: 12px 24px; background: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; font-size: 15px; color: #64748b; transition: all 0.2s; position: relative; bottom: -2px;">
+    Comment Received
+  </button>
+</div>
 
           <div class="card-body-modern">
             <div id="managementCommentsContainer">
@@ -2668,8 +2774,44 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
           });
           
           container.innerHTML = `
-            <form action="/audits/field-work/<%= audit.id %>/save-all" method="POST" id="auditProceduresForm" enctype="multipart/form-data">
-              <div class="card-modern">
+  <form action="/audits/field-work/<%= audit.id %>/save-all" method="POST" id="auditProceduresForm" enctype="multipart/form-data">
+  
+  <!-- Statistics Card -->
+<div class="card-modern" style="margin-bottom: 12px; background: white; border: 1px solid #e2e8f0;">
+  <div class="card-body-modern" style="padding: 12px;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        
+        <!-- Total Procedures -->
+        <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 4px;">TOTAL PROCEDURES</div>
+  <div id="total-procedures" style="font-size: 22px; font-weight: 700; color: #0f172a;">0</div>
+</div>
+        
+        <!-- Pass Count -->
+        <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 4px;">PASS</div>
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <div id="pass-count" style="font-size: 22px; font-weight: 700; color: #15803d;">0</div>
+    <div id="pass-percentage" style="font-size: 14px; font-weight: 600; color: #15803d; background: #dcfce7; padding: 2px 8px; border-radius: 6px;">0%</div>
+  </div>
+</div>
+        
+        <!-- Fail Count -->
+       <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+  <div style="font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 4px;">FAIL</div>
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <div id="fail-count" style="font-size: 22px; font-weight: 700; color: #991b1b;">0</div>
+    <div id="fail-percentage" style="font-size: 14px; font-weight: 600; color: #991b1b; background: #fee2e2; padding: 2px 8px; border-radius: 6px;">0%</div>
+  </div>
+</div>
+        
+      </div>
+    </div>
+  </div>
+  
+
+
+<div class="card-modern">
                 <div class="card-header-modern">
                   <h5 class="card-title-modern"><i class="bi bi-clipboard-check"></i> Audit Procedures</h5>
                   <button type="submit" class="btn btn-primary btn-sm">
@@ -2708,6 +2850,7 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
           
           // Re-attach event listeners for the new form
           attachAuditProceduresListeners();
+          setTimeout(updateAuditProceduresStats, 100);
           
           // Update workingPapersData for unlink functionality
           selectedAreas.forEach((area, idx) => {
@@ -3295,8 +3438,8 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
         let score = '';
         if (rating >= 1 && rating <= 6) {
           score = 'Low';
-          scoreInput.style.backgroundColor = '#dbeafe';
-          scoreInput.style.color = '#1e40af';
+          scoreInput.style.backgroundColor = '#dcfce7';
+          scoreInput.style.color = '#15803d';
         } else if (rating >= 7 && rating <= 14) {
           score = 'Medium';
           scoreInput.style.backgroundColor = '#fef3c7';
@@ -4258,22 +4401,25 @@ async function loadManagementComments(filter = 'all') {
 }
 
 function filterManagementComments(filter) {
-  // Update active button
+  // Update active button - same style as follow-up tabs
+  document.querySelectorAll('.mgmt-filter-tab').forEach(btn => {
+    btn.classList.remove('active');
+    btn.style.color = '#64748b';
+    btn.style.borderBottomColor = 'transparent';
+  });
+  
+  // Find and activate the correct tab based on filter
   document.querySelectorAll('.mgmt-filter-tab').forEach(btn => {
     if (btn.getAttribute('data-filter') === filter) {
-      btn.style.background = '#3b82f6';
-      btn.style.color = 'white';
       btn.classList.add('active');
-    } else {
-      btn.style.background = '#f1f5f9';
-      btn.style.color = '#475569';
-      btn.classList.remove('active');
+      btn.style.color = '#3b82f6';
+      btn.style.borderBottomColor = '#3b82f6';
     }
   });
   
   // Load with filter
   currentManagementFilter = filter;
-loadManagementComments(filter);
+  loadManagementComments(filter);
 }
 
 async function openManagementCommentModal(issueId, filter) {
@@ -5137,6 +5283,238 @@ setInterval(function() {
   }
 }, 3000); // Auto-save every 3 seconds
 
+// ==================== AUDIT COMPLETION TOGGLE ====================
+
+function toggleAuditCompletion() {
+  const auditId = '<%= audit.id %>';
+  const btn = document.getElementById('toggleCompletionBtn');
+  const originalText = btn.innerHTML;
+  
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+  
+  fetch(`/audits/${auditId}/toggle-completion`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast(data.message, 'success');
+      
+      // Reload page after 1 second to reflect changes
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    } else {
+      showToast(data.error || 'Failed to update status', 'danger');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Error updating audit status', 'danger');
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  });
+}
+
+// Disable all inputs if audit is completed
+window.addEventListener('DOMContentLoaded', function() {
+  const isCompleted = '<%= audit.status %>' === 'completed';
+  
+  if (isCompleted) {
+    // Disable all form inputs
+    document.querySelectorAll('input, textarea, select, button[type="submit"]').forEach(el => {
+      if (el.id !== 'toggleCompletionBtn') {
+        el.disabled = true;
+        el.style.opacity = '0.6';
+        el.style.cursor = 'not-allowed';
+      }
+    });
+    
+    // Show alert at top
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-info';
+    alertDiv.style.cssText = 'margin: 20px 0; padding: 16px; border-radius: 12px; background: #dbeafe; border: 1px solid #3b82f6; color: #1e40af;';
+    alertDiv.innerHTML = '<i class="bi bi-info-circle"></i> <strong>This audit is completed.</strong> All fields are read-only.';
+    
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent.firstChild) {
+      mainContent.insertBefore(alertDiv, mainContent.firstChild);
+    }
+  }
+});
+
+// ==================== END AUDIT COMPLETION ====================
+
+// ==================== AUTO-EXPANDING TEXTAREA ====================
+
+function autoExpandTextarea(textarea) {
+  // Reset height to auto to get the correct scrollHeight
+  textarea.style.height = 'auto';
+  // Set height to scrollHeight (max 500px)
+  textarea.style.height = Math.min(textarea.scrollHeight, 500) + 'px';
+}
+
+// Initialize all textareas immediately
+function initAllTextareas() {
+  const textareas = document.querySelectorAll('textarea');
+  
+  textareas.forEach(function(textarea) {
+    // Add the auto-expand class
+    textarea.classList.add('auto-expand-textarea');
+    
+    // IMPORTANT: Expand immediately to show all text
+    setTimeout(function() {
+      autoExpandTextarea(textarea);
+    }, 10);
+    
+    // Add event listeners for typing
+    textarea.addEventListener('input', function() {
+      autoExpandTextarea(this);
+    });
+  });
+}
+
+// Run on page load
+window.addEventListener('DOMContentLoaded', function() {
+  initAllTextareas();
+  
+  // Re-run after 500ms to catch any dynamically loaded content
+  setTimeout(initAllTextareas, 500);
+  setTimeout(initAllTextareas, 1000);
+  setTimeout(initAllTextareas, 2000);
+});
+
+// Re-initialize when tabs are switched
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('workflow-tab') || 
+      e.target.classList.contains('sub-tab')) {
+    setTimeout(initAllTextareas, 100);
+  }
+});
+
+// ==================== END AUTO-EXPANDING TEXTAREA ====================
+
+// ==================== RESULT COLUMN COLORING ====================
+
+function updateResultColors() {
+  const resultSelects = document.querySelectorAll('.col-result select');
+  
+  resultSelects.forEach(function(select) {
+    // Remove both classes first
+    select.classList.remove('result-pass', 'result-fail');
+    
+    // Add appropriate class based on value
+    if (select.value === 'pass') {
+      select.classList.add('result-pass');
+    } else if (select.value === 'fail') {
+      select.classList.add('result-fail');
+    }
+    
+    // Add change event listener
+    select.addEventListener('change', function() {
+      this.classList.remove('result-pass', 'result-fail');
+      
+      if (this.value === 'pass') {
+        this.classList.add('result-pass');
+      } else if (this.value === 'fail') {
+        this.classList.add('result-fail');
+      }
+    });
+  });
+}
+
+// Run on page load
+window.addEventListener('DOMContentLoaded', function() {
+  updateResultColors();
+  
+  // Re-run after delays to catch dynamically loaded content
+  setTimeout(updateResultColors, 500);
+  setTimeout(updateResultColors, 1000);
+});
+
+// Re-run when switching tabs
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('workflow-tab') || 
+      e.target.classList.contains('sub-tab')) {
+    setTimeout(updateResultColors, 200);
+  }
+});
+
+// ==================== END RESULT COLUMN COLORING ====================
+
+// ==================== AUDIT PROCEDURES STATISTICS ====================
+
+function updateAuditProceduresStats() {
+  try {
+    const form = document.getElementById('auditProceduresForm');
+    if (!form) {
+      console.log('Form not found');
+      return;
+    }
+    
+    const resultSelects = form.querySelectorAll('.col-result select');
+    console.log('Found ' + resultSelects.length + ' result selects');
+    
+    let totalCount = resultSelects.length;
+    let passCount = 0;
+    let failCount = 0;
+    
+    resultSelects.forEach(function(select) {
+      if (select.value === 'pass') {
+        passCount++;
+      } else if (select.value === 'fail') {
+        failCount++;
+      }
+    });
+    
+    // Calculate percentages
+    const passPercentage = totalCount > 0 ? Math.round((passCount / totalCount) * 100) : 0;
+    const failPercentage = totalCount > 0 ? Math.round((failCount / totalCount) * 100) : 0;
+    
+    // Update the display with null checks
+    const totalEl = document.getElementById('total-procedures');
+    const passCountEl = document.getElementById('pass-count');
+    const passPercentEl = document.getElementById('pass-percentage');
+    const failCountEl = document.getElementById('fail-count');
+    const failPercentEl = document.getElementById('fail-percentage');
+    
+    if (totalEl) totalEl.textContent = totalCount;
+    if (passCountEl) passCountEl.textContent = passCount;
+    if (passPercentEl) passPercentEl.textContent = passPercentage + '%';
+    if (failCountEl) failCountEl.textContent = failCount;
+    if (failPercentEl) failPercentEl.textContent = failPercentage + '%';
+    
+    console.log('Stats updated:', {total: totalCount, pass: passCount, fail: failCount});
+  } catch (error) {
+    console.error('Error updating stats:', error);
+  }
+}
+
+// Run on page load
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(updateAuditProceduresStats, 1000);
+  setTimeout(updateAuditProceduresStats, 2000);
+});
+
+// Update when result dropdowns change
+document.addEventListener('change', function(e) {
+  if (e.target.closest('.col-result')) {
+    updateAuditProceduresStats();
+  }
+});
+
+// Update when switching to Audit Procedures tab
+document.addEventListener('click', function(e) {
+  if (e.target.textContent && e.target.textContent.includes('Audit Procedures')) {
+    setTimeout(updateAuditProceduresStats, 500);
+  }
+});
+
+// ==================== END AUDIT PROCEDURES STATISTICS ====================
 </script>
 
   </script>

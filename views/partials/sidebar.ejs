@@ -4,6 +4,12 @@
       <i class="bi bi-shield-check"></i>
       <span>Internal Audit</span>
     </div>
+    <% if (user && user.role !== 'system_admin' && user.organization_name) { %>
+      <div class="org-name">
+        <i class="bi bi-buildings"></i>
+        <span><%= user.organization_name %></span>
+      </div>
+    <% } %>
   </div>
   
   <nav class="sidebar-nav">
@@ -15,7 +21,7 @@
       </a>
       
       <a href="/admin/organizations" class="nav-item <%= title === 'Manage Organizations' ? 'active' : '' %>">
-        <i class="bi bi-building"></i>
+        <i class="bi bi-buildings"></i>
         <span>Organizations</span>
       </a>
       
@@ -30,14 +36,14 @@
         <span>Dashboard</span>
       </a>
       
-      <a href="/audits" class="nav-item <%= title === 'Audits' || (title.includes('Audit') && title !== 'Audit Universe' && !title.includes('Auditee')) ? 'active' : '' %>">
+      <a href="/audits" class="nav-item <%= title === 'Audits' || (title.includes('Audit') && title !== 'Audit Universe' && !title.includes('Auditee') && title !== 'Verify Audit Issues') ? 'active' : '' %>">
         <i class="bi bi-clipboard-check"></i>
         <span>Audits</span>
       </a>
       
       <% if (user.role === 'head_of_audit') { %>
         <a href="/auditees" class="nav-item <%= title === 'Auditees' || title.includes('Auditee') ? 'active' : '' %>">
-          <i class="bi bi-building"></i>
+          <i class="bi bi-buildings"></i>
           <span>Auditees</span>
         </a>
         
@@ -53,18 +59,18 @@
       </a>
       
       <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
-        <a href="/issues/verify" class="nav-item">
+        <a href="/issues/verify" class="nav-item <%= title === 'Verify Audit Issues' ? 'active' : '' %>">
           <i class="bi bi-check-circle"></i>
           <span>Verify Issues</span>
         </a>
       <% } %>
       
-      <a href="/issues/issues-register" class="nav-item">
+      <a href="/issues/issues-register" class="nav-item <%= title === 'Issues Register' ? 'active' : '' %>">
         <i class="bi bi-journal-text"></i>
         <span>Issues Register</span>
       </a>
       
-      <a href="/issues/follow-up-tracker" class="nav-item">
+      <a href="/issues/follow-up-tracker" class="nav-item <%= title === 'Follow-up Tracker' ? 'active' : '' %>">
         <i class="bi bi-arrow-repeat"></i>
         <span>Follow-up Tracker</span>
       </a>
@@ -72,12 +78,12 @@
     
     <div class="nav-divider"></div>
     
-    <a href="/profile" class="nav-item">
+    <a href="/profile" class="nav-item <%= title === 'Profile' ? 'active' : '' %>">
       <i class="bi bi-person-circle"></i>
       <span>Profile</span>
     </a>
     
-    <a href="/logout" class="nav-item">
+    <a href="/auth/logout" class="nav-item">
       <i class="bi bi-box-arrow-right"></i>
       <span>Logout</span>
     </a>
@@ -129,6 +135,25 @@
     color: #3b82f6;
   }
   
+  .org-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 13px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .org-name i {
+    font-size: 12px;
+  }
+  
+  .org-name span {
+    font-weight: 500;
+  }
+  
   .sidebar-nav {
     flex: 1;
     padding: 16px 12px;
@@ -162,6 +187,9 @@
   .nav-item i {
     font-size: 18px;
     width: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .nav-divider {
