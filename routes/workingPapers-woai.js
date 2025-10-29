@@ -26,64 +26,21 @@ router.get('/', ensureAuditor, async (req, res) => {
   }
 });
 
-// AI Generate working paper with Claude API
+// AI Generate working paper
 router.post('/generate-ai', ensureAuditor, async (req, res) => {
   const { prompt } = req.body;
   
   try {
-    const Anthropic = require('@anthropic-ai/sdk');
-    const anthropic = new Anthropic({
-      apiKey: process.env.CLAUDE_API_KEY
-    });
-
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
-      max_tokens: 1024,
-      messages: [{
-        role: "user",
-        content: `You are an expert audit assistant. Create a working paper structure for: "${prompt}"
-
-Return ONLY a JSON object with this exact structure (no markdown, no explanation):
-{
-  "name": "Working Paper Name",
-  "columns": [
-    {
-      "name": "Column Name",
-      "type": "text|number|date|select|multiselect|file|url|formula",
-      "options": "Option1\\nOption2\\nOption3" (only for select/multiselect),
-      "formula": "col1 + col2" (only for formula type)
-    }
-  ]
-}
-
-Rules:
-- Include 5-8 relevant columns for audit purposes
-- Use appropriate column types (text, number, date, select, file, etc.)
-- For select columns, provide 3-5 relevant options separated by \\n
-- Make it practical for audit work
-- Include columns for evidence, status, dates, amounts as relevant`
-      }]
-    });
-
-    // Extract JSON from Claude's response
-    let responseText = message.content[0].text.trim();
-    
-    // Remove markdown code blocks if present
-    responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    
-    const result = JSON.parse(responseText);
-    
+    // Simple template-based generation (you can replace this with actual AI API later)
+    const result = generateWorkingPaper(prompt);
     res.json({ success: true, ...result });
   } catch (error) {
-    console.error('Claude API Error:', error);
-    
-    // Fallback to template-based generation if API fails
-    const result = generateWorkingPaperFallback(prompt);
-    res.json({ success: true, ...result });
+    console.error(error);
+    res.json({ success: false });
   }
 });
 
-function generateWorkingPaperFallback(prompt) {
+function generateWorkingPaper(prompt) {
   const lowerPrompt = prompt.toLowerCase();
   
   // Cash count template

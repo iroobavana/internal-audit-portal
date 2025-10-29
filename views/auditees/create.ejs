@@ -17,94 +17,16 @@
       color: #1e293b;
     }
     
-    /* Top Navigation Bar */
-    .top-nav {
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 16px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 20px;
-    }
-    
-    .nav-brand i {
-      font-size: 28px;
-      color: #3b82f6;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    
-    .nav-link {
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #64748b;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    
-    .nav-link:hover {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-    
-    .nav-link.active {
-      background: #dbeafe;
-      color: #3b82f6;
-    }
-    
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: #f8fafc;
-    }
-    
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
     /* Main Content */
     .main-content {
+      margin-left: 260px;
       min-height: 100vh;
       padding: 32px;
-      max-width: 900px;
-      margin: 0 auto;
+      max-width: 1200px;
+      margin-right: auto;
     }
     
     .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 32px;
     }
     
@@ -112,6 +34,112 @@
       font-size: 32px;
       font-weight: 700;
       color: #0f172a;
+    }
+    
+    /* Notification Toast */
+    .notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 9999;
+      max-width: 420px;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.success {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification.error .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-message {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    
+    .notification-close {
+      background: #f8fafc;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .notification-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
     }
     
     /* Card Styles */
@@ -132,24 +160,76 @@
     }
     
     .form-control {
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
       font-size: 14px;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .form-control:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
     }
     
     .form-control:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
       outline: none;
+      background: #ffffff;
+    }
+    
+    /* Department Input Group */
+    .department-item {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .department-item .form-control {
+      flex: 1;
+    }
+    
+    .btn-outline-danger {
+      background: white;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-outline-danger:hover {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-success {
+      background: #22c55e;
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-success:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
     }
     
     /* Button Styles */
     .btn-primary {
       background: #3b82f6;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px 24px;
       font-weight: 600;
       transition: all 0.2s;
@@ -160,13 +240,14 @@
       background: #2563eb;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      color: white;
     }
     
     .btn-secondary {
       background: #f1f5f9;
-      border: 2px solid #e2e8f0;
+      border: 1px solid #e2e8f0;
       color: #0f172a;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 10px 24px;
       font-weight: 600;
       transition: all 0.2s;
@@ -179,124 +260,149 @@
       color: #0f172a;
     }
     
-    .btn-success {
-      background: #22c55e;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      padding: 8px 16px;
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal-content-custom {
+      background: white;
+      padding: 32px;
+      border-radius: 20px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+    }
+    
+    .modal-header-custom {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .modal-icon {
+      width: 64px;
+      height: 64px;
+      background: #dcfce7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    
+    .modal-icon i {
+      font-size: 32px;
+      color: #10b981;
+    }
+    
+    .modal-title {
+      margin: 0;
+      color: #0f172a;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .credentials-box {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .credential-item {
+      margin-bottom: 16px;
+    }
+    
+    .credential-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .credential-label {
+      font-size: 11px;
+      color: #64748b;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
     }
     
-    .btn-success:hover {
-      background: #16a34a;
+    .credential-value {
+      padding: 8px 0;
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 14px;
     }
     
-    .btn-outline-danger {
-      border: 2px solid #ef4444;
-      color: #ef4444;
+    .credential-password {
+      padding: 12px 16px;
       background: white;
       border-radius: 8px;
+      font-weight: 600;
+      color: #ef4444;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      margin-top: 4px;
+      border: 2px dashed #fee2e2;
     }
     
-    .btn-outline-danger:hover {
-      background: #ef4444;
-      color: white;
-    }
-    
-    /* Department Input Group */
-    .input-group {
+    .btn-block {
+      width: 100%;
       margin-bottom: 12px;
-    }
-    
-    .input-group .form-control {
-      border-right: none;
-    }
-    
-    .input-group .btn {
-      border-left: none;
     }
   </style>
 </head>
 <body>
-  <!-- Top Navigation -->
-  <nav class="top-nav">
-    <a href="/dashboard" class="nav-brand">
-      <i class="bi bi-shield-check"></i>
-      <span>Internal Audit Portal</span>
-    </a>
-    
-    <div class="nav-links">
-      <a href="/dashboard" class="nav-link">
-        <i class="bi bi-house"></i> Dashboard
-      </a>
-      <a href="/auditees" class="nav-link active">
-        <i class="bi bi-building"></i> Auditees
-      </a>
-      <a href="/audits" class="nav-link">
-        <i class="bi bi-clipboard-check"></i> Audits
-      </a>
-      <a href="/working-papers" class="nav-link">
-        <i class="bi bi-file-earmark-text"></i> Working Papers
-      </a>
-      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
-        <a href="/issues/verify" class="nav-link">
-          <i class="bi bi-check-circle"></i> Verify
-        </a>
-      <% } %>
-    </div>
-    
-    <div class="user-menu">
-      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-      <div>
-        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
-        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
-      </div>
-      <a href="/auth/logout" class="btn btn-sm btn-secondary">
-        <i class="bi bi-box-arrow-right"></i>
-      </a>
-    </div>
-  </nav>
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+  
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
   
   <!-- Main Content -->
   <div class="main-content">
-    <%- include('../partials/messages') %>
-    
     <!-- Page Header -->
     <div class="page-header">
       <h1 class="page-title">
         <i class="bi bi-plus-circle"></i> Create Auditee
       </h1>
-      <a href="/auditees" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Back
-      </a>
     </div>
     
     <!-- Create Form -->
     <div class="card-modern">
       <form id="createAuditeeForm">
-        <div class="mb-4">
-          <label for="name" class="form-label">Auditee Name *</label>
-          <input type="text" class="form-control" id="name" name="name" placeholder="Enter auditee name" required>
-        </div>
-        
-        <div class="mb-4">
-          <label for="official_email" class="form-label">Official Email *</label>
-          <input type="email" class="form-control" id="official_email" name="official_email" placeholder="email@example.com" required>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <label for="name" class="form-label">Auditee Name *</label>
+            <input type="text" class="form-control" id="name" name="name" 
+                   placeholder="e.g. Finance Department" required>
+          </div>
+          
+          <div class="col-md-6 mb-4">
+            <label for="official_email" class="form-label">Official Email *</label>
+            <input type="email" class="form-control" id="official_email" name="official_email" 
+                   placeholder="email@example.com" required>
+          </div>
         </div>
         
         <div class="mb-4">
           <label class="form-label">Departments/Sections</label>
           <div id="departments-container">
-            <div class="input-group">
+            <div class="department-item">
               <input type="text" class="form-control" name="departments[]" placeholder="Department name">
-              <button type="button" class="btn btn-outline-danger remove-dept" style="display:none;">
-                <i class="bi bi-x"></i>
-              </button>
             </div>
           </div>
-          <button type="button" class="btn btn-sm btn-success" id="add-department">
-            <i class="bi bi-plus"></i> Add Department
+          <button type="button" class="btn btn-success btn-sm mt-2" id="add-department">
+            <i class="bi bi-plus-circle"></i> Add Department
           </button>
         </div>
         
@@ -308,46 +414,46 @@
         </div>
       </form>
     </div>
-    
-    <!-- Credentials Modal -->
-    <div id="credentialsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-      <div style="background: white; padding: 24px; border-radius: 20px; max-width: 380px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.35);">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="width: 56px; height: 56px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-            <i class="bi bi-check-circle-fill" style="font-size: 28px; color: #10b981;"></i>
-          </div>
-          <h3 style="margin: 0; color: #0f172a; font-size: 20px; font-weight: 700;">Auditee Created!</h3>
+  </div>
+  
+  <!-- Credentials Modal -->
+  <div id="credentialsModal" class="modal-overlay">
+    <div class="modal-content-custom">
+      <div class="modal-header-custom">
+        <div class="modal-icon">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h3 class="modal-title">Auditee Created!</h3>
+      </div>
+      
+      <div class="credentials-box">
+        <div class="credential-item">
+          <div class="credential-label">Name</div>
+          <div class="credential-value" id="modal-name"></div>
         </div>
         
-        <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 14px;">
-          <div style="margin-bottom: 12px;">
-            <label style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
-            <div style="padding: 6px 0; font-weight: 600; color: #0f172a; font-size: 14px;" id="modal-name"></div>
-          </div>
-          
-          <div style="margin-bottom: 12px;">
-            <label style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Email</label>
-            <div style="padding: 6px 0; font-weight: 500; color: #0f172a; font-size: 13px;" id="modal-email"></div>
-          </div>
-          
-          <div>
-            <label style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
-            <div style="padding: 10px 14px; background: white; border-radius: 6px; font-weight: 600; color: #ef4444; font-family: monospace; font-size: 16px; margin-top: 4px; border: 2px dashed #fee2e2;" id="modal-password"></div>
-          </div>
+        <div class="credential-item">
+          <div class="credential-label">Email</div>
+          <div class="credential-value" id="modal-email"></div>
         </div>
         
-        <button onclick="sendCredentialsEmail()" id="emailBtn" class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;">
-          <i class="bi bi-envelope"></i> Send Login to Email
+        <div class="credential-item">
+          <div class="credential-label">Password</div>
+          <div class="credential-password" id="modal-password"></div>
+        </div>
+      </div>
+      
+      <button onclick="sendCredentialsEmail()" id="emailBtn" class="btn btn-secondary btn-block">
+        <i class="bi bi-envelope"></i> Send Login to Email
+      </button>
+      
+      <div style="display: flex; gap: 12px;">
+        <button onclick="copyCredentials()" class="btn btn-secondary" style="flex: 1;">
+          <i class="bi bi-clipboard"></i> Copy
         </button>
-        
-        <div style="display: flex; gap: 12px;">
-          <button onclick="copyCredentials()" class="btn btn-secondary" style="flex: 1;">
-            <i class="bi bi-clipboard"></i> Copy
-          </button>
-          <button onclick="closeModalAndRedirect()" class="btn btn-primary" style="flex: 1;">
-            Done
-          </button>
-        </div>
+        <button onclick="closeModalAndRedirect()" class="btn btn-primary" style="flex: 1;">
+          Done
+        </button>
       </div>
     </div>
   </div>
@@ -356,26 +462,67 @@
   <script>
     let credentials = null;
     
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 
+        '<i class="bi bi-check-circle-fill"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        dismissNotification(notification.querySelector('.notification-close'));
+      }, 3000);
+    }
+    
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }
+    
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+      showNotification('<%= success_msg %>', 'success');
+    <% } %>
+    
+    <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+      showNotification('<%= error_msg %>', 'error');
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error.length > 0) { %>
+      showNotification('<%= error %>', 'error');
+    <% } %>
+    
+    // Add department functionality
     document.getElementById('add-department').addEventListener('click', function() {
       const container = document.getElementById('departments-container');
       const newDiv = document.createElement('div');
-      newDiv.className = 'input-group';
+      newDiv.className = 'department-item';
       newDiv.innerHTML = `
         <input type="text" class="form-control" name="departments[]" placeholder="Department name">
         <button type="button" class="btn btn-outline-danger remove-dept">
-          <i class="bi bi-x"></i>
+          <i class="bi bi-trash"></i>
         </button>
       `;
       container.appendChild(newDiv);
       
       newDiv.querySelector('.remove-dept').addEventListener('click', function() {
         newDiv.remove();
-      });
-    });
-    
-    document.querySelectorAll('.remove-dept').forEach(btn => {
-      btn.addEventListener('click', function() {
-        this.closest('.input-group').remove();
       });
     });
     
@@ -393,7 +540,9 @@
       for (let [key, value] of formData.entries()) {
         if (key === 'departments[]') {
           if (!data.departments) data.departments = [];
-          data.departments.push(value);
+          if (value.trim()) {
+            data.departments.push(value);
+          }
         } else {
           data[key] = value;
         }
@@ -415,12 +564,12 @@
           document.getElementById('modal-password').textContent = result.credentials.password;
           document.getElementById('credentialsModal').style.display = 'flex';
         } else {
-          alert(result.error || 'Error creating auditee');
+          showNotification(result.error || 'Error creating auditee', 'error');
           submitBtn.disabled = false;
           submitBtn.innerHTML = '<i class="bi bi-save"></i> Create Auditee';
         }
       } catch (error) {
-        alert('Error creating auditee');
+        showNotification('Error creating auditee', 'error');
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="bi bi-save"></i> Create Auditee';
       }
@@ -437,7 +586,7 @@ Password: ${credentials.password}
 Login at: ${window.location.origin}/auth/login`;
       
       navigator.clipboard.writeText(text).then(() => {
-        alert('Credentials copied to clipboard!');
+        showNotification('Credentials copied to clipboard!', 'success');
       });
     }
     
@@ -465,13 +614,14 @@ Login at: ${window.location.origin}/auth/login`;
           emailBtn.innerHTML = '<i class="bi bi-check-circle"></i> Sent!';
           emailBtn.style.background = '#10b981';
           emailBtn.style.color = 'white';
+          showNotification('Credentials sent to email!', 'success');
         } else {
-          alert('Failed to send email');
+          showNotification('Failed to send email', 'error');
           emailBtn.disabled = false;
           emailBtn.innerHTML = '<i class="bi bi-envelope"></i> Send Login to Email';
         }
       } catch (error) {
-        alert('Error sending email');
+        showNotification('Error sending email', 'error');
         emailBtn.disabled = false;
         emailBtn.innerHTML = '<i class="bi bi-envelope"></i> Send Login to Email';
       }

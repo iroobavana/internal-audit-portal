@@ -18,20 +18,17 @@ function generatePassword() {
 
 // List all auditees
 router.get('/', ensureHeadOfAudit, async (req, res) => {
-  console.log('=== DEBUG ===');
-  console.log('User ID:', req.user.id);
-  console.log('User Name:', req.user.name);
-  console.log('User Organization ID:', req.user.organization_id);
-  console.log('=============');
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     const result = await pool.query(`
       SELECT a.*, COUNT(DISTINCT d.id) as department_count
       FROM auditees a
       LEFT JOIN auditee_departments d ON a.id = d.auditee_id
-      WHERE a.organization_id = $1
       GROUP BY a.id
       ORDER BY a.created_at DESC
-    `, [req.user.organization_id]);
+    `);
     
     res.render('auditees/list', {
       title: 'Auditees',
@@ -46,6 +43,9 @@ router.get('/', ensureHeadOfAudit, async (req, res) => {
 
 // Create auditee form
 router.get('/create', ensureHeadOfAudit, (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
   res.render('auditees/create', { title: 'Create Auditee' });
 });
 
@@ -79,16 +79,16 @@ router.post('/create', ensureHeadOfAudit, async (req, res) => {
       
       // Create user account for auditee
       const userResult = await client.query(
-        'INSERT INTO users (name, email, password, role, organization_id) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-        [name, official_email, hashedPassword, 'auditee', req.user.organization_id]
+        'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id',
+        [name, official_email, hashedPassword, 'auditee']
       );
       
       const userId = userResult.rows[0].id;
       
       // Insert auditee
       const auditeeResult = await client.query(
-        'INSERT INTO auditees (name, official_email, created_by, user_id, organization_id) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-        [name, official_email, req.user.id, userId, req.user.organization_id]
+        'INSERT INTO auditees (name, official_email, created_by, user_id) VALUES ($1, $2, $3, $4) RETURNING id',
+        [name, official_email, req.user.id, userId]
       );
       
       const auditeeId = auditeeResult.rows[0].id;
@@ -139,9 +139,12 @@ router.post('/create', ensureHeadOfAudit, async (req, res) => {
 // View auditee details
 router.get('/:id', ensureHeadOfAudit, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     const auditeeResult = await pool.query(
-      'SELECT * FROM auditees WHERE id = $1 AND organization_id = $2',
-      [req.params.id, req.user.organization_id]
+      'SELECT * FROM auditees WHERE id = $1',
+      [req.params.id]
     );
     
     if (auditeeResult.rows.length === 0) {
@@ -170,9 +173,12 @@ router.get('/:id', ensureHeadOfAudit, async (req, res) => {
 // Edit auditee form
 router.get('/:id/edit', ensureHeadOfAudit, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     const auditeeResult = await pool.query(
-      'SELECT * FROM auditees WHERE id = $1 AND organization_id = $2',
-      [req.params.id, req.user.organization_id]
+      'SELECT * FROM auditees WHERE id = $1',
+      [req.params.id]
     );
     
     if (auditeeResult.rows.length === 0) {
@@ -210,8 +216,8 @@ router.put('/:id', ensureHeadOfAudit, async (req, res) => {
       
       // Update auditee
       await client.query(
-        'UPDATE auditees SET name = $1, official_email = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 AND organization_id = $4',
-        [name, official_email, req.params.id, req.user.organization_id]
+        'UPDATE auditees SET name = $1, official_email = $2 WHERE id = $3',
+        [name, official_email, req.params.id]
       );
       
       // Delete existing departments
@@ -233,7 +239,7 @@ router.put('/:id', ensureHeadOfAudit, async (req, res) => {
       
       await client.query('COMMIT');
       req.flash('success_msg', 'Auditee updated successfully');
-      res.redirect(`/auditees/${req.params.id}`);
+      res.redirect('/auditees');
       
     } catch (error) {
       await client.query('ROLLBACK');
@@ -252,7 +258,7 @@ router.put('/:id', ensureHeadOfAudit, async (req, res) => {
 // Delete auditee
 router.delete('/:id', ensureHeadOfAudit, async (req, res) => {
   try {
-    await pool.query('DELETE FROM auditees WHERE id = $1 AND organization_id = $2', [req.params.id, req.user.organization_id]);
+    await pool.query('DELETE FROM auditees WHERE id = $1', [req.params.id]);
     req.flash('success_msg', 'Auditee deleted successfully');
     res.redirect('/auditees');
   } catch (error) {
@@ -265,9 +271,13 @@ router.delete('/:id', ensureHeadOfAudit, async (req, res) => {
 // Audit Universe for an auditee
 router.get('/:id/audit-universe', ensureHeadOfAudit, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
     const auditeeResult = await pool.query(
-      'SELECT * FROM auditees WHERE id = $1 AND organization_id = $2',
-      [req.params.id, req.user.organization_id]
+      'SELECT * FROM auditees WHERE id = $1',
+      [req.params.id]
     );
     
     if (auditeeResult.rows.length === 0) {
@@ -275,26 +285,59 @@ router.get('/:id/audit-universe', ensureHeadOfAudit, async (req, res) => {
       return res.redirect('/auditees');
     }
     
+    const departmentsResult = await pool.query(
+      'SELECT * FROM auditee_departments WHERE auditee_id = $1',
+      [req.params.id]
+    );
+    
+    // Get existing audit universe entries
     const universeResult = await pool.query(`
       SELECT au.*, ad.department_name, a.name as auditee_name
       FROM audit_universe au
       LEFT JOIN auditee_departments ad ON au.department_id = ad.id
       LEFT JOIN auditees a ON au.auditee_id = a.id
       WHERE au.auditee_id = $1
-      ORDER BY ad.department_name, au.audit_area
+      ORDER BY au.id
     `, [req.params.id]);
     
-    const departmentsResult = await pool.query(
-      'SELECT * FROM auditee_departments WHERE auditee_id = $1',
-      [req.params.id]
-    );
-    
-    res.render('auditees/audit-universe', {
-      title: 'Audit Universe',
-      auditee: auditeeResult.rows[0],
-      universe: universeResult.rows,
-      departments: departmentsResult.rows
-    });
+    // Ensure minimum 5 rows exist
+    const currentCount = universeResult.rows.length;
+    if (currentCount < 5) {
+      const rowsToAdd = 5 - currentCount;
+      const firstDeptId = departmentsResult.rows.length > 0 ? departmentsResult.rows[0].id : null;
+      
+      for (let i = 0; i < rowsToAdd; i++) {
+        await pool.query(`
+          INSERT INTO audit_universe 
+          (auditee_id, department_id, audit_area, process, inherent_risk, control_measure, audit_procedure)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [req.params.id, firstDeptId, '', '', '', '', '']);
+      }
+      
+      // Re-fetch to get the newly created rows
+      const updatedUniverseResult = await pool.query(`
+        SELECT au.*, ad.department_name, a.name as auditee_name
+        FROM audit_universe au
+        LEFT JOIN auditee_departments ad ON au.department_id = ad.id
+        LEFT JOIN auditees a ON au.auditee_id = a.id
+        WHERE au.auditee_id = $1
+        ORDER BY au.id
+      `, [req.params.id]);
+      
+      res.render('auditees/audit-universe', {
+        title: 'Audit Universe',
+        auditee: auditeeResult.rows[0],
+        universe: updatedUniverseResult.rows,
+        departments: departmentsResult.rows
+      });
+    } else {
+      res.render('auditees/audit-universe', {
+        title: 'Audit Universe',
+        auditee: auditeeResult.rows[0],
+        universe: universeResult.rows,
+        departments: departmentsResult.rows
+      });
+    }
     
   } catch (error) {
     console.error(error);
@@ -308,22 +351,43 @@ router.post('/:id/audit-universe', ensureHeadOfAudit, async (req, res) => {
   const { department_id, audit_area, process, inherent_risk, control_measure, audit_procedure } = req.body;
   
   try {
-    await pool.query(`
+    const result = await pool.query(`
       INSERT INTO audit_universe 
       (auditee_id, department_id, audit_area, process, inherent_risk, control_measure, audit_procedure)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id
     `, [req.params.id, department_id, audit_area, process, inherent_risk, control_measure, audit_procedure]);
     
-    req.flash('success_msg', 'Audit universe entry added');
-    res.redirect(`/auditees/${req.params.id}/audit-universe`);
+    res.json({ success: true, id: result.rows[0].id });
     
   } catch (error) {
     console.error(error);
-    req.flash('error_msg', 'Error adding audit universe entry');
-    res.redirect(`/auditees/${req.params.id}/audit-universe`);
+    res.json({ success: false, error: 'Error adding audit universe entry' });
   }
 });
-
+// Update audit universe entry
+router.put('/:id/audit-universe/:entryId', ensureHeadOfAudit, async (req, res) => {
+  const { field, value } = req.body;
+  
+  // Validate field to prevent SQL injection
+  const allowedFields = ['department_id', 'audit_area', 'process', 'inherent_risk', 'control_measure', 'audit_procedure'];
+  
+  if (!allowedFields.includes(field)) {
+    return res.json({ success: false, error: 'Invalid field' });
+  }
+  
+  try {
+    await pool.query(
+      `UPDATE audit_universe SET ${field} = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+      [value, req.params.entryId]
+    );
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, error: 'Error updating entry' });
+  }
+});
 // Send credentials email
 router.post('/send-credentials', ensureHeadOfAudit, async (req, res) => {
   const { email, name, password } = req.body;

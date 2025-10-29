@@ -219,7 +219,7 @@
       padding: 32px;
     }
     
-    /* RESIZABLE RISK ASSESSMENT TABLE - MODERN STYLE */
+    /* RESIZABLE RISK ASSESSMENT TABLE */
     .risk-table-container {
       overflow-x: auto;
       margin: 0;
@@ -245,27 +245,18 @@
       margin: 0;
       width: 100%;
       min-width: 1700px;
-      border-collapse: separate;
-      border-spacing: 0;
+      border-collapse: collapse;
       table-layout: fixed;
     }
     
-    .table-risk thead {
-      background: #f8fafc;
-    }
-    
     .table-risk th {
-      padding: 16px;
-      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
       font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #e2e8f0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
+      text-align: left;
+      background: #f8fafc;
       position: relative;
       user-select: none;
     }
@@ -280,7 +271,6 @@
       cursor: col-resize;
       background: transparent;
       z-index: 10;
-      user-select: none;
     }
     
     .table-risk th .resize-handle:hover {
@@ -292,15 +282,12 @@
     }
     
     .table-risk td {
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      font-size: 14px;
-      color: #1e293b;
-      vertical-align: middle;
-      transition: background-color 0.3s ease;
+      padding: 12px;
+      vertical-align: top;
+      border: 1px solid #e2e8f0;
+      background: white;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .table-risk tbody tr:hover {
@@ -310,11 +297,10 @@
     /* Simple Form Controls */
     .table-risk .form-control,
     .table-risk .form-select {
-      border: 1px solid #e2e8f0;
+      border: 2px solid #e2e8f0;
       border-radius: 8px;
       padding: 8px 12px;
-      font-size: 13px;
-      background: white;
+      font-size: 14px;
       transition: all 0.2s;
     }
     
@@ -326,8 +312,8 @@
     }
     
     .table-risk .form-control-sm {
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: 6px 10px;
+      font-size: 14px;
       text-align: center;
       font-weight: 500;
     }
@@ -347,15 +333,13 @@
     
     /* Process Text Display */
     .process-text {
-  font-size: 14px;
-  color: #1e293b;
-  line-height: 1.5;
-  word-wrap: break-word;
-  word-break: break-word;
-  white-space: normal;
-  max-height: none;
-  overflow: visible;
-}
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.5;
+      word-wrap: break-word;
+      max-height: 100px;
+      overflow-y: auto;
+    }
     
     .process-text::-webkit-scrollbar {
       width: 4px;
@@ -392,7 +376,7 @@
       background: #22c55e !important;
       color: white;
     }
-   
+    
     .table-risk .badge.bg-warning {
       background: #eab308 !important;
       color: white;
@@ -404,25 +388,15 @@
     }
     
     /* Default Column Widths - Can be adjusted by dragging */
-.col-audit-area { width: 200px; }
-.col-process { 
-  width: 300px; 
-  max-width: 300px;
-}
-.col-inherent-risk { width: 140px; text-align: left; vertical-align: top; }
-.col-input-small { width: 100px; text-align: center; }
-.col-rating { width: 80px; text-align: center; }
-.col-score { width: 120px; text-align: center; }
-.col-select { width: 80px; text-align: center; }
-.col-auditor { width: 180px; }
-    /* Remove green background from cells */
-.table-risk td {
-  background: white !important;
-}
-
-.table-risk tbody tr:hover td {
-  background: #f8fafc !important;
-}
+    .col-audit-area { width: 180px; }
+    .col-process { width: 250px; }
+    .col-inherent-risk { width: 120px; text-align: center; }
+    .col-input-small { width: 100px; text-align: center; }
+    .col-rating { width: 80px; text-align: center; }
+    .col-score { width: 100px; text-align: center; }
+    .col-select { width: 80px; text-align: center; }
+    .col-auditor { width: 180px; }
+    
     /* Audit Procedures Table - SAME STYLE AS RISK ASSESSMENT */
     .audit-procedures-container {
       overflow-x: auto;
@@ -448,27 +422,18 @@
       margin: 0;
       width: 100%;
       min-width: 2200px;
-      border-collapse: separate;
-      border-spacing: 0;
+      border-collapse: collapse;
       table-layout: fixed;
     }
     
-    .table-audit-proc thead {
-      background: #f8fafc;
-    }
-    
     .table-audit-proc th {
-      padding: 16px;
-      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
       font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #e2e8f0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
+      text-align: left;
+      background: #f8fafc;
       position: relative;
       user-select: none;
     }
@@ -482,7 +447,6 @@
       cursor: col-resize;
       background: transparent;
       z-index: 10;
-      user-select: none;
     }
     
     .table-audit-proc th .resize-handle:hover {
@@ -494,77 +458,73 @@
     }
     
     .table-audit-proc td {
-      padding: 16px;
-      vertical-align: middle;
-      border-bottom: 1px solid #e2e8f0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      font-size: 14px;
-      color: #1e293b;
+      padding: 12px;
+      vertical-align: top;
+      border: 1px solid #e2e8f0;
       background: white;
-      transition: background-color 0.3s ease;
     }
     
     .table-audit-proc tbody tr:hover {
       background: #f8fafc;
     }
     
-    /* Audit Procedures Form Controls - Modern Style */
+    /* Audit Procedures Form Controls - Borderless Style */
     .table-audit-proc .form-control,
     .table-audit-proc .form-select {
-      border: 1px solid #e2e8f0;
-      background: white;
+      border: none;
+      background: transparent;
       padding: 8px 12px;
-      font-size: 13px;
-      border-radius: 8px;
+      font-size: 14px;
       transition: all 0.2s;
     }
     
     .table-audit-proc .form-control:hover,
     .table-audit-proc .form-select:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      background: #f8fafc;
+      border-radius: 8px;
     }
     
     .table-audit-proc .form-control:focus,
     .table-audit-proc .form-select:focus {
-      border-color: #3b82f6;
+      background: #f8fafc;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       outline: none;
     }
     
     .table-audit-proc .form-control-sm {
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: 6px 10px;
+      font-size: 14px;
     }
     
     .table-audit-proc .form-select-sm {
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: 6px 10px;
+      font-size: 14px;
     }
     
-    /* Audit Textarea Styling - Modern */
+    /* Audit Textarea Styling - Borderless */
     .audit-textarea {
-      border: 1px solid #e2e8f0;
-      background: white;
+      border: none;
+      background: transparent;
       padding: 8px 12px;
       font-size: 14px;
       width: 100%;
       min-height: 50px;
       resize: vertical;
-      border-radius: 8px;
       transition: all 0.2s;
       font-family: inherit;
     }
     
     .audit-textarea:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      background: #f8fafc;
+      border-radius: 8px;
     }
     
     .audit-textarea:focus {
-      border-color: #3b82f6;
+      background: #f8fafc;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       outline: none;
     }
@@ -608,54 +568,26 @@
     .col-score { width: 100px; text-align: center; }
     
     /* Folder Cards */
-.folder-card {
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  text-decoration: none;
-  display: block;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.folder-card:hover {
-  border-color: #3b82f6;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
-  transform: translateY(-6px);
-}
-
-.folder-icon-container {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.folder-card:hover .folder-icon-container {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
-}
-
-.folder-icon {
-  font-size: 40px;
-  color: #3b82f6;
-  transition: all 0.3s ease;
-}
-
-.folder-card:hover .folder-icon {
-  color: white;
-  transform: scale(1.1);
-}
+    .folder-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    
+    .folder-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
+    }
+    
+    .folder-icon {
+      font-size: 64px;
+      color: #ffc107;
+    }
     
     /* Form Styles */
     .form-label {
@@ -666,37 +598,23 @@
     }
     
     .form-control, .form-select {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
       font-size: 14px;
-      transition: all 0.3s ease;
-      background: #ffffff;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    
-    .form-control:hover, .form-select:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      transition: all 0.2s;
     }
     
     .form-control:focus, .form-select:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       outline: none;
-      background: #ffffff;
     }
     
     /* Table Styles (for other tables) */
-    .table-container {
-      overflow-x: auto;
-    }
-    
     .table-modern {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      table-layout: fixed;
+      margin: 0;
+      font-size: 14px;
     }
     
     .table-modern thead {
@@ -704,76 +622,17 @@
     }
     
     .table-modern th {
-      padding: 16px;
-      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
       font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #e2e8f0;
-      position: relative;
-      resize: horizontal;
-      overflow: hidden;
-    }
-    
-    .table-modern th .resizer {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 5px;
-      height: 100%;
-      cursor: col-resize;
-      user-select: none;
-    }
-    
-    .table-modern th .resizer:hover {
-      background: #3b82f6;
     }
     
     .table-modern td {
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
-      font-size: 14px;
-      color: #1e293b;
-      transition: background-color 0.3s ease;
-    }
-    
-    .table-modern tr:hover {
-      background: #f8fafc;
-    }
-    
-    .table-modern td.editable {
-      cursor: text;
-      background: #fef3c7;
-      outline: none;
-    }
-    
-    .table-modern td.editable:focus {
-      background: #fef08a;
-      box-shadow: inset 0 0 0 2px #facc15;
-    }
-    
-    .table-modern select {
-      width: 100%;
+      padding: 12px;
+      vertical-align: top;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 13px;
-      background: white;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .table-modern select:disabled {
-      background: #f8fafc;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-    
-    .table-modern select:not(:disabled):hover {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     
     .table-modern tbody tr:hover {
@@ -782,105 +641,78 @@
     
     /* Button Styles */
     .btn-primary {
-      background: #3b82f6;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
       border: none;
-      border-radius: 10px;
-      padding: 12px 24px;
-      font-weight: 600;
-      transition: all 0.2s;
-      color: white;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .btn-primary:hover {
-      background: #2563eb;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-      color: white;
-    }
-    
-    .btn-info {
-      background: #0ea5e9;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .btn-info:hover {
-      background: #0284c7;
-      color: white;
-    }
-    
-    .btn-secondary {
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      color: #0f172a;
       border-radius: 10px;
       padding: 10px 24px;
       font-weight: 600;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .btn-secondary:hover {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-    
-    .btn-warning {
-      background: #f59e0b;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .btn-warning:hover {
-      background: #d97706;
+      transition: all 0.2s;
       color: white;
     }
     
-    .btn-danger {
-      background: #ef4444;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-weight: 600;
-    }
-    
-    .btn-danger:hover {
-      background: #dc2626;
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
       color: white;
     }
     
     .btn-success {
-      background: #22c55e;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       border: none;
+      border-radius: 10px;
       color: white;
-      border-radius: 8px;
       padding: 10px 24px;
       font-weight: 600;
       transition: all 0.2s;
     }
     
     .btn-success:hover {
-      background: #16a34a;
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
       color: white;
     }
     
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      transform: translateY(-2px);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      color: #0f172a;
+      border-radius: 10px;
+      padding: 8px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #0f172a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
     .btn-sm {
-      padding: 8px 16px;
+      padding: 8px 20px;
       font-size: 14px;
     }
     
@@ -890,54 +722,6 @@
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
-    }
-    
-    /* Document Library Table - Same Clean Style */
-    .doc-table-container {
-      overflow-x: auto;
-      margin: 0;
-      background: white;
-      border-radius: 0 0 16px 16px;
-    }
-    
-    .table-doc {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin: 0;
-    }
-    
-    .table-doc thead {
-      background: #f8fafc;
-    }
-    
-    .table-doc th {
-      padding: 16px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #e2e8f0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-    }
-    
-    .table-doc td {
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      font-size: 14px;
-      color: #1e293b;
-      vertical-align: middle;
-    }
-    
-    .table-doc tbody tr:hover {
-      background: #f8fafc;
     }
     
     /* Empty State */
@@ -971,44 +755,34 @@
       color: #1e40af;
     }
     
-    /* Document Manager Table Styles - MODERN STYLE */
+    /* Document Manager Table Styles */
     .doc-table-container {
       overflow-x: auto;
       margin: 0;
       background: white;
-      border-radius: 0 0 16px 16px;
     }
     
     .table-doc {
       margin: 0;
       width: 100%;
       min-width: 1000px;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    
-    .table-doc thead {
-      background: #f8fafc;
+      border-collapse: collapse;
     }
     
     .table-doc th {
-      padding: 16px;
-      text-align: left;
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
       font-size: 13px;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #e2e8f0;
+      text-align: left;
+      background: #f8fafc;
     }
     
     .table-doc td {
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
+      border: 1px solid #e2e8f0;
+      padding: 12px;
       vertical-align: middle;
-      font-size: 14px;
-      color: #1e293b;
-      transition: background-color 0.3s ease;
     }
     
     .table-doc tbody tr:hover {
@@ -1019,11 +793,10 @@
     .table-doc input[type="date"],
     .table-doc input[type="file"] {
       border: 1px solid #e2e8f0;
-      padding: 8px 12px;
+      padding: 6px 10px;
       font-size: 13px;
-      border-radius: 8px;
+      border-radius: 6px;
       transition: all 0.2s;
-      background: white;
     }
     
     .table-doc input:focus {
@@ -1032,31 +805,6 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     
-    .table-doc select {
-      width: 100%;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 13px;
-      background: white;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .table-doc select:hover {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-    /* Submit Audit Issues Table Font Sizes */
-#reportProceduresContainer table th {
-  font-size: 13px !important;
-  padding: 16px !important;
-}
-
-#reportProceduresContainer table td {
-  font-size: 14px !important;
-  padding: 16px !important;
-}
     /* Audit Procedures Include in Report Column */
     .col-include-report {
       width: 140px;
@@ -1261,7 +1009,7 @@
           
           <form id="documentForm" onsubmit="saveDocuments(event)">
             <div class="doc-table-container">
-              <table class="table-doc" id="documentTable">
+              <table class="table-doc table-bordered" id="documentTable">
                 <thead>
                   <tr>
                     <th style="width: 50px;">#</th>
@@ -1381,7 +1129,7 @@
               
               <!-- RESIZABLE RISK TABLE -->
               <div class="risk-table-container">
-                <table class="table-risk" id="riskTable">
+                <table class="table-risk table-bordered" id="riskTable">
                   <thead>
                     <tr>
                       <th class="col-audit-area">
@@ -1444,7 +1192,13 @@
                           <div class="process-text"><%= item.process || '-' %></div>
                         </td>
                         <td class="col-inherent-risk">
-                          <div class="process-text"><%= item.inherent_risk || '-' %></div>
+                          <% if (item.inherent_risk) { %>
+                            <span class="badge bg-<%= item.inherent_risk.toLowerCase() === 'high' ? 'danger' : item.inherent_risk.toLowerCase() === 'medium' ? 'warning' : 'success' %>">
+                              <%= item.inherent_risk %>
+                            </span>
+                          <% } else { %>
+                            <span class="text-muted">-</span>
+                          <% } %>
                         </td>
                         <td class="col-input-small">
                           <input type="number" 
@@ -1517,7 +1271,6 @@
             <h5 class="card-title-modern">Testing Procedures - Audit Folders</h5>
           </div>
           <div class="card-body-modern">
-            
             <div id="testingProceduresFolders" class="row g-4">
               <!-- Folders will be dynamically generated -->
               <% if (selectedAreas.length === 0) { %>
@@ -1543,15 +1296,13 @@
                 %>
                   <div class="col-md-4">
                     <a href="/audits/<%= audit.id %>/testing-procedures/<%= area.id %>" class="folder-card">
-                      <div style="padding: 32px; text-align: center;">
-                        <div class="folder-icon-container">
-                          <i class="bi bi-folder-fill folder-icon"></i>
-                        </div>
-                        <h6 style="margin-top: 20px; font-weight: 600; color: #0f172a; font-size: 16px;">
+                      <div style="padding: 24px; text-align: center;">
+                        <i class="bi bi-folder-fill folder-icon"></i>
+                        <h6 style="margin-top: 16px; font-weight: 600; color: #0f172a;">
                           <%= area.audit_area %>
                         </h6>
-                        <p style="font-size: 13px; color: #64748b; margin: 8px 0 0 0;">
-                          <i class="bi bi-person" style="font-size: 12px;"></i> <%= area.auditor_name || 'Unassigned' %>
+                        <p style="font-size: 13px; color: #64748b; margin: 0;">
+                          Assigned to: <%= area.auditor_name || 'Unassigned' %>
                         </p>
                       </div>
                     </a>
@@ -1590,7 +1341,7 @@
               
               <!-- AUDIT PROCEDURES TABLE - SAME STYLE AS RISK ASSESSMENT -->
               <div class="audit-procedures-container">
-                <table class="table-audit-proc" id="auditProceduresTable">
+                <table class="table-audit-proc table-bordered" id="auditProceduresTable">
                   <thead>
                     <tr>
                       <th class="col-audit-area-proc">
@@ -1674,10 +1425,10 @@
                                     name="items[<%= index %>][conclusion]" 
                                     rows="2" 
                                     placeholder="Enter conclusion..." 
-                                    ><%= existingProc ? existingProc.conclusion || '' : '' %></textarea>
+                                    required><%= existingProc ? existingProc.conclusion || '' : '' %></textarea>
                         </td>
                         <td class="col-result">
-                          <select class="form-select form-select-sm" name="items[<%= index %>][result]">
+                          <select class="form-select form-select-sm" name="items[<%= index %>][result]" required>
                             <option value="">Select</option>
                             <option value="pass" <%= existingProc && existingProc.result === 'pass' ? 'selected' : '' %>>Pass</option>
                             <option value="fail" <%= existingProc && existingProc.result === 'fail' ? 'selected' : '' %>>Fail</option>
@@ -2003,12 +1754,9 @@
             <div class="row">
               <!-- Criteria -->
               <div class="col-md-6 mb-4">
-               <label for="criteria" class="form-label" style="font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
-  <span>Criteria</span>
-  <button type="button" class="btn btn-sm" onclick="aiRephrase('criteria')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; font-size: 12px; border: none; border-radius: 6px;">
-    <i class="bi bi-magic"></i> AI Rephrase
-  </button>
-</label>
+                <label for="criteria" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Criteria
+                </label>
                 <textarea class="form-control" 
                           id="criteria" 
                           name="criteria" 
@@ -2019,12 +1767,9 @@
               
               <!-- Condition -->
               <div class="col-md-6 mb-4">
-               <label for="condition" class="form-label" style="font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
-  <span>Condition</span>
-  <button type="button" class="btn btn-sm" onclick="aiRephrase('condition')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; font-size: 12px; border: none; border-radius: 6px;">
-    <i class="bi bi-magic"></i> AI Rephrase
-  </button>
-</label>
+                <label for="condition" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Condition
+                </label>
                 <textarea class="form-control" 
                           id="condition" 
                           name="condition" 
@@ -2037,12 +1782,9 @@
             <div class="row">
               <!-- Cause -->
               <div class="col-md-6 mb-4">
-              <label for="cause_issue" class="form-label" style="font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
-  <span>Cause</span>
-  <button type="button" class="btn btn-sm" onclick="aiRephrase('cause_issue')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; font-size: 12px; border: none; border-radius: 6px;">
-    <i class="bi bi-magic"></i> AI Rephrase
-  </button>
-</label>
+                <label for="cause_issue" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Cause
+                </label>
                 <textarea class="form-control" 
                           id="cause_issue" 
                           name="cause" 
@@ -2053,12 +1795,9 @@
               
               <!-- Consequence -->
               <div class="col-md-6 mb-4">
-                <label for="consequence" class="form-label" style="font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
-  <span>Consequence</span>
-  <button type="button" class="btn btn-sm" onclick="aiGenerateConsequence()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 4px 12px; font-size: 12px; border: none; border-radius: 6px;">
-    <i class="bi bi-stars"></i> AI Generate
-  </button>
-</label>
+                <label for="consequence" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Consequence
+                </label>
                 <textarea class="form-control" 
                           id="consequence" 
                           name="consequence" 
@@ -2071,12 +1810,9 @@
             <div class="row">
               <!-- Corrective Action -->
               <div class="col-md-8 mb-4">
-                <label for="corrective_action" class="form-label" style="font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
-  <span>Corrective Action</span>
-  <button type="button" class="btn btn-sm" onclick="aiRephrase('corrective_action')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; font-size: 12px; border: none; border-radius: 6px;">
-    <i class="bi bi-magic"></i> AI Rephrase
-  </button>
-</label>
+                <label for="corrective_action" class="form-label" style="font-weight: 600; color: #1e293b;">
+                  Corrective Action
+                </label>
                 <textarea class="form-control" 
                           id="corrective_action" 
                           name="corrective_action" 
@@ -2389,46 +2125,7 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
     function updateTestingProcedures() {
       const container = document.getElementById('testingProceduresFolders');
       if (!container) return;
-      // Filter folders by search and auditor
-    function filterFolders() {
-      const searchValue = document.getElementById('folderSearchInput')?.value.toLowerCase() || '';
-      const auditorValue = document.getElementById('auditorFilter')?.value || '';
       
-      const folders = document.querySelectorAll('#testingProceduresFolders .col-md-4');
-      let visibleCount = 0;
-      
-      folders.forEach(folder => {
-        const folderCard = folder.querySelector('.folder-card');
-        if (!folderCard) return;
-        
-        const auditArea = folderCard.querySelector('h6')?.textContent.toLowerCase() || '';
-        const auditor = folderCard.querySelector('p')?.textContent || '';
-        
-        const matchesSearch = auditArea.includes(searchValue);
-        const matchesAuditor = !auditorValue || auditor.includes(auditorValue);
-        
-        if (matchesSearch && matchesAuditor) {
-          folder.style.display = '';
-          visibleCount++;
-        } else {
-          folder.style.display = 'none';
-        }
-      });
-    }
-    
-    function clearFolderFilters() {
-      const searchInput = document.getElementById('folderSearchInput');
-      const auditorFilter = document.getElementById('auditorFilter');
-      
-      if (searchInput) searchInput.value = '';
-      if (auditorFilter) auditorFilter.value = '';
-      
-      filterFolders();
-    }
-    
-    // Attach event listeners for folder filtering
-    document.getElementById('folderSearchInput')?.addEventListener('input', filterFolders);
-    document.getElementById('auditorFilter')?.addEventListener('change', filterFolders);
       // Fetch fresh data from server to get NEW risk_assessment IDs
       fetch('/audits/<%= audit.id %>/get-selected-areas')
         .then(response => response.json())
@@ -2462,15 +2159,13 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
               html += `
                 <div class="col-md-4">
                   <a href="/audits/<%= audit.id %>/testing-procedures/${area.id}" class="folder-card">
-                    <div style="padding: 32px; text-align: center;">
-                      <div class="folder-icon-container">
-                        <i class="bi bi-${area.icon || 'folder-fill'} folder-icon"></i>
-                      </div>
-                      <h6 style="margin-top: 20px; font-weight: 600; color: #0f172a; font-size: 16px;">
+                    <div style="padding: 24px; text-align: center;">
+                      <i class="bi bi-folder-fill folder-icon"></i>
+                      <h6 style="margin-top: 16px; font-weight: 600; color: #0f172a;">
                         ${area.audit_area}
                       </h6>
-                      <p style="font-size: 13px; color: #64748b; margin: 8px 0 0 0;">
-                        <i class="bi bi-person" style="font-size: 12px;"></i> ${area.auditor_name || 'Unassigned'}
+                      <p style="font-size: 13px; color: #64748b; margin: 0;">
+                        Assigned to: ${area.auditor_name || 'Unassigned'}
                       </p>
                     </div>
                   </a>
@@ -2544,10 +2239,10 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
                             name="items[${idx}][conclusion]" 
                             rows="2" 
                             placeholder="Enter conclusion..." 
-                            >${existingProc ? (existingProc.conclusion || '') : ''}</textarea>
+                            required>${existingProc ? (existingProc.conclusion || '') : ''}</textarea>
                 </td>
                 <td class="col-result">
-                  <select class="form-select form-select-sm" name="items[${idx}][result]">
+                  <select class="form-select form-select-sm" name="items[${idx}][result]" required>
                     <option value="">Select</option>
                     <option value="pass" ${existingProc && existingProc.result === 'pass' ? 'selected' : ''}>Pass</option>
                     <option value="fail" ${existingProc && existingProc.result === 'fail' ? 'selected' : ''}>Fail</option>
@@ -2678,7 +2373,7 @@ document.querySelector('.workflow-tab[data-selection="reporting"]')?.addEventLis
                 </div>
                 
                 <div class="audit-procedures-container">
-                  <table class="table-audit-proc" id="auditProceduresTable">
+                  <table class="table-audit-proc table-bordered" id="auditProceduresTable">
                     <thead>
                       <tr>
                         <th class="col-audit-area-proc">Audit Area<div class="resize-handle" data-column="0"></div></th>
@@ -3777,11 +3472,9 @@ const isAmendment = proc.status === 'sent_for_amendment';
               </td>
               <td style="padding: 14px; text-align: center;">
                 <button type="button" 
-                        class="btn ${hasDraft ? 'btn-warning' : 'btn-primary'} btn-sm draft-btn"
+                        class="btn ${hasDraft ? 'btn-warning' : 'btn-primary'} btn-sm"
                         style="padding: 6px 16px; font-weight: 500;"
-                        data-procedure-id="${proc.procedure_id}"
-                        data-audit-area="${proc.audit_area.replace(/"/g, '&quot;')}"
-                        data-audit-procedure="${proc.audit_procedure.replace(/"/g, '&quot;')}">
+                        onclick="openDraftModal(${proc.procedure_id}, '${proc.audit_area}', '${proc.audit_procedure}')">
                   <i class="bi ${hasDraft ? 'bi-pencil-square' : 'bi-plus-circle'}"></i> 
                  ${isAmendment ? 'Amend' : (hasDraft ? 'Edit Draft' : 'Create Draft')}
                 </button>
@@ -3808,19 +3501,7 @@ const isAmendment = proc.status === 'sent_for_amendment';
         `;
       }
     }
-    // Event delegation for draft buttons
-    document.addEventListener('click', function(e) {
-      if (e.target.closest('.draft-btn')) {
-        const btn = e.target.closest('.draft-btn');
-        const procedureId = btn.getAttribute('data-procedure-id');
-        const auditArea = btn.getAttribute('data-audit-area');
-        const auditProcedure = btn.getAttribute('data-audit-procedure');
-        openDraftModal(procedureId, auditArea, auditProcedure);
-      }
-    });
     
-    // Open draft modal and load existing draft if available
-
     // Open draft modal and load existing draft if available
     async function openDraftModal(procedureId, auditArea, auditProcedure) {
       // Set procedure ID
@@ -3906,86 +3587,7 @@ async function loadIssueComments(issueId) {
     document.getElementById('commentsList').innerHTML = '<p class="text-danger">Error loading comments</p>';
   }
 }
-// AI Rephrase Function
-async function aiRephrase(fieldId) {
-  const textarea = document.getElementById(fieldId);
-  const originalText = textarea.value.trim();
-  
-  if (!originalText) {
-    alert('Please enter some text first before using AI Rephrase');
-    return;
-  }
-  
-  // Show loading state
-  const originalValue = textarea.value;
-  textarea.value = 'AI is rephrasing...';
-  textarea.disabled = true;
-  
-  try {
-    const response = await fetch('/audits/api/ai-rephrase', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: originalText })
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      textarea.value = data.rephrasedText;
-    } else {
-      alert('AI Rephrase failed. Please try again.');
-      textarea.value = originalValue;
-    }
-  } catch (error) {
-    console.error('AI Rephrase error:', error);
-    alert('An error occurred. Please try again.');
-    textarea.value = originalValue;
-  } finally {
-    textarea.disabled = false;
-  }
-}
 
-// AI Generate Consequence Function
-async function aiGenerateConsequence() {
-  const criteriaText = document.getElementById('criteria').value.trim();
-  const conditionText = document.getElementById('condition').value.trim();
-  const consequenceField = document.getElementById('consequence');
-  
-  if (!criteriaText || !conditionText) {
-    alert('Please fill in both Criteria and Condition fields before generating Consequence');
-    return;
-  }
-  
-  // Show loading state
-  consequenceField.value = 'AI is generating consequence...';
-  consequenceField.disabled = true;
-  
-  try {
-    const response = await fetch('/audits/api/ai-generate-consequence', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        criteria: criteriaText,
-        condition: conditionText 
-      })
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      consequenceField.value = data.consequence;
-    } else {
-      alert('AI Generation failed. Please try again.');
-      consequenceField.value = '';
-    }
-  } catch (error) {
-    console.error('AI Generate error:', error);
-    alert('An error occurred. Please try again.');
-    consequenceField.value = '';
-  } finally {
-    consequenceField.disabled = false;
-  }
-}
     // Save draft issue
     async function saveDraft() {
       const form = document.getElementById('draftIssueForm');
@@ -5118,26 +4720,6 @@ document.querySelector('.workflow-tab[data-section="followup"]')?.addEventListen
 });
 
 // ==================== END FOLLOW-UP FUNCTIONS ====================
-
-// Auto-save for Audit Procedures - Simple version
-setInterval(function() {
-  var form = document.getElementById('auditProceduresForm');
-  var section = document.getElementById('audit-procedures');
-  
-  if (form && section && section.classList.contains('active')) {
-    var formData = new FormData(form);
-    var auditId = '<%= audit.id %>';
-    
-    fetch('/audits/field-work/' + auditId + '/save-all', {
-      method: 'POST',
-      body: formData
-    }).catch(function(err) {
-      console.error('Auto-save failed:', err);
-    });
-  }
-}, 3000); // Auto-save every 3 seconds
-
-</script>
 
   </script>
 </body>

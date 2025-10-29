@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+  }
+  
+  /* Top Navigation Bar */
+  .top-nav {
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  
+  .nav-brand i {
+    font-size: 28px;
+    color: #3b82f6;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .nav-link {
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+  
+  .nav-link.active {
+    background: #dbeafe;
+    color: #3b82f6;
+  }
+  
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: #f8fafc;
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  .main-content {
+    padding: 32px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  
+  .page-header {
+    margin-bottom: 32px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+  
+  /* Keep the rest of your existing styles below (card-modern, issue-card, etc.) */
+    
+    .main-content {
+      padding: 32px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    .card-modern {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 24px;
+    }
+    
+    .issue-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.2s;
+    }
+    
+    .issue-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-color: #cbd5e1;
+    }
+    
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .issue-title-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    .issue-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .meta-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    .meta-value {
+      font-size: 14px;
+      color: #1e293b;
+      font-weight: 500;
+    }
+    
+    .issue-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .content-field {
+      padding: 12px;
+      background: #fafbfc;
+      border-radius: 8px;
+    }
+    
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    
+    .field-value {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.5;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-approve {
+      background: #10b981;
+      color: white;
+    }
+    
+    .btn-approve:hover {
+      background: #059669;
+    }
+    
+    .btn-amend {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .btn-amend:hover {
+      background: #d97706;
+    }
+    
+    .btn-remove {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-remove:hover {
+      background: #dc2626;
+    }
+.status-tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.status-tab:hover {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.status-tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 8px;
+  background: #e2e8f0;
+  color: #64748b;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-tab.active .tab-badge {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+  </style>
+</head>
+<body>
+
+
+  <body>
+  <%- include('../partials/navbar') %>
+
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-clipboard-check text-primary"></i> Verify Audit Issues
+      </h1>
+      <p class="text-muted mt-2">Review and approve issues submitted by auditors</p>
+    </div>
+
+    <!-- Status Tabs -->
+<div style="display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px;">
+  <button class="status-tab active" data-status="pending" onclick="switchTab('pending')">
+  Pending Verification<span class="tab-badge" id="badge-pending">0</span>
+  </button>
+  <button class="status-tab" data-status="approved" onclick="switchTab('approved')">
+  Approved<span class="tab-badge" id="badge-approved">0</span>
+  </button>
+  <button class="status-tab" data-status="amendment" onclick="switchTab('amendment')">
+   Sent for Amendment<span class="tab-badge" id="badge-amendment">0</span>
+  </button>
+  <button class="status-tab" data-status="removed" onclick="switchTab('removed')">
+   Removed<span class="tab-badge" id="badge-removed">0</span>
+  </button>
+</div>
+
+<div id="issuesTableContainer">
+  <!-- Issues will be loaded here -->
+</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  let currentIssueId = null;
+
+  let currentStatus = 'pending';
+    async function approveIssue(issueId) {
+      if (!confirm('Are you sure you want to approve this issue?')) return;
+      
+      try {
+        const response = await fetch(`/issues/${issueId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue approved successfully', 'success');
+closeModal();
+localStorage.setItem('activeTab', currentStatus);
+location.reload();
+        } else {
+          showToast('Error: ' + data.error, 'danger');
+        }
+      } catch (error) {
+        showToast('Error approving issue', 'danger');
+      }
+    }
+
+    async function sendForAmendment(issueId) {
+      if (!confirm('Send this issue back for amendment?')) return;
+      
+      try {
+        const response = await fetch(`/issues/${issueId}/send-for-amendment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue sent for amendment', 'success');
+closeModal();
+localStorage.setItem('activeTab', currentStatus);
+location.reload();
+        } else {
+          showToast('Error: ' + data.error, 'danger');
+        }
+      } catch (error) {
+        showToast('Error sending for amendment', 'danger');
+      }
+    }
+
+    async function removeIssue(issueId) {
+      if (!confirm('Are you sure you want to remove this issue? It will be moved to the removed issues register.')) return;
+      
+      try {
+        const response = await fetch(`/issues/${issueId}/remove`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('Issue removed', 'success');
+closeModal();
+localStorage.setItem('activeTab', currentStatus);
+location.reload();
+        } else {
+          showToast('Error: ' + data.error, 'danger');
+        }
+      } catch (error) {
+        showToast('Error removing issue', 'danger');
+      }
+    }
+
+function openIssueModal(issueId, statusParam) {
+  const status = statusParam || currentStatus;
+  currentIssueId = issueId;
+  const modal = document.createElement('div');
+  modal.id = 'issueModal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  `;
+  
+  modal.innerHTML = `
+    <div style="background: white; width: 90%; max-width: 1200px; max-height: 90vh; overflow-y: auto; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+      <div style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 1;">
+        <h3 style="margin: 0; font-weight: 700; color: #0f172a;" id="modalIssueTitle">Loading...</h3>
+        <button onclick="closeModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">×</button>
+      </div>
+      
+      <div style="padding: 24px;">
+        <div style="display: flex; gap: 20px; margin-bottom: 24px;">
+          <!-- Left side - Main content -->
+          <div style="flex: 1;">
+            <div id="issueContent">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="selectable-content">
+                  <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Criteria</div>
+                  <div id="criteria" class="content-text" style="position: relative; color: #334155; line-height: 1.6; padding: 8px; border-radius: 4px;">Loading...</div>
+                </div>
+                <div class="selectable-content">
+                  <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Condition</div>
+                  <div id="condition" class="content-text" style="position: relative; color: #334155; line-height: 1.6; padding: 8px; border-radius: 4px;">Loading...</div>
+                </div>
+                <div class="selectable-content">
+                  <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Cause</div>
+                  <div id="cause" class="content-text" style="position: relative; color: #334155; line-height: 1.6; padding: 8px; border-radius: 4px;">Loading...</div>
+                </div>
+                <div class="selectable-content">
+                  <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Consequence</div>
+                  <div id="consequence" class="content-text" style="position: relative; color: #334155; line-height: 1.6; padding: 8px; border-radius: 4px;">Loading...</div>
+                </div>
+                <div class="selectable-content" style="grid-column: span 2;">
+                  <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Corrective Action</div>
+                  <div id="correctiveAction" class="content-text" style="position: relative; color: #334155; line-height: 1.6; padding: 8px; border-radius: 4px;">Loading...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right side - Working Paper Button -->
+          <!-- Right side - Working Paper Button -->
+          <div id="workingPaperSection" style="display: none; width: 50px;">
+            <button id="viewWPButton" onclick="viewWorkingPaperInModal()" style="background: #3b82f6; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center;" title="View Working Paper">
+              <i class="bi bi-file-earmark-text" style="font-size: 20px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="commentsSection" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+          <h4 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600; color: #0f172a;">Comments</h4>
+          <div id="commentsList" style="margin-bottom: 16px;"></div>
+          <div style="display: flex; gap: 12px;">
+            <input type="text" id="commentInput" placeholder="Add a general comment..." style="flex: 1; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+           <button onclick="addGeneralComment()" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+              <i class="bi bi-send"></i> Add
+            </button>
+          </div>
+        </div>
+        
+        <div id="actionButtons" style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+         <button id="approveBtn" onclick="approveIssue(currentIssueId)" style="background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+            <i class="bi bi-check-circle"></i> Approve
+          </button>
+         <button id="amendBtn" onclick="sendForAmendment(currentIssueId)" style="background: #f59e0b; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+            <i class="bi bi-arrow-counterclockwise"></i> Amend
+          </button>
+          <button id="removeBtn" onclick="removeIssue(currentIssueId)" style="background: #ef4444; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+            <i class="bi bi-trash"></i> Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  // Hide/show buttons based on status
+  if (status === 'removed') {
+    document.getElementById('approveBtn').style.display = 'none';
+    document.getElementById('removeBtn').style.display = 'none';
+  } else if (status === 'amendment') {
+    document.getElementById('amendBtn').style.display = 'none';
+  } else if (status === 'approved') {
+    document.getElementById('approveBtn').style.display = 'none';
+    document.getElementById('removeBtn').style.display = 'none';
+  }
+  loadIssueDetails(issueId);
+  enableTextSelection();
+}
+
+async function loadIssueDetails(issueId) {
+  try {
+    const response = await fetch(`/issues/${issueId}/details`);
+    const issue = await response.json();
+    
+    document.getElementById('modalIssueTitle').textContent = issue.issue_title;
+    document.getElementById('criteria').textContent = issue.criteria || 'Not provided';
+    document.getElementById('condition').textContent = issue.condition || 'Not provided';
+    document.getElementById('cause').textContent = issue.cause || 'Not provided';
+    document.getElementById('consequence').textContent = issue.consequence || 'Not provided';
+    document.getElementById('correctiveAction').textContent = issue.corrective_action || 'Not provided';
+    
+    // Show working paper button if available
+if (issue.working_paper_id && issue.risk_assessment_id) {
+  document.getElementById('workingPaperSection').style.display = 'block';
+  window.currentWorkingPaperData = {
+    auditId: issue.audit_id,
+    riskAssessmentId: issue.risk_assessment_id,
+    workingPaperId: issue.working_paper_id,
+    workingPaperName: issue.working_paper_name
+  };
+} else {
+  document.getElementById('workingPaperSection').style.display = 'none';
+}
+
+    loadComments(issueId);
+  } catch (error) {
+    console.error('Error loading issue:', error);
+  }
+}
+
+async function viewWorkingPaperInModal() {
+  const wpData = window.currentWorkingPaperData;
+  if (!wpData) return;
+  
+  // Create WP modal
+  const wpModal = document.createElement('div');
+  wpModal.id = 'wpModal';
+  wpModal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+  `;
+  
+  wpModal.innerHTML = `
+    <div style="background: white; width: 90%; max-width: 1400px; max-height: 90vh; overflow-y: auto; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+      <div style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+        <h4 style="margin: 0; font-weight: 600; color: #0f172a;"><i class="bi bi-file-earmark-text"></i> ${wpData.workingPaperName}</h4>
+        <button onclick="closeWPModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">×</button>
+      </div>
+      <div id="wpContent" style="padding: 20px;">
+        <div style="text-align: center; padding: 40px;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p style="margin-top: 16px; color: #64748b;">Loading working paper...</p>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(wpModal);
+  
+  // Load WP data
+  try {
+    const response = await fetch(`/audits/${wpData.auditId}/working-paper-view/${wpData.riskAssessmentId}/${wpData.workingPaperId}`);
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load working paper');
+    }
+    
+    let tableHTML = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0;">';
+    
+    // Header
+    tableHTML += '<thead style="background: #f8fafc;"><tr>';
+    data.columns.forEach(col => {
+      const columnName = col.name || col.column_name || 'Unknown';
+      tableHTML += `<th style="padding: 12px; border: 1px solid #e2e8f0; font-weight: 600; color: #0f172a;">${columnName}</th>`;
+    });
+    tableHTML += '</tr></thead>';
+    
+    // Body
+    tableHTML += '<tbody>';
+    if (data.rows && data.rows.length > 0) {
+      data.rows.forEach(row => {
+        tableHTML += '<tr>';
+        data.columns.forEach(col => {
+          const columnName = col.name || col.column_name || 'Unknown';
+          const cellData = row.data || {};
+          const value = cellData[columnName] || '-';
+          tableHTML += `<td style="padding: 10px; border: 1px solid #e2e8f0;">${value}</td>`;
+        });
+        tableHTML += '</tr>';
+      });
+    } else {
+      tableHTML += `<tr><td colspan="${data.columns.length}" style="text-align: center; padding: 40px; color: #64748b;">No data entered yet</td></tr>`;
+    }
+    tableHTML += '</tbody></table></div>';
+    
+    document.getElementById('wpContent').innerHTML = tableHTML;
+    
+  } catch (error) {
+    console.error('Error loading working paper:', error);
+    document.getElementById('wpContent').innerHTML = `
+      <div style="padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px;">
+        <i class="bi bi-exclamation-triangle"></i> Error loading working paper: ${error.message}
+      </div>
+    `;
+  }
+}
+
+function closeWPModal() {
+  const modal = document.getElementById('wpModal');
+  if (modal) modal.remove();
+}
+
+function enableTextSelection() {
+  document.querySelectorAll('.content-text').forEach(element => {
+    element.addEventListener('mouseup', function(e) {
+      const selection = window.getSelection();
+      const selectedText = selection.toString().trim();
+      
+      if (selectedText.length > 0) {
+        showCommentPopup(selectedText, e.pageX, e.pageY, this.id);
+      }
+    });
+  });
+}
+
+function showCommentPopup(selectedText, x, y, fieldId) {
+  const existingPopup = document.getElementById('commentPopup');
+  if (existingPopup) existingPopup.remove();
+  
+  const popup = document.createElement('div');
+  popup.id = 'commentPopup';
+  popup.style.cssText = `
+    position: absolute;
+    left: ${x}px;
+    top: ${y}px;
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 10001;
+    min-width: 250px;
+  `;
+  
+  popup.innerHTML = `
+    <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Selected: "${selectedText.substring(0, 30)}..."</div>
+    <input type="text" id="inlineCommentInput" placeholder="Comment on this text..." style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; margin-bottom: 8px;">
+    <div style="display: flex; gap: 8px;">
+      <button onclick="saveInlineComment('${fieldId}')" style="background: #3b82f6; color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; flex: 1;">Save</button>
+      <button onclick="closeCommentPopup()" style="background: #94a3b8; color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">Cancel</button>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  document.getElementById('inlineCommentInput').focus();
+  
+  window.selectedTextInfo = { text: selectedText, fieldId: fieldId };
+}
+
+async function saveInlineComment(fieldId) {
+  const comment = document.getElementById('inlineCommentInput').value.trim();
+  if (!comment) return;
+  
+  const issueId = getCurrentIssueId();
+  const selectedText = window.selectedTextInfo.text;
+  
+  try {
+    const response = await fetch('/issues/comments/inline', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        issue_id: issueId,
+        field_name: fieldId,
+        selected_text: selectedText,
+        comment: comment
+      })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      showToast('Comment added', 'success');
+      loadComments(issueId);
+      closeCommentPopup();
+    }
+  } catch (error) {
+    showToast('Error adding comment', 'danger');
+  }
+}
+
+async function addGeneralComment() {
+  const comment = document.getElementById('commentInput').value.trim();
+  if (!comment) return;
+  
+  try {
+    const response = await fetch('/issues/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        issue_id: currentIssueId,
+        comment: comment
+      })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('commentInput').value = '';
+      loadComments(currentIssueId);
+      showToast('Comment added', 'success');
+    }
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    showToast('Error adding comment', 'danger');
+  }
+}
+
+async function loadComments(issueId) {
+  try {
+    const response = await fetch(`/issues/${issueId}/comments`);
+    const comments = await response.json();
+    
+    const commentsList = document.getElementById('commentsList');
+    if (comments.length === 0) {
+      commentsList.innerHTML = '<p style="color: #94a3b8; font-size: 14px; margin: 0;">No comments yet</p>';
+    } else {
+      commentsList.innerHTML = comments.map(c => `
+        <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid ${c.field_name ? '#3b82f6' : '#94a3b8'};">
+          ${c.field_name ? `<div style="font-size: 11px; color: #64748b; margin-bottom: 4px;"><strong>${c.field_name}:</strong> "${c.selected_text}"</div>` : ''}
+          <div style="color: #334155; font-size: 14px;">${c.comment}</div>
+          <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${c.commented_by} • ${new Date(c.commented_at).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+    
+    // Highlight fields with comments
+    const fieldsWithComments = [...new Set(comments.filter(c => c.field_name).map(c => c.field_name))];
+    fieldsWithComments.forEach(fieldName => {
+      const element = document.getElementById(fieldName);
+      if (element) {
+        element.style.background = '#fef3c7';
+        if (!element.querySelector('.comment-indicator')) {
+          const indicator = document.createElement('span');
+          indicator.className = 'comment-indicator';
+          indicator.innerHTML = '<i class="bi bi-chat-fill" style="color: #f59e0b; font-size: 14px; position: absolute; top: 4px; right: 4px;"></i>';
+          element.appendChild(indicator);
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error loading comments:', error);
+  }
+}
+
+function getCurrentIssueId() {
+  return currentIssueId;
+}
+
+function closeCommentPopup() {
+  const popup = document.getElementById('commentPopup');
+  if (popup) popup.remove();
+}
+
+function closeModal() {
+  const modal = document.getElementById('issueModal');
+  if (modal) modal.remove();
+}
+
+    function showToast(message, type = 'info') {
+      const existingToast = document.querySelector('.custom-toast');
+      if (existingToast) existingToast.remove();
+      
+      const colors = {
+        success: '#10b981',
+        danger: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+      };
+      
+      const toast = document.createElement('div');
+      toast.className = 'custom-toast';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type] || colors.info};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        font-weight: 500;
+        animation: slideIn 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    
+async function loadAllCounts() {
+  const statuses = ['pending', 'approved', 'amendment', 'removed'];
+  for (const status of statuses) {
+    try {
+      const response = await fetch('/issues/verify/' + status);
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('badge-' + status).textContent = data.issues.length;
+      }
+    } catch (error) {
+      console.error('Error loading count for ' + status);
+    }
+  }
+}
+
+function switchTab(status) {
+  currentStatus = status;
+  
+  document.querySelectorAll('.status-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelector(`[data-status="${status}"]`).classList.add('active');
+  
+  loadIssuesByStatus(status);
+  loadAllCounts();
+}
+
+async function loadIssuesByStatus(status) {
+  const container = document.getElementById('issuesTableContainer');
+  
+  container.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p style="margin-top: 16px; color: #64748b;">Loading issues...</p></div>';
+  
+  try {
+    const response = await fetch('/issues/verify/' + status);
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load issues');
+    }
+    
+    if (data.issues.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 60px; background: white; border-radius: 12px;"><i class="bi bi-inbox" style="font-size: 48px; color: #cbd5e1;"></i><p style="margin-top: 16px; color: #64748b; font-size: 16px;">No ' + status + ' issues found</p></div>';
+      return;
+    }
+    
+    // Group issues by audit
+    const groupedIssues = {};
+    data.issues.forEach(issue => {
+      const auditKey = issue.audit_name || 'Unknown Audit';
+      if (!groupedIssues[auditKey]) {
+        groupedIssues[auditKey] = {
+          auditee: issue.auditee_name,
+          year: issue.audit_year,
+          issues: []
+        };
+      }
+      groupedIssues[auditKey].issues.push(issue);
+    });
+    
+    let html = '';
+    
+    // Build grouped tables
+    Object.keys(groupedIssues).forEach(auditName => {
+      const group = groupedIssues[auditName];
+      
+      html += '<div style="margin-bottom: 40px;">';
+      html += '<div style="background: white; padding: 16px 24px; border-radius: 12px 12px 0 0; border-bottom: 2px solid #e2e8f0;">';
+      html += '<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #0f172a;">' + auditName + '</h3>';
+      html += '<p style="margin: 4px 0 0 0; font-size: 14px; color: #64748b;">' + group.auditee + ' • ' + group.year + '</p>';
+      html += '</div>';
+      
+      html += '<div style="background: white; border-radius: 0 0 12px 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">';
+      html += '<table style="width: 100%; border-collapse: collapse;">';
+      html += '<thead style="background: #f8fafc;"><tr>';
+      html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ISSUE TITLE</th>';
+      html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">AUDIT AREA</th>';
+      
+      if (status !== 'pending') {
+        html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">VERIFIED BY</th>';
+        html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">DATE</th>';
+      } else {
+        html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">SUBMITTED BY</th>';
+        html += '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">SUBMITTED ON</th>';
+      }
+      
+      html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">RATING</th>';
+      html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">SCORE</th>';
+      html += '<th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #475569; font-size: 13px; border-bottom: 2px solid #e2e8f0;">ACTION</th>';
+      html += '</tr></thead><tbody>';
+      
+      group.issues.forEach(issue => {
+        const scoreColor = issue.score === 'High' ? '#ef4444' : issue.score === 'Medium' ? '#f59e0b' : issue.score === 'Low' ? '#10b981' : '#94a3b8';
+        const calcRating = (issue.likelihood && issue.impact) ? issue.likelihood * issue.impact : 'N/A';
+        
+        html += '<tr style="border-bottom: 1px solid #f1f5f9;">';
+        html += '<td style="padding: 16px;"><div style="font-weight: 600; color: #0f172a;">' + issue.issue_title + '</div></td>';
+        html += '<td style="padding: 16px; color: #334155;">' + (issue.audit_area || 'N/A') + '</td>';
+        
+        if (status !== 'pending') {
+          html += '<td style="padding: 16px; color: #334155;">' + (issue.verified_by_name || 'N/A') + '</td>';
+          html += '<td style="padding: 16px; color: #334155;">' + (issue.verified_at ? new Date(issue.verified_at).toLocaleDateString() : 'N/A') + '</td>';
+        } else {
+          html += '<td style="padding: 16px; color: #334155;">' + issue.submitted_by_name + '</td>';
+          html += '<td style="padding: 16px; color: #334155;">' + new Date(issue.submitted_at).toLocaleDateString() + '</td>';
+        }
+        
+        html += '<td style="padding: 16px; text-align: center; color: #334155;">' + calcRating + '</td>';
+        html += '<td style="padding: 16px; text-align: center;"><span style="background: ' + scoreColor + '; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">' + (issue.score || 'N/A') + '</span></td>';
+        html += '<td style="padding: 16px; text-align: center;"><button onclick="openIssueModal(' + issue.id + ', \'' + status + '\')" style="background: #3b82f6; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 13px;"><i class="bi bi-clipboard-check"></i> ' + (status === 'pending' ? 'Review' : 'View') + '</button></td>';
+        html += '</tr>';
+      });
+      
+      html += '</tbody></table></div></div>';
+    });
+    
+    container.innerHTML = html;
+    
+  } catch (error) {
+    console.error('Error loading issues:', error);
+    container.innerHTML = '<div style="padding: 20px; background: #fee2e2; color: #991b1b; border-radius: 8px;"><i class="bi bi-exclamation-triangle"></i> Error loading issues: ' + error.message + '</div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadAllCounts();
+  const savedTab = localStorage.getItem('activeTab') || 'pending';
+  localStorage.removeItem('activeTab');
+  
+  if (savedTab !== 'pending') {
+    switchTab(savedTab);
+  } else {
+    loadIssuesByStatus('pending');
+  }
+});
+
+  </script>
+</body>
+</body>
+</html>

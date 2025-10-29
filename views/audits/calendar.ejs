@@ -17,88 +17,12 @@
       color: #1e293b;
     }
     
-    /* Top Navigation Bar */
-    .top-nav {
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 16px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 20px;
-    }
-    
-    .nav-brand i {
-      font-size: 28px;
-      color: #3b82f6;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    
-    .nav-link {
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #64748b;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    
-    .nav-link:hover {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-    
-    .nav-link.active {
-      background: #dbeafe;
-      color: #3b82f6;
-    }
-    
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: #f8fafc;
-    }
-    
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
     /* Main Content */
     .main-content {
+      margin-left: 260px;
       min-height: 100vh;
       padding: 32px;
-      max-width: 1600px;
-      margin: 0 auto;
+      max-width: calc(100% - 260px);
     }
     
     .page-header {
@@ -114,110 +38,464 @@
       color: #0f172a;
     }
     
+    /* Notification Toast */
+    .notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 9999;
+      max-width: 420px;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.success {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification.error .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-message {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    
+    .notification-close {
+      background: #f8fafc;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .notification-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    /* Search and Filter Section */
+    .search-filter-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 16px;
+    }
+    
+    .search-input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px 12px 44px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .search-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .filter-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .filter-select {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      min-width: 150px;
+      cursor: pointer;
+    }
+    
+    .filter-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .clear-filters-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .clear-filters-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
     /* Card Styles */
     .card-modern {
       background: white;
       border-radius: 16px;
+      padding: 32px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       border: 1px solid #e2e8f0;
-      overflow: hidden;
+      margin-bottom: 24px;
     }
     
-    /* Calendar Card Item */
-    .calendar-item {
+    /* Calendar Navigation */
+    .calendar-nav {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 20px;
-      padding: 20px;
-      border-bottom: 1px solid #f1f5f9;
-      transition: all 0.2s;
+      margin-bottom: 24px;
     }
     
-    .calendar-item:last-child {
-      border-bottom: none;
-    }
-    
-    .calendar-item:hover {
-      background: #f8fafc;
-    }
-    
-    .calendar-date {
-      flex-shrink: 0;
-      width: 140px;
-    }
-    
-    .date-box {
-      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-    }
-    
-    .date-day {
-      font-size: 24px;
+    .calendar-month-year {
+      font-size: 22px;
       font-weight: 700;
+      color: #0f172a;
+    }
+    
+    .calendar-nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .nav-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .nav-btn:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    
+    .today-btn {
+      background: #dbeafe;
+      border-color: #3b82f6;
       color: #1e40af;
     }
     
-    .date-month {
+    .today-btn:hover {
+      background: #bfdbfe;
+    }
+    
+    /* Calendar Grid */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    
+    .calendar-header {
+      text-align: center;
       font-size: 12px;
-      color: #3b82f6;
+      font-weight: 700;
+      color: #64748b;
+      padding: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .calendar-day {
+      aspect-ratio: 1;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .calendar-day:hover {
+      border-color: #3b82f6;
+      background: #f8fafc;
+    }
+    
+    .calendar-day.other-month {
+      color: #cbd5e1;
+      background: #f8fafc;
+      cursor: default;
+    }
+    
+    .calendar-day.other-month:hover {
+      border-color: #e2e8f0;
+      background: #f8fafc;
+    }
+    
+    .calendar-day.today {
+      background: #dbeafe;
+      border-color: #3b82f6;
+    }
+    
+    .calendar-day.has-audits {
+      background: #f0f9ff;
+      border-color: #3b82f6;
+    }
+    
+    .day-number {
       font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 3px;
     }
     
-    .calendar-content {
-      flex: 1;
+    .audit-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: auto;
     }
     
-    .calendar-title {
+    .audit-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #3b82f6;
+    }
+    
+    .audit-count {
+      font-size: 10px;
+      font-weight: 600;
+      color: #3b82f6;
+      margin-top: 3px;
+    }
+    
+    /* Audit Details Modal */
+    .audit-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .audit-modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      padding: 32px 32px 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+    
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    .modal-close {
+      background: #f8fafc;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      color: #64748b;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    
+    .modal-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    .modal-scroll {
+      overflow-y: auto;
+      padding: 24px 32px 32px 32px;
+    }
+    
+    .modal-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .modal-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .modal-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    
+    .modal-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    .audit-item {
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    
+    .audit-item:hover {
+      background: #f8fafc;
+      border-color: #3b82f6;
+    }
+    
+    .audit-item-title {
       font-weight: 600;
       font-size: 16px;
       color: #0f172a;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
     
-    .calendar-title a {
+    .audit-item-title a {
       color: #0f172a;
       text-decoration: none;
     }
     
-    .calendar-title a:hover {
+    .audit-item-title a:hover {
       color: #3b82f6;
     }
     
-    .calendar-meta {
+    .audit-item-meta {
       font-size: 14px;
       color: #64748b;
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 16px;
-      margin-top: 8px;
     }
     
-    .calendar-meta i {
+    .audit-item-meta i {
       margin-right: 4px;
-    }
-    
-    .calendar-status {
-      flex-shrink: 0;
-    }
-    
-    /* Badge Styles */
-    .badge-custom {
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    
-    .badge-success {
-      background: #dcfce7;
-      color: #166534;
-    }
-    
-    .badge-primary {
-      background: #dbeafe;
-      color: #1e40af;
     }
     
     /* Button Styles */
@@ -258,6 +536,24 @@
       color: #0f172a;
     }
     
+    .badge-custom {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-primary {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
     /* Empty State */
     .empty-state {
       text-align: center;
@@ -277,49 +573,14 @@
   </style>
 </head>
 <body>
-  <!-- Top Navigation -->
-  <nav class="top-nav">
-    <a href="/dashboard" class="nav-brand">
-      <i class="bi bi-shield-check"></i>
-      <span>Internal Audit Portal</span>
-    </a>
-    
-    <div class="nav-links">
-      <a href="/dashboard" class="nav-link">
-        <i class="bi bi-house"></i> Dashboard
-      </a>
-      <a href="/auditees" class="nav-link">
-        <i class="bi bi-building"></i> Auditees
-      </a>
-      <a href="/audits" class="nav-link active">
-        <i class="bi bi-clipboard-check"></i> Audits
-      </a>
-      <a href="/working-papers" class="nav-link">
-        <i class="bi bi-file-earmark-text"></i> Working Papers
-      </a>
-      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
-        <a href="/issues/verify" class="nav-link">
-          <i class="bi bi-check-circle"></i> Verify
-        </a>
-      <% } %>
-    </div>
-    
-    <div class="user-menu">
-      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-      <div>
-        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
-        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
-      </div>
-      <a href="/auth/logout" class="btn btn-sm btn-secondary">
-        <i class="bi bi-box-arrow-right"></i>
-      </a>
-    </div>
-  </nav>
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+  
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
   
   <!-- Main Content -->
   <div class="main-content">
-    <%- include('../partials/messages') %>
-    
     <!-- Page Header -->
     <div class="page-header">
       <h1 class="page-title">
@@ -337,60 +598,323 @@
       </div>
     </div>
     
+    <!-- Search and Filter Section -->
+    <div class="search-filter-section">
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search audits...">
+      </div>
+      
+      <div class="filter-group">
+        <select id="statusFilter" class="filter-select">
+          <option value="">All Status</option>
+          <option value="planning">Planning</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+        
+        <select id="yearFilter" class="filter-select">
+          <option value="">All Years</option>
+        </select>
+        
+        <button class="clear-filters-btn" onclick="clearFilters()">
+          <i class="bi bi-x-circle"></i> Clear
+        </button>
+      </div>
+    </div>
+    
     <!-- Calendar View -->
     <div class="card-modern">
-      <% if (audits.length === 0) { %>
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="bi bi-calendar"></i>
-          </div>
-          <div class="empty-text">No audits scheduled</div>
-          <% if (user.role === 'head_of_audit') { %>
-            <a href="/audits/create" class="btn btn-primary mt-3">
-              <i class="bi bi-plus-circle"></i> Create First Audit
-            </a>
-          <% } %>
+      <div class="calendar-nav">
+        <div class="calendar-month-year" id="currentMonthYear"></div>
+        <div class="calendar-nav-buttons">
+          <button class="nav-btn" onclick="previousMonth()">
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+          <button class="nav-btn today-btn" onclick="goToToday()">
+            Today
+          </button>
+          <button class="nav-btn" onclick="nextMonth()">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
         </div>
-      <% } else { %>
-        <% audits.forEach(audit => { 
-          const startDate = new Date(audit.start_date);
-          const endDate = new Date(audit.end_date);
-        %>
-          <div class="calendar-item">
-            <div class="calendar-date">
-              <div class="date-box">
-                <div class="date-day"><%= startDate.getDate() %></div>
-                <div class="date-month"><%= startDate.toLocaleString('default', { month: 'short' }) %> <%= startDate.getFullYear() %></div>
-              </div>
-            </div>
-            
-            <div class="calendar-content">
-              <div class="calendar-title">
-                <a href="/audits/<%= audit.id %>"><%= audit.audit_name %></a>
-              </div>
-              <div class="calendar-meta">
-                <span>
-                  <i class="bi bi-building"></i>
-                  <%= audit.auditee_name %>
-                </span>
-                <span>
-                  <i class="bi bi-calendar-range"></i>
-                  <%= startDate.toLocaleDateString() %> - <%= endDate.toLocaleDateString() %>
-                </span>
-              </div>
-            </div>
-            
-            <div class="calendar-status">
-              <span class="badge-custom <%= audit.status === 'completed' ? 'badge-success' : 'badge-primary' %>">
-                <%= audit.status %>
-              </span>
-            </div>
-          </div>
-        <% }) %>
-      <% } %>
+      </div>
+      
+      <div class="calendar-grid" id="calendarGrid">
+        <!-- Calendar will be generated by JavaScript -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Audit Details Modal -->
+  <div class="audit-modal" id="auditModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle"></div>
+        <button class="modal-close" onclick="closeModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-scroll">
+        <div id="modalBody"></div>
+      </div>
     </div>
   </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Audit data from server
+    const audits = <%- JSON.stringify(audits) %>;
+    
+    let currentDate = new Date();
+    let filteredAudits = [...audits];
+    
+    // Notification functions
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 
+        '<i class="bi bi-check-circle-fill"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        dismissNotification(notification.querySelector('.notification-close'));
+      }, 3000);
+    }
+    
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }
+    
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+      showNotification('<%= success_msg %>', 'success');
+    <% } %>
+    
+    <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+      showNotification('<%= error_msg %>', 'error');
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error.length > 0) { %>
+      showNotification('<%= error %>', 'error');
+    <% } %>
+    
+    // Populate year filter
+    const yearFilter = document.getElementById('yearFilter');
+    const years = new Set();
+    audits.forEach(audit => {
+      if (audit.audit_year) {
+        years.add(audit.audit_year);
+      }
+    });
+    Array.from(years).sort((a, b) => b - a).forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearFilter.appendChild(option);
+    });
+    
+    // Filter functions
+    function applyFilters() {
+      const searchValue = document.getElementById('searchInput').value.toLowerCase();
+      const statusValue = document.getElementById('statusFilter').value.toLowerCase();
+      const yearValue = document.getElementById('yearFilter').value;
+      
+      filteredAudits = audits.filter(audit => {
+        const matchesSearch = 
+          audit.audit_name.toLowerCase().includes(searchValue) ||
+          audit.auditee_name.toLowerCase().includes(searchValue) ||
+          audit.team_leader_name.toLowerCase().includes(searchValue);
+        
+        const matchesStatus = !statusValue || audit.status === statusValue;
+        const matchesYear = !yearValue || String(audit.audit_year) === yearValue;
+        
+        return matchesSearch && matchesStatus && matchesYear;
+      });
+      
+      renderCalendar();
+    }
+    
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('yearFilter').value = '';
+      applyFilters();
+    }
+    
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    document.getElementById('yearFilter').addEventListener('change', applyFilters);
+    
+    // Calendar functions
+    function getAuditsForDate(date) {
+      // Normalize the date to remove time component
+      const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      
+      return filteredAudits.filter(audit => {
+        // Normalize start and end dates
+        const startDate = new Date(audit.start_date);
+        const normalizedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        
+        const endDate = new Date(audit.end_date);
+        const normalizedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+        
+        // Check if the date falls within the audit period
+        return checkDate >= normalizedStart && checkDate <= normalizedEnd;
+      });
+    }
+    
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      document.getElementById('currentMonthYear').textContent = 
+        currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+      
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const startingDayOfWeek = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+      
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      
+      // Add day headers
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      dayNames.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-header';
+        header.textContent = day;
+        grid.appendChild(header);
+      });
+      
+      // Add empty cells for days before month starts
+      for (let i = 0; i < startingDayOfWeek; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day other-month';
+        grid.appendChild(emptyDay);
+      }
+      
+      // Add days of the month
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dayAudits = getAuditsForDate(date);
+        
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        
+        if (date.toDateString() === today.toDateString()) {
+          dayCell.classList.add('today');
+        }
+        
+        if (dayAudits.length > 0) {
+          dayCell.classList.add('has-audits');
+          dayCell.onclick = () => showAuditsForDate(date, dayAudits);
+        }
+        
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        dayCell.appendChild(dayNumber);
+        
+        if (dayAudits.length > 0) {
+          const dots = document.createElement('div');
+          dots.className = 'audit-dots';
+          for (let i = 0; i < Math.min(dayAudits.length, 5); i++) {
+            const dot = document.createElement('div');
+            dot.className = 'audit-dot';
+            dots.appendChild(dot);
+          }
+          dayCell.appendChild(dots);
+          
+          if (dayAudits.length > 0) {
+            const count = document.createElement('div');
+            count.className = 'audit-count';
+            count.textContent = `${dayAudits.length} audit${dayAudits.length > 1 ? 's' : ''}`;
+            dayCell.appendChild(count);
+          }
+        }
+        
+        grid.appendChild(dayCell);
+      }
+    }
+    
+    function showAuditsForDate(date, dayAudits) {
+      const modal = document.getElementById('auditModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      modalTitle.textContent = date.toLocaleDateString('default', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      modalBody.innerHTML = dayAudits.map(audit => `
+        <div class="audit-item">
+          <div class="audit-item-title">
+            <a href="/audits/${audit.id}">${audit.audit_name}</a>
+          </div>
+          <div class="audit-item-meta">
+            <span><i class="bi bi-building"></i>${audit.auditee_name}</span>
+            <span><i class="bi bi-person"></i>${audit.team_leader_name}</span>
+            <span><i class="bi bi-calendar-range"></i>${new Date(audit.start_date).toLocaleDateString()} - ${new Date(audit.end_date).toLocaleDateString()}</span>
+          </div>
+          <div style="margin-top: 8px;">
+            <span class="badge-custom ${audit.status === 'completed' ? 'badge-success' : 'badge-primary'}">
+              ${audit.status}
+            </span>
+          </div>
+        </div>
+      `).join('');
+      
+      modal.classList.add('show');
+    }
+    
+    function closeModal(event) {
+      if (!event || event.target === document.getElementById('auditModal')) {
+        document.getElementById('auditModal').classList.remove('show');
+      }
+    }
+    
+    function previousMonth() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    }
+    
+    function nextMonth() {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    }
+    
+    function goToToday() {
+      currentDate = new Date();
+      renderCalendar();
+    }
+    
+    // Initial render
+    renderCalendar();
+  </script>
 </body>
 </html>

@@ -6,13 +6,16 @@ const { ensureHeadOfAudit, ensureAuditor } = require('../middleware/auth');
 // List all audits
 router.get('/', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const result = await pool.query(`
-      SELECT a.*, au.name as auditee_name, u.name as team_leader_name
+      SELECT a.*, au.name as auditee_name, u.name as team_leader_name, a.audit_year
       FROM audits a
       LEFT JOIN auditees au ON a.auditee_id = au.id
       LEFT JOIN users u ON a.team_leader_id = u.id
       WHERE a.organization_id = $1
-      ORDER BY a.start_date DESC
+      ORDER BY a.id DESC
     `, [req.user.organization_id]);
     
     res.render('audits/list', {
@@ -29,6 +32,9 @@ router.get('/', ensureAuditor, async (req, res) => {
 // Create audit form
 router.get('/create', ensureHeadOfAudit, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const auditeesResult = await pool.query('SELECT * FROM auditees WHERE organization_id = $1 ORDER BY name', [req.user.organization_id]);
     const auditorsResult = await pool.query(
       "SELECT * FROM users WHERE role IN ('auditor', 'manager', 'head_of_audit') AND organization_id = $1 ORDER BY name",
@@ -49,7 +55,7 @@ router.get('/create', ensureHeadOfAudit, async (req, res) => {
 
 // Create audit POST
 router.post('/create', ensureHeadOfAudit, async (req, res) => {
-  const { audit_name, auditee_id, team_leader_id, start_date, end_date, team_members } = req.body;
+  const { audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, team_members } = req.body;
   
   try {
     const client = await pool.connect();
@@ -59,10 +65,10 @@ router.post('/create', ensureHeadOfAudit, async (req, res) => {
       
       // Insert audit
       const auditResult = await client.query(`
-        INSERT INTO audits (audit_name, auditee_id, team_leader_id, start_date, end_date, created_by, organization_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO audits (audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, created_by, organization_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id
-      `, [audit_name, auditee_id, team_leader_id, start_date, end_date, req.user.id, req.user.organization_id]);
+      `, [audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, req.user.id, req.user.organization_id]);
       
       const auditId = auditResult.rows[0].id;
       
@@ -99,10 +105,210 @@ router.post('/create', ensureHeadOfAudit, async (req, res) => {
     res.redirect('/audits/create');
   }
 });
+// Edit audit form
+router.get('/:id/edit', ensureHeadOfAudit, async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+    const auditId = req.params.id;
+    
+    // Get audit details
+    const auditResult = await pool.query(`
+      SELECT * FROM audits WHERE id = $1 AND organization_id = $2
+    `, [auditId, req.user.organization_id]);
+    
+    if (auditResult.rows.length === 0) {
+      req.flash('error_msg', 'Audit not found');
+      return res.redirect('/audits');
+    }
+    
+    const audit = auditResult.rows[0];
+    
+    // Get auditees
+    const auditeesResult = await pool.query('SELECT * FROM auditees WHERE organization_id = $1 ORDER BY name', [req.user.organization_id]);
+    
+    // Get auditors
+    const auditorsResult = await pool.query(
+      "SELECT * FROM users WHERE role IN ('auditor', 'manager', 'head_of_audit') AND organization_id = $1 ORDER BY name",
+      [req.user.organization_id]
+    );
+    
+    // Get current team members
+    const teamMembersResult = await pool.query(
+      'SELECT user_id FROM audit_team WHERE audit_id = $1',
+      [auditId]
+    );
+    const currentTeamMembers = teamMembersResult.rows.map(row => row.user_id);
+    
+    res.render('audits/edit', {
+      title: 'Edit Audit',
+      audit: audit,
+      auditees: auditeesResult.rows,
+      auditors: auditorsResult.rows,
+      currentTeamMembers: currentTeamMembers
+    });
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error loading audit');
+    res.redirect('/audits');
+  }
+});
 
+// Update audit POST
+router.post('/:id/edit', ensureHeadOfAudit, async (req, res) => {
+  const auditId = req.params.id;
+  const { audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, team_members } = req.body;
+  
+  try {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Verify audit belongs to organization
+      const checkResult = await client.query(
+        'SELECT id FROM audits WHERE id = $1 AND organization_id = $2',
+        [auditId, req.user.organization_id]
+      );
+      
+      if (checkResult.rows.length === 0) {
+        throw new Error('Audit not found');
+      }
+      
+      // Update audit
+      await client.query(`
+        UPDATE audits 
+        SET audit_name = $1, auditee_id = $2, team_leader_id = $3, 
+            start_date = $4, end_date = $5, audit_year = $6
+        WHERE id = $7 AND organization_id = $8
+      `, [audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, auditId, req.user.organization_id]);
+      
+      // Delete existing team members
+      await client.query('DELETE FROM audit_team WHERE audit_id = $1', [auditId]);
+      
+      // Add updated team members
+      if (team_members && Array.isArray(team_members)) {
+        for (const memberId of team_members) {
+          await client.query(
+            'INSERT INTO audit_team (audit_id, user_id) VALUES ($1, $2)',
+            [auditId, memberId]
+          );
+        }
+      }
+      
+      // Add team leader to team if not already included
+      await client.query(
+        'INSERT INTO audit_team (audit_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+        [auditId, team_leader_id]
+      );
+      
+      await client.query('COMMIT');
+      
+      req.flash('success_msg', 'Audit updated successfully');
+      res.redirect('/audits');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error updating audit');
+    res.redirect(`/audits/${auditId}/edit`);
+  }
+});
+// Delete audit POST
+router.post('/:id/delete', ensureHeadOfAudit, async (req, res) => {
+  const auditId = req.params.id;
+  
+  try {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Verify audit belongs to organization
+      const checkResult = await client.query(
+        'SELECT id FROM audits WHERE id = $1 AND organization_id = $2',
+        [auditId, req.user.organization_id]
+      );
+      
+      if (checkResult.rows.length === 0) {
+        throw new Error('Audit not found');
+      }
+      
+      // Delete team members
+      await client.query('DELETE FROM audit_team WHERE audit_id = $1', [auditId]);
+      
+      // Delete audit
+      await client.query('DELETE FROM audits WHERE id = $1 AND organization_id = $2', [auditId, req.user.organization_id]);
+      
+      await client.query('COMMIT');
+      
+      req.flash('success_msg', 'Audit deleted successfully');
+      res.redirect('/audits');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error deleting audit');
+    res.redirect('/audits');
+  }
+});
+// Delete audit POST
+router.post('/:id/delete', ensureHeadOfAudit, async (req, res) => {
+  const auditId = req.params.id;
+  
+  try {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Verify audit belongs to organization
+      const checkResult = await client.query(
+        'SELECT id FROM audits WHERE id = $1 AND organization_id = $2',
+        [auditId, req.user.organization_id]
+      );
+      
+      if (checkResult.rows.length === 0) {
+        throw new Error('Audit not found');
+      }
+      
+      // Delete team members
+      await client.query('DELETE FROM audit_team WHERE audit_id = $1', [auditId]);
+      
+      // Delete audit
+      await client.query('DELETE FROM audits WHERE id = $1 AND organization_id = $2', [auditId, req.user.organization_id]);
+      
+      await client.query('COMMIT');
+      
+      req.flash('success_msg', 'Audit deleted successfully');
+      res.redirect('/audits');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error deleting audit');
+    res.redirect('/audits');
+  }
+});
 // View all audit universe entries
 router.get('/audit-universe-all', async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const universeResult = await pool.query(`
       SELECT 
         au.*,
@@ -135,6 +341,9 @@ router.get('/audit-universe-all', async (req, res) => {
 // View audit details - FIXED VARIABLE NAMES
 router.get('/:id', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const auditResult = await pool.query(`
       SELECT a.*, au.name as auditee_name, u.name as team_leader_name
       FROM audits a
@@ -159,11 +368,13 @@ router.get('/:id', ensureAuditor, async (req, res) => {
     `, [req.params.id]);
     
     // Get audit universe items for this auditee
-    const universeResult = await pool.query(`
-      SELECT * FROM audit_universe 
-      WHERE auditee_id = $1 
-      ORDER BY audit_area, process
-    `, [audit.auditee_id]);
+const universeResult = await pool.query(`
+  SELECT au.* FROM audit_universe au
+  INNER JOIN auditees a ON au.auditee_id = a.id
+  WHERE au.auditee_id = $1 
+    AND a.organization_id = $2
+  ORDER BY au.audit_area, au.process
+`, [audit.auditee_id, req.user.organization_id]);
     
     // Get document library (if exists)
     let documentsResult = { rows: [] };
@@ -203,6 +414,8 @@ router.get('/:id', ensureAuditor, async (req, res) => {
       WHERE ra.audit_id = $1 AND ra.is_selected = true
       ORDER BY auv.audit_area
     `, [req.params.id]);
+    
+    
     
     // Get audit procedures - RENAMED TO MATCH TEMPLATE
     const proceduresResult = await pool.query(`
@@ -286,6 +499,9 @@ router.get('/:id', ensureAuditor, async (req, res) => {
 // Testing Procedures - List view
 router.get('/:id/testing-procedures', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const auditResult = await pool.query(`
       SELECT a.*, au.name as auditee_name, u.name as team_leader_name
       FROM audits a
@@ -344,6 +560,9 @@ router.get('/:id/testing-procedures', ensureAuditor, async (req, res) => {
 // Testing Procedures - SINGLE FOLDER VIEW (when you click a folder)
 router.get('/:id/testing-procedures/:riskAssessmentId', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const auditId = req.params.id;
     const riskAssessmentId = req.params.riskAssessmentId;
     
@@ -702,6 +921,9 @@ router.post('/field-work/:id/save-all', ensureAuditor, async (req, res) => {
 // Get selected areas with fresh risk_assessment IDs (for dynamic updates)
 router.get('/:id/get-selected-areas', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const selectedAreasResult = await pool.query(`
       SELECT ra.*, auv.audit_area, auv.process, auv.audit_procedure,
              (ra.likelihood * ra.impact) as risk_rating,
@@ -717,6 +939,8 @@ router.get('/:id/get-selected-areas', ensureAuditor, async (req, res) => {
       WHERE ra.audit_id = $1 AND ra.is_selected = true
       ORDER BY auv.audit_area
     `, [req.params.id]);
+    
+    
     
     res.json({ 
       success: true, 
@@ -734,6 +958,9 @@ router.get('/:id/get-selected-areas', ensureAuditor, async (req, res) => {
 // Get audit procedures data with working papers (for dynamic updates)
 router.get('/:id/get-audit-procedures', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     // Get selected areas
     const selectedAreasResult = await pool.query(`
       SELECT ra.*, auv.audit_area, auv.process, auv.audit_procedure,
@@ -862,6 +1089,9 @@ router.post('/:auditId/audit-procedures/:procedureId/unlink-wp', ensureAuditor, 
 // View working paper data (for modal popup in Audit Procedures)
 router.get('/:auditId/working-paper-view/:riskAssessmentId/:workingPaperId', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const { auditId, riskAssessmentId, workingPaperId } = req.params;
     
     // Verify audit belongs to user's organization
@@ -917,6 +1147,9 @@ router.get('/:auditId/working-paper-view/:riskAssessmentId/:workingPaperId', ens
 // Audit calendar view
 router.get('/calendar/view', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const result = await pool.query(`
       SELECT a.*, au.name as auditee_name
       FROM audits a
@@ -941,6 +1174,9 @@ router.get('/calendar/view', ensureAuditor, async (req, res) => {
 // Get procedures marked for inclusion in report
 router.get('/:id/get-report-procedures', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const auditId = req.params.id;
     
     const proceduresResult = await pool.query(`
@@ -991,6 +1227,9 @@ router.get('/:id/get-report-procedures', ensureAuditor, async (req, res) => {
 // Get existing draft issue for a procedure
 router.get('/:auditId/issues/:procedureId/draft', ensureAuditor, async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     const { auditId, procedureId } = req.params;
     
     const issueResult = await pool.query(`
@@ -1311,5 +1550,29 @@ router.post('/issues/:issueId/send-email-notification', ensureAuditor, async (re
 
 // ==================== END SEND FOR COMMENTING ROUTES ====================
 
-// View all audit universe entries
+const aiService = require('../ai-service');
+
+// AI Rephrase Route
+router.post('/api/ai-rephrase', async (req, res) => {
+  try {
+    const { text } = req.body;
+    const rephrasedText = await aiService.rephraseText(text);
+    res.json({ success: true, rephrasedText });
+  } catch (error) {
+    console.error('AI Rephrase error:', error);
+    res.json({ success: false, error: error.message });
+  }
+});
+
+// AI Generate Consequence Route
+router.post('/api/ai-generate-consequence', async (req, res) => {
+  try {
+    const { criteria, condition } = req.body;
+    const consequence = await aiService.generateConsequence(criteria, condition);
+    res.json({ success: true, consequence });
+  } catch (error) {
+    console.error('AI Generate Consequence error:', error);
+    res.json({ success: false, error: error.message });
+  }
+});
 module.exports = router;

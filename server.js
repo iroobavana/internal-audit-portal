@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
@@ -46,6 +47,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
+app.use('/admin', require('./routes/admin'));
 app.use('/auditees', require('./routes/auditees'));
 app.use('/audits', require('./routes/audits'));
 app.use('/working-papers', require('./routes/workingPapers'));

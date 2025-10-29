@@ -99,7 +99,160 @@ router.post('/create', ensureHeadOfAudit, async (req, res) => {
     res.redirect('/audits/create');
   }
 });
+// Edit audit form
+router.get('/:id/edit', ensureHeadOfAudit, async (req, res) => {
+  try {
+    const auditId = req.params.id;
+    
+    // Get audit details
+    const auditResult = await pool.query(`
+      SELECT * FROM audits WHERE id = $1 AND organization_id = $2
+    `, [auditId, req.user.organization_id]);
+    
+    if (auditResult.rows.length === 0) {
+      req.flash('error_msg', 'Audit not found');
+      return res.redirect('/audits');
+    }
+    
+    const audit = auditResult.rows[0];
+    
+    // Get auditees
+    const auditeesResult = await pool.query('SELECT * FROM auditees WHERE organization_id = $1 ORDER BY name', [req.user.organization_id]);
+    
+    // Get auditors
+    const auditorsResult = await pool.query(
+      "SELECT * FROM users WHERE role IN ('auditor', 'manager', 'head_of_audit') AND organization_id = $1 ORDER BY name",
+      [req.user.organization_id]
+    );
+    
+    // Get current team members
+    const teamMembersResult = await pool.query(
+      'SELECT user_id FROM audit_team WHERE audit_id = $1',
+      [auditId]
+    );
+    const currentTeamMembers = teamMembersResult.rows.map(row => row.user_id);
+    
+    res.render('audits/edit', {
+      title: 'Edit Audit',
+      audit: audit,
+      auditees: auditeesResult.rows,
+      auditors: auditorsResult.rows,
+      currentTeamMembers: currentTeamMembers
+    });
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error loading audit');
+    res.redirect('/audits');
+  }
+});
 
+// Update audit POST
+router.post('/:id/edit', ensureHeadOfAudit, async (req, res) => {
+  const auditId = req.params.id;
+  const { audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, team_members } = req.body;
+  
+  try {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Verify audit belongs to organization
+      const checkResult = await client.query(
+        'SELECT id FROM audits WHERE id = $1 AND organization_id = $2',
+        [auditId, req.user.organization_id]
+      );
+      
+      if (checkResult.rows.length === 0) {
+        throw new Error('Audit not found');
+      }
+      
+      // Update audit
+      await client.query(`
+        UPDATE audits 
+        SET audit_name = $1, auditee_id = $2, team_leader_id = $3, 
+            start_date = $4, end_date = $5, audit_year = $6
+        WHERE id = $7 AND organization_id = $8
+      `, [audit_name, auditee_id, team_leader_id, start_date, end_date, audit_year, auditId, req.user.organization_id]);
+      
+      // Delete existing team members
+      await client.query('DELETE FROM audit_team WHERE audit_id = $1', [auditId]);
+      
+      // Add updated team members
+      if (team_members && Array.isArray(team_members)) {
+        for (const memberId of team_members) {
+          await client.query(
+            'INSERT INTO audit_team (audit_id, user_id) VALUES ($1, $2)',
+            [auditId, memberId]
+          );
+        }
+      }
+      
+      // Add team leader to team if not already included
+      await client.query(
+        'INSERT INTO audit_team (audit_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+        [auditId, team_leader_id]
+      );
+      
+      await client.query('COMMIT');
+      
+      req.flash('success_msg', 'Audit updated successfully');
+      res.redirect('/audits');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error updating audit');
+    res.redirect(`/audits/${auditId}/edit`);
+  }
+});
+
+// Delete audit POST
+router.post('/:id/delete', ensureHeadOfAudit, async (req, res) => {
+  const auditId = req.params.id;
+  
+  try {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Verify audit belongs to organization
+      const checkResult = await client.query(
+        'SELECT id FROM audits WHERE id = $1 AND organization_id = $2',
+        [auditId, req.user.organization_id]
+      );
+      
+      if (checkResult.rows.length === 0) {
+        throw new Error('Audit not found');
+      }
+      
+      // Delete team members
+      await client.query('DELETE FROM audit_team WHERE audit_id = $1', [auditId]);
+      
+      // Delete audit
+      await client.query('DELETE FROM audits WHERE id = $1 AND organization_id = $2', [auditId, req.user.organization_id]);
+      
+      await client.query('COMMIT');
+      
+      req.flash('success_msg', 'Audit deleted successfully');
+      res.redirect('/audits');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error deleting audit');
+    res.redirect('/audits');
+  }
+});
 // View all audit universe entries
 router.get('/audit-universe-all', async (req, res) => {
   try {
@@ -204,6 +357,11 @@ router.get('/:id', ensureAuditor, async (req, res) => {
       WHERE ra.audit_id = $1 AND ra.is_selected = true
       ORDER BY auv.audit_area
     `, [req.params.id]);
+    
+    // Generate icons for each selected area
+    for (const area of selectedAreasResult.rows) {
+      area.icon = await getIconForAuditArea(area.audit_area);
+    }
     
     // Get audit procedures - RENAMED TO MATCH TEMPLATE
     const proceduresResult = await pool.query(`

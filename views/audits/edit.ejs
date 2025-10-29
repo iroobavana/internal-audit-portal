@@ -37,44 +37,44 @@
       color: #0f172a;
     }
     
-    /* Modern Toast Notification */
-    .toast-container {
+    /* Notification Toast */
+    .notification-container {
       position: fixed;
-      top: 24px;
-      right: 24px;
+      top: 32px;
+      right: 32px;
       z-index: 9999;
-      max-width: 400px;
+      max-width: 420px;
     }
     
-    .modern-toast {
+    .notification {
       background: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      border-left: 4px solid;
-      animation: slideIn 0.3s ease-out;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
       transition: all 0.3s ease;
     }
     
-    .modern-toast.success {
-      border-left-color: #10b981;
+    .notification.success {
+      border-left: 4px solid #3b82f6;
     }
     
-    .modern-toast.error {
-      border-left-color: #ef4444;
+    .notification.error {
+      border-left: 4px solid #ef4444;
     }
     
-    .modern-toast.hiding {
-      animation: slideOut 0.3s ease-out forwards;
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
     }
     
     @keyframes slideIn {
       from {
-        transform: translateX(400px);
+        transform: translateX(450px);
         opacity: 0;
       }
       to {
@@ -89,53 +89,57 @@
         opacity: 1;
       }
       to {
-        transform: translateX(400px);
+        transform: translateX(450px);
         opacity: 0;
       }
     }
     
-    .toast-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      font-size: 20px;
     }
     
-    .modern-toast.success .toast-icon {
-      background: #d1fae5;
-      color: #10b981;
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
     }
     
-    .modern-toast.error .toast-icon {
+    .notification.error .notification-icon {
       background: #fee2e2;
       color: #ef4444;
     }
     
-    .toast-content {
+    .notification-message {
       flex: 1;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       color: #1e293b;
+      line-height: 1.5;
     }
     
-    .toast-close {
-      background: none;
+    .notification-close {
+      background: #f8fafc;
       border: none;
       cursor: pointer;
       color: #64748b;
-      padding: 4px;
+      padding: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 4px;
+      border-radius: 8px;
       transition: all 0.2s;
+      width: 32px;
+      height: 32px;
     }
     
-    .toast-close:hover {
-      background: #f1f5f9;
+    .notification-close:hover {
+      background: #e2e8f0;
       color: #1e293b;
     }
     
@@ -552,26 +556,26 @@
   <!-- Sidebar -->
   <%- include('../partials/sidebar') %>
   
-  <!-- Toast Container -->
-  <div class="toast-container" id="toastContainer"></div>
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
   
   <!-- Main Content -->
   <div class="main-content">
     <!-- Page Header -->
     <div class="page-header">
       <h1 class="page-title">
-        <i class="bi bi-plus-circle"></i> Create Audit
+        <i class="bi bi-pencil"></i> Edit Audit
       </h1>
     </div>
     
-    <!-- Create Form -->
+    <!-- Edit Form -->
     <div class="card-modern">
-      <form action="/audits/create" method="POST">
+      <form action="/audits/<%= audit.id %>/edit" method="POST">
         <div class="row">
           <div class="col-md-6 mb-4">
             <label for="audit_name" class="form-label">Audit Name *</label>
             <input type="text" class="form-control" id="audit_name" name="audit_name" 
-                   placeholder="e.g. Q1 2025 Financial Audit" required>
+                   value="<%= audit.audit_name %>" required>
           </div>
           
           <div class="col-md-6 mb-4">
@@ -580,7 +584,9 @@
               <select name="auditee_id" id="auditee_id" required>
                 <option value="">-- Choose Auditee --</option>
                 <% auditees.forEach(auditee => { %>
-                  <option value="<%= auditee.id %>"><%= auditee.name %></option>
+                  <option value="<%= auditee.id %>" <%= audit.auditee_id == auditee.id ? 'selected' : '' %>>
+                    <%= auditee.name %>
+                  </option>
                 <% }) %>
               </select>
               
@@ -603,37 +609,47 @@
           <div class="col-md-6 mb-4">
             <label for="start_date" class="form-label">Start Date *</label>
             <input type="text" class="form-control datepicker" id="start_date" name="start_date" 
-                   placeholder="Select start date" required readonly>
+                   value="<%= audit.start_date.toISOString().split('T')[0] %>" required readonly>
           </div>
           
           <div class="col-md-6 mb-4">
             <label for="end_date" class="form-label">End Date *</label>
             <input type="text" class="form-control datepicker" id="end_date" name="end_date" 
-                   placeholder="Select end date" required readonly>
+                   value="<%= audit.end_date.toISOString().split('T')[0] %>" required readonly>
           </div>
         </div>
         
-        <div class="mb-4">
-          <label class="form-label">Team Leader *</label>
-          <div class="custom-dropdown" data-dropdown="team_leader_id">
-            <select name="team_leader_id" id="team_leader_id" required>
-              <option value="">-- Choose Team Leader --</option>
-              <% auditors.forEach(auditor => { %>
-                <option value="<%= auditor.id %>"><%= auditor.name %> (<%= auditor.role %>)</option>
-              <% }) %>
-            </select>
-            
-            <div class="dropdown-button">
-              <span class="dropdown-button-text">-- Choose Team Leader --</span>
-              <i class="bi bi-chevron-down dropdown-arrow"></i>
-            </div>
-            
-            <div class="dropdown-menu-custom">
-              <div class="dropdown-search">
-                <input type="text" placeholder="Search team leaders..." class="search-input">
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <label class="form-label">Team Leader *</label>
+            <div class="custom-dropdown" data-dropdown="team_leader_id">
+              <select name="team_leader_id" id="team_leader_id" required>
+                <option value="">-- Choose Team Leader --</option>
+                <% auditors.forEach(auditor => { %>
+                  <option value="<%= auditor.id %>" <%= audit.team_leader_id == auditor.id ? 'selected' : '' %>>
+                    <%= auditor.name %> (<%= auditor.role %>)
+                  </option>
+                <% }) %>
+              </select>
+              
+              <div class="dropdown-button">
+                <span class="dropdown-button-text">-- Choose Team Leader --</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
               </div>
-              <div class="dropdown-options"></div>
+              
+              <div class="dropdown-menu-custom">
+                <div class="dropdown-search">
+                  <input type="text" placeholder="Search team leaders..." class="search-input">
+                </div>
+                <div class="dropdown-options"></div>
+              </div>
             </div>
+          </div>
+          
+          <div class="col-md-6 mb-4">
+            <label for="audit_year" class="form-label">Audit Year *</label>
+            <input type="number" class="form-control" id="audit_year" name="audit_year" 
+                   value="<%= audit.audit_year %>" min="2000" max="2100" required>
           </div>
         </div>
         
@@ -643,7 +659,8 @@
             <% auditors.forEach(auditor => { %>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="team_members[]" 
-                       value="<%= auditor.id %>" id="member_<%= auditor.id %>">
+                       value="<%= auditor.id %>" id="member_<%= auditor.id %>"
+                       <%= currentTeamMembers.includes(auditor.id) ? 'checked' : '' %>>
                 <label class="form-check-label" for="member_<%= auditor.id %>">
                   <strong><%= auditor.name %></strong> - <%= auditor.role %>
                 </label>
@@ -653,11 +670,16 @@
           <small class="text-muted">Select team members for this audit</small>
         </div>
         
-        <div class="d-flex gap-3 justify-content-end">
-          <a href="/audits" class="btn btn-secondary">Cancel</a>
-          <button type="submit" class="btn btn-primary">
-            <i class="bi bi-save"></i> Create Audit
+        <div class="d-flex gap-3 justify-content-between">
+          <button type="button" class="btn btn-danger" onclick="deleteAudit()">
+            <i class="bi bi-trash"></i> Delete Audit
           </button>
+          <div style="display: flex; gap: 12px;">
+            <a href="/audits" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save"></i> Update Audit
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -666,53 +688,50 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-    // Modern Toast Notification System
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toastContainer');
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
       
-      const toast = document.createElement('div');
-      toast.className = `modern-toast ${type}`;
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
       
       const icon = type === 'success' ? 
         '<i class="bi bi-check-circle-fill"></i>' : 
-        '<i class="bi bi-exclamation-circle-fill"></i>';
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
       
-      toast.innerHTML = `
-        <div class="toast-icon">${icon}</div>
-        <div class="toast-content">${message}</div>
-        <button class="toast-close" onclick="dismissToast(this)">
-          <i class="bi bi-x-lg"></i>
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
         </button>
       `;
       
-      container.appendChild(toast);
+      container.appendChild(notification);
       
-      // Auto dismiss after 3 seconds
       setTimeout(() => {
-        dismissToast(toast.querySelector('.toast-close'));
+        dismissNotification(notification.querySelector('.notification-close'));
       }, 3000);
     }
     
-    function dismissToast(button) {
-      const toast = button.closest('.modern-toast');
-      toast.classList.add('hiding');
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
       
       setTimeout(() => {
-        toast.remove();
-      }, 300);
+        notification.remove();
+      }, 400);
     }
     
-    // Check for messages and show toasts
     <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
-      showToast('<%= success_msg %>', 'success');
+      showNotification('<%= success_msg %>', 'success');
     <% } %>
     
     <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
-      showToast('<%= error_msg %>', 'error');
+      showNotification('<%= error_msg %>', 'error');
     <% } %>
     
     <% if (typeof error !== 'undefined' && error.length > 0) { %>
-      showToast('<%= error %>', 'error');
+      showNotification('<%= error %>', 'error');
     <% } %>
     
     // Custom Dropdown Functionality
@@ -733,6 +752,15 @@
       init() {
         this.renderOptions();
         this.attachEvents();
+        this.updateButtonText();
+      }
+      
+      updateButtonText() {
+        const selectedOption = this.select.options[this.select.selectedIndex];
+        if (selectedOption && selectedOption.value) {
+          this.buttonText.textContent = selectedOption.text;
+          this.buttonText.classList.add('selected');
+        }
       }
       
       renderOptions(filter = '') {
@@ -823,7 +851,15 @@
         this.button.classList.remove('active');
       }
     }
-    
+    function deleteAudit() {
+      if (confirm('Are you sure you want to delete "<%= audit.audit_name %>"?\n\nThis action cannot be undone and will remove all associated data.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/audits/<%= audit.id %>/delete';
+        document.body.appendChild(form);
+        form.submit();
+      }
+    }
     // Initialize all custom dropdowns
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.custom-dropdown').forEach(dropdown => {

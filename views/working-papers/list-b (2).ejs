@@ -289,7 +289,45 @@
   </style>
 </head>
 <body>
-  <%- include('../partials/navbar') %>
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="/dashboard" class="nav-brand">
+      <i class="bi bi-shield-check"></i>
+      <span>Internal Audit Portal</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <i class="bi bi-house"></i> Dashboard
+      </a>
+      <a href="/auditees" class="nav-link">
+        <i class="bi bi-building"></i> Auditees
+      </a>
+      <a href="/audits" class="nav-link">
+        <i class="bi bi-clipboard-check"></i> Audits
+      </a>
+      <a href="/working-papers" class="nav-link active">
+        <i class="bi bi-file-earmark-text"></i> Working Papers
+      </a>
+      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
+        <a href="/issues/verify" class="nav-link">
+          <i class="bi bi-check-circle"></i> Verify
+        </a>
+      <% } %>
+    </div>
+    
+    <div class="user-menu">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
+        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
+      </div>
+      <a href="/auth/logout" class="btn btn-sm btn-secondary">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </nav>
+
   <%- include('../partials/messages') %>
   
   <div class="main-content">

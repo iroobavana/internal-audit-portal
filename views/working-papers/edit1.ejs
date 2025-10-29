@@ -6,75 +6,169 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    body {
-      background-color: #f8f9fa;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    /* Top Navigation Bar */
     .top-nav {
       background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      padding: 1rem 0;
-      margin-bottom: 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    
+    .nav-brand i {
+      font-size: 28px;
+      color: #3b82f6;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .nav-link {
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    
+    .nav-link.active {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* Main Content */
+    .main-content {
+      min-height: 100vh;
+      padding: 32px;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
     .page-header {
       background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .page-title i {
+      color: #3b82f6;
     }
 
     .card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 1.5rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
     }
 
     .card-header {
       background: white;
       border-bottom: 1px solid #e9ecef;
-      padding: 1.25rem 1.5rem;
-      border-radius: 12px 12px 0 0 !important;
+      padding: 20px 24px;
+      border-radius: 16px 16px 0 0 !important;
     }
 
     .card-header h5 {
       margin: 0;
       font-weight: 600;
+      color: #0f172a;
     }
 
     .card-body {
-      padding: 1.5rem;
+      padding: 24px;
     }
 
     .card-footer {
       background: white;
       border-top: 1px solid #e9ecef;
-      padding: 1.25rem 1.5rem;
-    }
-    
-    .column-builder {
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+      padding: 20px 24px;
     }
     
     .column-item {
       background: white;
       border: 1px solid #dee2e6;
       border-radius: 8px;
-      padding: 1.25rem;
-      margin-bottom: 0.75rem;
+      padding: 20px;
+      margin-bottom: 12px;
       position: relative;
       transition: all 0.2s;
     }
 
     .column-item:hover {
-      border-color: #1a73e8;
-      box-shadow: 0 2px 8px rgba(26, 115, 232, 0.1);
+      border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
     }
     
     .column-item .remove-btn {
@@ -88,16 +182,17 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
+      margin-top: 16px;
     }
     
     .preview-table th {
-      background: #1a73e8;
+      background: #3b82f6;
       color: white;
-      padding: 0.75rem;
+      padding: 12px;
       text-align: left;
       border: none;
       font-weight: 600;
-      font-size: 0.875rem;
+      font-size: 14px;
     }
 
     .preview-table th:first-child {
@@ -109,140 +204,190 @@
     }
     
     .preview-table td {
-      padding: 0.75rem;
-      border: 1px solid #dee2e6;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
       border-top: none;
     }
 
     .form-control:focus, .form-select:focus {
-      border-color: #1a73e8;
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn {
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #1a73e8 0%, #174ea6 100%);
-      border: none;
-      border-radius: 6px;
-      padding: 0.5rem 1.5rem;
-      font-weight: 500;
-      transition: all 0.3s;
+      background: #3b82f6;
+      color: white;
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+      background: #2563eb;
+      color: white;
     }
 
     .btn-success {
-      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
-      border: none;
-      border-radius: 6px;
-      padding: 0.5rem 1.5rem;
-      font-weight: 500;
-      transition: all 0.3s;
+      background: #10b981;
+      color: white;
     }
 
     .btn-success:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      background: #059669;
+      color: white;
     }
 
     .btn-secondary {
-      border-radius: 6px;
-      padding: 0.5rem 1.5rem;
-      font-weight: 500;
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+      color: white;
     }
 
     .btn-danger {
-      border-radius: 6px;
+      background: #ef4444;
+      color: white;
     }
 
-    .sticky-top {
-      position: sticky;
-      top: 20px;
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
-  <%- include('../partials/navbar') %>
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <a href="/dashboard" class="nav-brand">
+      <i class="bi bi-shield-check"></i>
+      <span>Internal Audit Portal</span>
+    </a>
+    
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <i class="bi bi-house"></i> Dashboard
+      </a>
+      <a href="/auditees" class="nav-link">
+        <i class="bi bi-building"></i> Auditees
+      </a>
+      <a href="/audits" class="nav-link">
+        <i class="bi bi-clipboard-check"></i> Audits
+      </a>
+      <a href="/working-papers" class="nav-link active">
+        <i class="bi bi-file-earmark-text"></i> Working Papers
+      </a>
+      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
+        <a href="/issues/verify" class="nav-link">
+          <i class="bi bi-check-circle"></i> Verify
+        </a>
+      <% } %>
+    </div>
+    
+    <div class="user-menu">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <div>
+        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
+        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
+      </div>
+      <a href="/auth/logout" class="btn btn-sm btn-secondary">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </nav>
+
   <%- include('../partials/messages') %>
   
-  <div class="container-fluid py-4">
+  <div class="main-content">
     <!-- Page Header -->
     <div class="page-header">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <h2 class="mb-1"><i class="bi bi-pencil-square me-2"></i>Edit Working Paper</h2>
+          <h2 class="page-title">
+            <i class="bi bi-pencil-square"></i>
+            Edit Working Paper
+          </h2>
           <p class="text-muted mb-0">Update working paper structure and properties</p>
         </div>
         <a href="/working-papers/<%= workingPaper.id %>/view" class="btn btn-secondary">
-          <i class="bi bi-x-lg me-1"></i> Cancel
+          <i class="bi bi-arrow-left"></i> Back
         </a>
       </div>
     </div>
     
     <form action="/working-papers/<%= workingPaper.id %>/update" method="POST" id="wpForm">
-      <div class="row">
-        <!-- Left Side - Builder -->
-        <div class="col-lg-7">
-          <div class="card">
-            <div class="card-header">
-              <h5>Working Paper Configuration</h5>
+      <!-- Form Builder Section -->
+      <div class="card">
+        <div class="card-header">
+          <h5><i class="bi bi-gear me-2"></i>Working Paper Configuration</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <label for="name" class="form-label fw-semibold">Working Paper Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= workingPaper.name %>" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Allow Row Insertion</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_yes" value="true" <%= workingPaper.allow_row_insert ? 'checked' : '' %>>
+              <label class="form-check-label" for="allow_yes">
+                Yes - Auditors can add rows during field work
+              </label>
             </div>
-            <div class="card-body">
-              <div class="mb-4">
-                <label for="name" class="form-label fw-semibold">Working Paper Name</label>
-                <input type="text" class="form-control" id="name" name="name" value="<%= workingPaper.name %>" required>
-              </div>
-              
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Allow Row Insertion</label>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_yes" value="true" <%= workingPaper.allow_row_insert ? 'checked' : '' %>>
-                  <label class="form-check-label" for="allow_yes">
-                    Yes - Auditors can add rows during field work
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_no" value="false" <%= !workingPaper.allow_row_insert ? 'checked' : '' %>>
-                  <label class="form-check-label" for="allow_no">
-                    No - Fixed structure
-                  </label>
-                </div>
-              </div>
-              
-              <hr>
-              
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">Properties</h5>
-                <button type="button" class="btn btn-primary btn-sm" id="addColumnBtn">
-                  <i class="bi bi-plus-circle me-1"></i> Add Property
-                </button>
-              </div>
-              
-              <div id="columnsContainer">
-                <!-- Existing columns will be loaded here -->
-              </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_no" value="false" <%= !workingPaper.allow_row_insert ? 'checked' : '' %>>
+              <label class="form-check-label" for="allow_no">
+                No - Fixed structure
+              </label>
             </div>
           </div>
+          
+          <hr>
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Properties</h5>
+            <button type="button" class="btn btn-primary btn-sm" id="addColumnBtn">
+              <i class="bi bi-plus-circle"></i> Add Property
+            </button>
+          </div>
+          
+          <div id="columnsContainer">
+            <!-- Existing columns will be loaded here -->
+          </div>
         </div>
-        
-        <!-- Right Side - Preview -->
-        <div class="col-lg-5">
-          <div class="card sticky-top">
-            <div class="card-header">
-              <h5>Preview</h5>
-            </div>
-            <div class="card-body">
-              <div id="previewArea">
-                <p class="text-muted text-center">Add properties to see preview</p>
-              </div>
-            </div>
-            <div class="card-footer">
-              <button type="submit" class="btn btn-success w-100">
-                <i class="bi bi-save me-2"></i> Update Working Paper
-              </button>
-            </div>
+      </div>
+
+      <!-- Preview Section - Full Width Below -->
+      <div class="card">
+        <div class="card-header">
+          <h5><i class="bi bi-eye me-2"></i>Preview - Table Structure</h5>
+        </div>
+        <div class="card-body">
+          <div id="previewArea">
+            <p class="text-muted text-center py-4">Add properties to see preview</p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/working-papers/<%= workingPaper.id %>/view" class="btn btn-secondary">
+              <i class="bi bi-x-lg"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-save"></i> Update Working Paper
+            </button>
           </div>
         </div>
       </div>
@@ -360,7 +505,7 @@
       const previewArea = document.getElementById('previewArea');
       
       if (columns.length === 0) {
-        previewArea.innerHTML = '<p class="text-muted text-center">Add properties to see preview</p>';
+        previewArea.innerHTML = '<p class="text-muted text-center py-4">Add properties to see preview</p>';
         return;
       }
       

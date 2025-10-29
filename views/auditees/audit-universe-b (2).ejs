@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %> - Internal Audit Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    /* Main Content */
+    .main-content {
+      margin-left: 260px;
+      min-height: 100vh;
+      padding: 32px;
+      max-width: calc(100% - 260px);
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    /* Notification Toast */
+    .notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 9999;
+      max-width: 420px;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.success {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification.error .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-message {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    
+    .notification-close {
+      background: #f8fafc;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .notification-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    /* Card Styles */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    /* Form Styles */
+    .form-label {
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-control, .form-select {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .form-control:hover, .form-select:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+      background: #ffffff;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+      background: #3b82f6;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
+      border-radius: 10px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      color: white;
+    }
+    
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      position: relative;
+    }
+    
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+    }
+    
+    .table-modern th {
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+      position: relative;
+      resize: horizontal;
+      overflow: hidden;
+    }
+    
+    .table-modern th .resizer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      cursor: col-resize;
+      user-select: none;
+      background: transparent;
+    }
+    
+    .table-modern th .resizer:hover {
+      background: #3b82f6;
+    }
+    
+    .table-modern td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+      font-size: 14px;
+      vertical-align: top;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .table-modern td.editable {
+      cursor: text;
+      background: #f8fafc;
+      transition: all 0.2s;
+    }
+    
+    .table-modern td.editable:hover {
+      background: #e0f2fe;
+      outline: 2px solid #bae6fd;
+    }
+    
+    .table-modern td.editable:focus {
+      background: white;
+      outline: 2px solid #3b82f6;
+    }
+    
+    .table-modern select {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      background: #ffffff;
+      width: 100%;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .table-modern select:disabled {
+      background: #fafafa;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+    
+    .table-modern select:enabled:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+    
+    .table-modern select:focus {
+      border-color: #3b82f6;
+      outline: 2px solid rgba(59, 130, 246, 0.1);
+    }
+    
+    .table-modern tbody tr {
+      transition: all 0.2s;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    .add-row-btn {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      color: #64748b;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      display: none;
+    }
+    
+    .add-row-btn:hover {
+      background: #e2e8f0;
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+  
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-grid"></i> Audit Universe - <%= auditee.name %>
+      </h1>
+      <div style="display: flex; gap: 12px;">
+        <button id="editBtn" class="btn btn-primary" onclick="toggleEdit()">
+          <i class="bi bi-pencil"></i> Enable Edit
+        </button>
+        <a href="/auditees" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Back
+        </a>
+      </div>
+    </div>
+    
+    <!-- Audit Universe Entries Table -->
+    <div class="card-modern">
+      <h2 class="card-title">
+        <i class="bi bi-table"></i> Audit Universe Entries
+      </h2>
+      
+      <% if (universe.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-grid"></i>
+          </div>
+          <div class="empty-text">No entries yet. Click "Add New Row" below to get started!</div>
+        </div>
+      <% } else { %>
+        <div class="table-container">
+          <table class="table-modern">
+            <thead>
+              <tr>
+                <th style="width: 150px;">
+                  Department
+                  <div class="resizer"></div>
+                </th>
+                <th style="width: 150px;">
+                  Audit Area
+                  <div class="resizer"></div>
+                </th>
+                <th style="width: 150px;">
+                  Process
+                  <div class="resizer"></div>
+                </th>
+                <th style="width: 120px;">
+                  Inherent Risk
+                  <div class="resizer"></div>
+                </th>
+                <th style="width: 250px;">
+                  Control Measure
+                  <div class="resizer"></div>
+                </th>
+                <th style="width: 250px;">
+                  Audit Procedure
+                  <div class="resizer"></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% universe.forEach(entry => { %>
+                <tr data-id="<%= entry.id %>">
+                  <td data-field="department_id">
+                    <select class="department-select" data-original="<%= entry.department_id %>" disabled>
+                      <% departments.forEach(dept => { %>
+                        <option value="<%= dept.id %>" <%= entry.department_id == dept.id ? 'selected' : '' %>>
+                          <%= dept.department_name %>
+                        </option>
+                      <% }) %>
+                    </select>
+                  </td>
+                  <td data-field="audit_area">
+                    <select class="audit-area-select" data-original="<%= entry.audit_area %>" disabled>
+                      <% 
+                      const uniqueAuditAreas = [...new Set(universe.map(u => u.audit_area).filter(a => a))];
+                      uniqueAuditAreas.forEach(area => { %>
+                        <option value="<%= area %>" <%= entry.audit_area === area ? 'selected' : '' %>>
+                          <%= area %>
+                        </option>
+                      <% }); %>
+                    </select>
+                  </td>
+                  <td data-field="process"><%= entry.process || '-' %></td>
+                  <td data-field="inherent_risk"><%= entry.inherent_risk || '-' %></td>
+                  <td data-field="control_measure"><%= entry.control_measure || '-' %></td>
+                  <td data-field="audit_procedure"><%= entry.audit_procedure || '-' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+      
+      <button type="button" class="add-row-btn" onclick="addNewRow()">
+        <i class="bi bi-plus-circle"></i> Add New Row
+      </button>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 
+        '<i class="bi bi-check-circle-fill"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        dismissNotification(notification.querySelector('.notification-close'));
+      }, 3000);
+    }
+    
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }
+    
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+      showNotification('<%= success_msg %>', 'success');
+    <% } %>
+    
+    <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+      showNotification('<%= error_msg %>', 'error');
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error.length > 0) { %>
+      showNotification('<%= error %>', 'error');
+    <% } %>
+    
+    // Edit mode state
+    let isEditMode = false;
+    let saveTimeout = null;
+    
+    // Toggle edit mode
+    function toggleEdit() {
+      isEditMode = !isEditMode;
+      const editBtn = document.getElementById('editBtn');
+      const editableCells = document.querySelectorAll('td:not([data-field="department_id"]):not([data-field="audit_area"])');
+      const departmentSelects = document.querySelectorAll('.department-select');
+      const auditAreaSelects = document.querySelectorAll('.audit-area-select');
+      const addRowBtn = document.querySelector('.add-row-btn');
+      
+      if (isEditMode) {
+        editBtn.innerHTML = '<i class="bi bi-lock-fill"></i> Disable Edit';
+        editBtn.classList.add('btn-warning');
+        editBtn.classList.remove('btn-primary');
+        
+        // Show add row button
+        if (addRowBtn) addRowBtn.style.display = 'block';
+        
+        // Enable dropdowns
+        departmentSelects.forEach(select => {
+          select.disabled = false;
+          select.addEventListener('change', handleSelectChange);
+        });
+        
+        auditAreaSelects.forEach(select => {
+          select.disabled = false;
+          select.addEventListener('change', handleSelectChange);
+        });
+        
+        // Enable editable cells
+        editableCells.forEach(cell => {
+          cell.contentEditable = true;
+          cell.classList.add('editable');
+          cell.addEventListener('input', handleCellEdit);
+          cell.addEventListener('blur', handleCellBlur);
+        });
+        
+        showNotification('Edit mode enabled. Changes will auto-save.', 'success');
+      } else {
+        editBtn.innerHTML = '<i class="bi bi-pencil"></i> Enable Edit';
+        editBtn.classList.remove('btn-warning');
+        editBtn.classList.add('btn-primary');
+        
+        // Hide add row button
+        if (addRowBtn) addRowBtn.style.display = 'none';
+        
+        // Disable dropdowns
+        departmentSelects.forEach(select => {
+          select.disabled = true;
+          select.removeEventListener('change', handleSelectChange);
+        });
+        
+        auditAreaSelects.forEach(select => {
+          select.disabled = true;
+          select.removeEventListener('change', handleSelectChange);
+        });
+        
+        // Disable editable cells
+        editableCells.forEach(cell => {
+          cell.contentEditable = false;
+          cell.classList.remove('editable');
+          cell.removeEventListener('input', handleCellEdit);
+          cell.removeEventListener('blur', handleCellBlur);
+        });
+        
+        showNotification('Edit mode disabled', 'success');
+      }
+    }
+    
+    // Handle select dropdown changes
+    async function handleSelectChange(e) {
+      const select = e.target;
+      const row = select.closest('tr');
+      const cell = select.closest('td');
+      const entryId = row.dataset.id;
+      const field = cell.dataset.field;
+      const value = select.value;
+      
+      try {
+        const response = await fetch(`/auditees/<%= auditee.id %>/audit-universe/${entryId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            field: field,
+            value: value
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Visual feedback
+          cell.style.background = '#dcfce7';
+          setTimeout(() => {
+            cell.style.background = '';
+          }, 500);
+        } else {
+          showNotification(result.error || 'Error saving changes', 'error');
+          // Revert to original value
+          select.value = select.dataset.original;
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        showNotification('Error saving changes', 'error');
+        select.value = select.dataset.original;
+      }
+    }
+    
+    // Handle cell edit with debounced auto-save
+    function handleCellEdit(e) {
+      const cell = e.target;
+      
+      // Clear existing timeout
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+      
+      // Set new timeout for auto-save (1 second after user stops typing)
+      saveTimeout = setTimeout(() => {
+        saveCellData(cell);
+      }, 1000);
+    }
+    
+    // Handle cell blur (save immediately when user leaves the cell)
+    function handleCellBlur(e) {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+      saveCellData(e.target);
+    }
+    
+    // Save cell data to backend
+    async function saveCellData(cell) {
+      const row = cell.closest('tr');
+      const entryId = row.dataset.id;
+      const field = cell.dataset.field;
+      const value = cell.textContent.trim() === '-' ? '' : cell.textContent.trim();
+      
+      try {
+        const response = await fetch(`/auditees/<%= auditee.id %>/audit-universe/${entryId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            field: field,
+            value: value
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Visual feedback - briefly highlight the cell
+          cell.style.background = '#dcfce7';
+          setTimeout(() => {
+            cell.style.background = '';
+          }, 500);
+        } else {
+          showNotification(result.error || 'Error saving changes', 'error');
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        showNotification('Error saving changes', 'error');
+      }
+    }
+    
+    // Resizable columns functionality
+    const resizers = document.querySelectorAll('.resizer');
+    
+    resizers.forEach(resizer => {
+      let startX, startWidth;
+      
+      resizer.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const th = resizer.parentElement;
+        startX = e.pageX;
+        startWidth = th.offsetWidth;
+        
+        const doDrag = (e) => {
+          const width = startWidth + (e.pageX - startX);
+          if (width > 50) {
+            th.style.width = width + 'px';
+          }
+        };
+        
+        const stopDrag = () => {
+          document.removeEventListener('mousemove', doDrag);
+          document.removeEventListener('mouseup', stopDrag);
+        };
+        
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', stopDrag);
+      });
+    });
+    
+    // Add new row functionality
+    function addNewRow() {
+      showNotification('Add new row functionality - you need to create a form/modal to add new entries', 'success');
+      // This button shows notification - implement your add row logic here
+      // You can open a modal with the form that was previously in the page
+    }
+  </script>
+</body>
+</html>

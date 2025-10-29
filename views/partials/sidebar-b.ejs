@@ -30,13 +30,13 @@
         <span>Dashboard</span>
       </a>
       
-      <a href="/audits" class="nav-item <%= title === 'Audits' || (title.includes('Audit') && title !== 'Audit Universe' && !title.includes('Auditee')) ? 'active' : '' %>">
+      <a href="/audits" class="nav-item <%= title === 'Audits' || (title.includes('Audit') && title !== 'Audit Universe') ? 'active' : '' %>">
         <i class="bi bi-clipboard-check"></i>
         <span>Audits</span>
       </a>
       
       <% if (user.role === 'head_of_audit') { %>
-        <a href="/auditees" class="nav-item <%= title === 'Auditees' || title.includes('Auditee') ? 'active' : '' %>">
+        <a href="/auditees" class="nav-item <%= title === 'Auditees' ? 'active' : '' %>">
           <i class="bi bi-building"></i>
           <span>Auditees</span>
         </a>

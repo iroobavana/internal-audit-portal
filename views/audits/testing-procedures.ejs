@@ -4,90 +4,514 @@
   <title><%= title %> - Internal Audit Portal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="/css/style.css">
   <style>
-    .folder-card {
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      transition: all 0.3s;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    /* Main Content */
+    .main-content {
+      margin-left: 260px;
+      min-height: 100vh;
+      padding: 32px;
+      max-width: calc(100% - 260px);
+    }
+    
+    /* Notification Toast */
+    .notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 9999;
+      max-width: 420px;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.success {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification.error .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-message {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    
+    .notification-close {
+      background: #f8fafc;
+      border: none;
       cursor: pointer;
+      color: #64748b;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .notification-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    /* Page Header */
+    .page-header {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    
+    .audit-info {
+      display: flex;
+      gap: 24px;
+      color: #64748b;
+      font-size: 15px;
+    }
+    
+    .audit-info i {
+      color: #3b82f6;
+    }
+    
+    /* Card Styles */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    
+    .card-header-modern {
+      padding: 24px 32px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+    
+    .card-title-modern {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-body-modern {
+      padding: 32px;
+    }
+    
+    /* Folder Cards */
+    .folder-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
     
     .folder-card:hover {
-      border-color: var(--primary);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
       transform: translateY(-2px);
     }
     
     .folder-card.active {
-      border-color: var(--primary);
-      background-color: #f8f9fa;
+      border-color: #3b82f6;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
     
     .folder-icon {
-      font-size: 48px;
-      color: #ffc107;
+      font-size: 40px;
+      color: #fbbf24;
+      flex-shrink: 0;
     }
     
-    .working-paper-item {
-      border: 1px solid #dee2e6;
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 8px;
+    .folder-card.active .folder-icon {
+      color: #f59e0b;
+    }
+    
+    .folder-content {
+      flex: 1;
+    }
+    
+    .folder-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    
+    .folder-meta {
+      font-size: 13px;
+      color: #64748b;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    /* Working Paper Items */
+    .wp-item {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: white;
+      transition: all 0.2s;
     }
     
-    .working-paper-item:hover {
-      background-color: #f8f9fa;
+    .wp-item:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
     }
     
-    .badge-columns {
-      background-color: #6c757d;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
+    .wp-icon {
+      font-size: 32px;
+      color: #3b82f6;
+      margin-right: 16px;
+    }
+    
+    .wp-info {
+      flex: 1;
+    }
+    
+    .wp-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    
+    .wp-meta {
+      font-size: 13px;
+      color: #64748b;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    /* Badges */
+    .badge {
+      padding: 4px 12px;
+      border-radius: 6px;
       font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .badge.bg-success {
+      background: #22c55e !important;
+      color: white;
+    }
+    
+    .badge.bg-warning {
+      background: #eab308 !important;
+      color: white;
+    }
+    
+    .badge.bg-danger {
+      background: #ef4444 !important;
+      color: white;
+    }
+    
+    .badge-gray {
+      background: #64748b;
+      color: white;
+    }
+    
+    /* Buttons */
+    .btn {
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+    
+    .btn-outline-primary {
+      background: transparent;
+      border: 2px solid #3b82f6;
+      color: #3b82f6;
+    }
+    
+    .btn-outline-primary:hover {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-outline-danger {
+      background: transparent;
+      border: 2px solid #ef4444;
+      color: #ef4444;
+    }
+    
+    .btn-outline-danger:hover {
+      background: #ef4444;
+      color: white;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    
+    .empty-text {
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    
+    /* Alert */
+    .alert-info-modern {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: #1e40af;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: start;
+      gap: 12px;
+    }
+    
+    .alert-info-modern i {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    /* List Group */
+    .list-group-modern {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .list-group-item-modern {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    
+    .list-group-item-modern:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    
+    .scrollable-area {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    
+    .scrollable-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .scrollable-area::-webkit-scrollbar-track {
+      background: #f8fafc;
+      border-radius: 3px;
+    }
+    
+    .scrollable-area::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    
+    .scrollable-area::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
     }
   </style>
 </head>
 <body>
-  <%- include('../partials/navbar') %>
-  <%- include('../partials/messages') %>
+  <%- include('../partials/sidebar') %>
   
-  <div class="container-fluid">
-    <!-- Header -->
-    <div class="card mb-4">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 class="mb-2"><%= audit.audit_name %></h2>
-            <p class="mb-0 text-muted">
-              <i class="bi bi-building"></i> <%= audit.auditee_name %> | 
-              <i class="bi bi-person"></i> <%= audit.team_leader_name %>
-            </p>
+  <!-- Notification Container -->
+  <div id="notificationContainer" class="notification-container"></div>
+  
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="page-title"><%= audit.audit_name %></h1>
+          <div class="audit-info">
+            <span><i class="bi bi-building"></i> <%= audit.auditee_name %></span>
+            <span><i class="bi bi-person"></i> <%= audit.team_leader_name %></span>
           </div>
-          <a href="/audits/<%= audit.id %>" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Workspace
-          </a>
         </div>
+        <a href="/audits/<%= audit.id %>" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Back to Workspace
+        </a>
       </div>
     </div>
     
     <% if (auditAreas.length === 0) { %>
       <!-- No Selected Areas -->
-      <div class="card">
-        <div class="card-body text-center py-5">
-          <i class="bi bi-folder-x text-muted" style="font-size: 64px;"></i>
-          <h4 class="mt-3">No Audit Areas Selected</h4>
-          <p class="text-muted mb-4">
-            Please go to Risk Assessment and select audit areas to create folders here.
-          </p>
-          <a href="/audits/<%= audit.id %>" class="btn btn-primary">
-            <i class="bi bi-arrow-left"></i> Go to Risk Assessment
-          </a>
+      <div class="card-modern">
+        <div class="card-body-modern">
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-folder-x"></i>
+            </div>
+            <h4 class="empty-title">No Audit Areas Selected</h4>
+            <p class="empty-text">
+              Please go to Risk Assessment and select audit areas to create folders here.
+            </p>
+            <a href="/audits/<%= audit.id %>" class="btn btn-primary">
+              <i class="bi bi-arrow-left"></i> Go to Risk Assessment
+            </a>
+          </div>
         </div>
       </div>
     <% } else { %>
@@ -95,37 +519,35 @@
       <div class="row">
         <!-- Left: Folders List -->
         <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0">
+          <div class="card-modern">
+            <div class="card-header-modern">
+              <h5 class="card-title-modern">
                 <i class="bi bi-folder"></i> Audit Areas
               </h5>
-              <small class="text-muted"><%= auditAreas.length %> folder(s)</small>
+              <span class="badge bg-primary"><%= auditAreas.length %> folders</span>
             </div>
-            <div class="card-body p-2">
+            <div class="card-body-modern" style="padding: 16px;">
               <% auditAreas.forEach((area, index) => { 
                 const isActive = selectedFolderId == area.id || (!selectedFolderId && index === 0);
                 const attachedCount = attachedWPs.filter(wp => wp.risk_assessment_id === area.id).length;
               %>
-                <div class="folder-card p-3 mb-2 <%= isActive ? 'active' : '' %>" 
+                <div class="folder-card <%= isActive ? 'active' : '' %>" 
                      onclick="selectFolder(<%= area.id %>)">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-folder-fill folder-icon me-3"></i>
-                    <div class="flex-grow-1">
-                      <h6 class="mb-1"><%= area.audit_area %></h6>
-                      <small class="text-muted">
-                        <span class="badge bg-<%= area.score === 'High' ? 'danger' : area.score === 'Medium' ? 'warning' : 'success' %>">
-                          <%= area.score %>
-                        </span>
-                        <% if (attachedCount > 0) { %>
-                          | <i class="bi bi-file-earmark-text"></i> <%= attachedCount %> WP(s)
-                        <% } %>
-                      </small>
+                  <i class="bi bi-folder-fill folder-icon"></i>
+                  <div class="folder-content">
+                    <div class="folder-title"><%= area.audit_area %></div>
+                    <div class="folder-meta">
+                      <span class="badge bg-<%= area.score === 'High' ? 'danger' : area.score === 'Medium' ? 'warning' : 'success' %>">
+                        <%= area.score %>
+                      </span>
+                      <% if (attachedCount > 0) { %>
+                        <span><i class="bi bi-file-earmark-text"></i> <%= attachedCount %> WP(s)</span>
+                      <% } %>
                     </div>
-                    <% if (isActive) { %>
-                      <i class="bi bi-chevron-right text-primary"></i>
-                    <% } %>
                   </div>
+                  <% if (isActive) { %>
+                    <i class="bi bi-chevron-right" style="color: #3b82f6; font-size: 20px;"></i>
+                  <% } %>
                 </div>
               <% }) %>
             </div>
@@ -145,48 +567,53 @@
           %>
           
           <% if (selectedArea) { %>
-            <div class="card mb-3">
-              <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
+            <!-- Folder Info Card -->
+            <div class="card-modern">
+              <div class="card-header-modern" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                <h5 class="card-title-modern" style="color: white;">
                   <i class="bi bi-folder-open"></i> <%= selectedArea.audit_area %>
                 </h5>
               </div>
-              <div class="card-body">
+              <div class="card-body-modern">
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <small class="text-muted">Process:</small>
-                    <p class="mb-2"><%= selectedArea.process || 'N/A' %></p>
+                    <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Process</div>
+                    <div style="font-size: 15px; color: #0f172a;"><%= selectedArea.process || 'N/A' %></div>
                   </div>
                   <div class="col-md-6">
-                    <small class="text-muted">Assigned Auditor:</small>
-                    <p class="mb-2"><%= selectedArea.auditor_name || 'Unassigned' %></p>
+                    <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Assigned Auditor</div>
+                    <div style="font-size: 15px; color: #0f172a;"><%= selectedArea.auditor_name || 'Unassigned' %></div>
                   </div>
                 </div>
                 
-                <div class="alert alert-info">
+                <div class="alert-info-modern">
                   <i class="bi bi-info-circle"></i>
-                  <strong>Instructions:</strong> Attach working papers to this audit area below. You can then fill them in during field work.
+                  <div>
+                    <strong>Instructions:</strong> Attach working papers to this audit area below. You can then fill them in during field work.
+                  </div>
                 </div>
               </div>
             </div>
             
             <!-- Attached Working Papers -->
-            <div class="card mb-3">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">
+            <div class="card-modern">
+              <div class="card-header-modern">
+                <h6 class="card-title-modern">
                   <i class="bi bi-paperclip"></i> Attached Working Papers
                 </h6>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#attachModal">
+                <button class="btn btn-primary btn-sm" onclick="showAttachSection()">
                   <i class="bi bi-plus-circle"></i> Attach Working Paper
                 </button>
               </div>
-              <div class="card-body">
+              <div class="card-body-modern">
                 <% if (attachedForArea.length === 0) { %>
-                  <div class="text-center py-4 text-muted">
-                    <i class="bi bi-file-earmark" style="font-size: 48px;"></i>
-                    <p class="mt-2">No working papers attached yet</p>
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#attachModal">
-                      Attach Your First Working Paper
+                  <div class="empty-state" style="padding: 40px 20px;">
+                    <div class="empty-icon" style="font-size: 48px;">
+                      <i class="bi bi-file-earmark"></i>
+                    </div>
+                    <p class="empty-text">No working papers attached yet</p>
+                    <button class="btn btn-primary btn-sm" onclick="showAttachSection()">
+                      <i class="bi bi-plus-circle"></i> Attach Your First Working Paper
                     </button>
                   </div>
                 <% } else { %>
@@ -194,32 +621,30 @@
                     const wp = workingPapers.find(w => w.id === attached.working_paper_id);
                     if (!wp) return;
                   %>
-                    <div class="working-paper-item">
+                    <div class="wp-item">
                       <div class="d-flex align-items-center flex-grow-1">
-                        <i class="bi bi-file-earmark-text text-primary me-3" style="font-size: 24px;"></i>
-                        <div>
-                          <h6 class="mb-0"><%= wp.name %></h6>
-                          <small class="text-muted">
-                            <span class="badge-columns">
+                        <i class="bi bi-file-earmark-text wp-icon"></i>
+                        <div class="wp-info">
+                          <div class="wp-title"><%= wp.name %></div>
+                          <div class="wp-meta">
+                            <span class="badge badge-gray">
                               <i class="bi bi-columns"></i> <%= wp.column_count %> columns
                             </span>
                             <% if (wp.allow_add_rows) { %>
-                              | <i class="bi bi-plus-square text-success"></i> Can add rows
+                              <span style="color: #22c55e;"><i class="bi bi-plus-square"></i> Can add rows</span>
                             <% } else { %>
-                              | <i class="bi bi-lock text-warning"></i> Fixed rows
+                              <span style="color: #eab308;"><i class="bi bi-lock"></i> Fixed rows</span>
                             <% } %>
-                          </small>
+                          </div>
                         </div>
                       </div>
-                      <div class="btn-group">
+                      <div class="d-flex gap-2">
                         <a href="/working-papers/<%= wp.id %>/view?audit=<%= audit.id %>&area=<%= selectedId %>" 
-                           class="btn btn-sm btn-outline-primary" 
-                           title="View/Fill Working Paper">
+                           class="btn btn-sm btn-outline-primary">
                           <i class="bi bi-eye"></i> View
                         </a>
                         <button class="btn btn-sm btn-outline-danger" 
-                                onclick="detachWorkingPaper(<%= selectedId %>, <%= wp.id %>)"
-                                title="Remove from this folder">
+                                onclick="detachWorkingPaper(<%= selectedId %>, <%= wp.id %>)">
                           <i class="bi bi-trash"></i>
                         </button>
                       </div>
@@ -230,47 +655,54 @@
             </div>
             
             <!-- Available Working Papers to Attach -->
-            <div class="card">
-              <div class="card-header">
-                <h6 class="mb-0">
+            <div class="card-modern" id="attachSection" style="display: none;">
+              <div class="card-header-modern">
+                <h6 class="card-title-modern">
                   <i class="bi bi-files"></i> All Available Working Papers
                 </h6>
+                <button class="btn btn-secondary btn-sm" onclick="hideAttachSection()">
+                  <i class="bi bi-x"></i> Close
+                </button>
               </div>
-              <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-                <% if (workingPapers.length === 0) { %>
-                  <p class="text-muted text-center py-3">
-                    No working papers created yet. 
-                    <a href="/working-papers/create">Create one</a>
-                  </p>
-                <% } else { %>
-                  <div class="list-group">
-                    <% workingPapers.forEach(wp => { 
-                      const isAttached = attachedForArea.some(a => a.working_paper_id === wp.id);
-                    %>
-                      <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                          <h6 class="mb-0"><%= wp.name %></h6>
-                          <small class="text-muted">
-                            <%= wp.column_count %> columns
-                            <% if (isAttached) { %>
-                              | <span class="badge bg-success">Attached</span>
-                            <% } %>
-                          </small>
+              <div class="card-body-modern">
+                <div class="scrollable-area">
+                  <% if (workingPapers.length === 0) { %>
+                    <div class="empty-state" style="padding: 40px 20px;">
+                      <p class="empty-text">
+                        No working papers created yet. 
+                        <a href="/working-papers/create" style="color: #3b82f6;">Create one</a>
+                      </p>
+                    </div>
+                  <% } else { %>
+                    <div class="list-group-modern">
+                      <% workingPapers.forEach(wp => { 
+                        const isAttached = attachedForArea.some(a => a.working_paper_id === wp.id);
+                      %>
+                        <div class="list-group-item-modern">
+                          <div>
+                            <div style="font-weight: 600; color: #0f172a; margin-bottom: 4px;"><%= wp.name %></div>
+                            <div style="font-size: 13px; color: #64748b;">
+                              <%= wp.column_count %> columns
+                              <% if (isAttached) { %>
+                                | <span class="badge bg-success">Attached</span>
+                              <% } %>
+                            </div>
+                          </div>
+                          <% if (!isAttached) { %>
+                            <button class="btn btn-sm btn-primary" 
+                                    onclick="attachWorkingPaper(<%= selectedId %>, <%= wp.id %>)">
+                              <i class="bi bi-plus"></i> Attach
+                            </button>
+                          <% } else { %>
+                            <button class="btn btn-sm btn-outline-secondary" disabled>
+                              <i class="bi bi-check"></i> Attached
+                            </button>
+                          <% } %>
                         </div>
-                        <% if (!isAttached) { %>
-                          <button class="btn btn-sm btn-primary" 
-                                  onclick="attachWorkingPaper(<%= selectedId %>, <%= wp.id %>)">
-                            <i class="bi bi-plus"></i> Attach
-                          </button>
-                        <% } else { %>
-                          <button class="btn btn-sm btn-outline-secondary" disabled>
-                            <i class="bi bi-check"></i> Attached
-                          </button>
-                        <% } %>
-                      </div>
-                    <% }) %>
-                  </div>
-                <% } %>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
               </div>
             </div>
           <% } %>
@@ -281,54 +713,101 @@
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 
+        '<i class="bi bi-check-circle-fill"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        dismissNotification(notification.querySelector('.notification-close'));
+      }, 3000);
+    }
+    
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }
+    
+    function showAttachSection() {
+      document.getElementById('attachSection').style.display = 'block';
+      document.getElementById('attachSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function hideAttachSection() {
+      document.getElementById('attachSection').style.display = 'none';
+    }
+    
     function selectFolder(folderId) {
       window.location.href = '/audits/<%= audit.id %>/testing-procedures?folder=' + folderId;
     }
     
-    function attachWorkingPaper(areaId, wpId) {
-      fetch('/audits/<%= audit.id %>/testing-procedures/' + areaId + '/attach', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ working_paper_id: wpId })
-      })
-      .then(response => response.json())
-      .then(data => {
+    async function attachWorkingPaper(areaId, wpId) {
+      try {
+        const response = await fetch('/audits/<%= audit.id %>/testing-procedures/' + areaId + '/attach', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ working_paper_id: wpId })
+        });
+        
+        const data = await response.json();
+        
         if (data.success) {
-          location.reload();
+          showNotification('Working paper attached successfully', 'success');
+          setTimeout(() => location.reload(), 1000);
         } else {
-          alert('Failed to attach working paper');
+          showNotification('Failed to attach working paper', 'error');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error:', error);
-        alert('Error attaching working paper');
-      });
+        showNotification('Error attaching working paper', 'error');
+      }
     }
     
-    function detachWorkingPaper(areaId, wpId) {
+    async function detachWorkingPaper(areaId, wpId) {
       if (!confirm('Remove this working paper from this folder?')) return;
       
-      fetch('/audits/<%= audit.id %>/testing-procedures/' + areaId + '/detach', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ working_paper_id: wpId })
-      })
-      .then(response => response.json())
-      .then(data => {
+      try {
+        const response = await fetch('/audits/<%= audit.id %>/testing-procedures/' + areaId + '/detach', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ working_paper_id: wpId })
+        });
+        
+        const data = await response.json();
+        
         if (data.success) {
-          location.reload();
+          showNotification('Working paper removed successfully', 'success');
+          setTimeout(() => location.reload(), 1000);
         } else {
-          alert('Failed to detach working paper');
+          showNotification('Failed to detach working paper', 'error');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error:', error);
-        alert('Error detaching working paper');
-      });
+        showNotification('Error detaching working paper', 'error');
+      }
     }
   </script>
 </body>

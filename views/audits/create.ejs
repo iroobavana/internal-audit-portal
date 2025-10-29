@@ -4,6 +4,7 @@
   <title><%= title %> - Internal Audit Portal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     * {
       margin: 0;
@@ -17,94 +18,16 @@
       color: #1e293b;
     }
     
-    /* Top Navigation Bar */
-    .top-nav {
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 16px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 20px;
-    }
-    
-    .nav-brand i {
-      font-size: 28px;
-      color: #3b82f6;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    
-    .nav-link {
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #64748b;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    
-    .nav-link:hover {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-    
-    .nav-link.active {
-      background: #dbeafe;
-      color: #3b82f6;
-    }
-    
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: #f8fafc;
-    }
-    
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
     /* Main Content */
     .main-content {
+      margin-left: 260px;
       min-height: 100vh;
       padding: 32px;
-      max-width: 1000px;
-      margin: 0 auto;
+      max-width: 1200px;
+      margin-right: auto;
     }
     
     .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 32px;
     }
     
@@ -112,6 +35,112 @@
       font-size: 32px;
       font-weight: 700;
       color: #0f172a;
+    }
+    
+    /* Notification Toast */
+    .notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 9999;
+      max-width: 420px;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.success {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification.error .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-message {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    
+    .notification-close {
+      background: #f8fafc;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .notification-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
     }
     
     /* Card Styles */
@@ -131,36 +160,352 @@
       font-size: 14px;
     }
     
-    .form-control, .form-select {
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 10px 14px;
+    .form-control {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
       font-size: 14px;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .form-control:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    
+    .form-control:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+      background: #ffffff;
+    }
+    
+    /* Custom Dropdown Container */
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    
+    .custom-dropdown select {
+      display: none;
+    }
+    
+    /* Dropdown Button */
+    .dropdown-button {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    
+    .dropdown-button:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      background-color: #f8fafc;
+    }
+    
+    .dropdown-button.active {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .dropdown-button-text {
+      color: #64748b;
+      flex: 1;
+    }
+    
+    .dropdown-button-text.selected {
+      color: #1e293b;
+      font-weight: 500;
+    }
+    
+    .dropdown-arrow {
+      transition: transform 0.3s ease;
+      color: #3b82f6;
+      font-size: 12px;
+    }
+    
+    .dropdown-button.active .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+    
+    /* Dropdown Menu */
+    .dropdown-menu-custom {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: none;
+      max-height: 300px;
+      overflow: hidden;
+      animation: dropdownFadeIn 0.2s ease;
+    }
+    
+    @keyframes dropdownFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .dropdown-menu-custom.show {
+      display: block;
+    }
+    
+    /* Search Box */
+    .dropdown-search {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .dropdown-search input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      outline: none;
       transition: all 0.2s;
     }
     
-    .form-control:focus, .form-select:focus {
+    .dropdown-search input:focus {
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      outline: none;
+    }
+    
+    /* Options List */
+    .dropdown-options {
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    
+    .dropdown-options::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .dropdown-options::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    
+    .dropdown-options::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    
+    .dropdown-options::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Option Items */
+    .dropdown-option {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      font-size: 14px;
+      color: #1e293b;
+    }
+    
+    .dropdown-option:hover {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .dropdown-option.selected {
+      background: #3b82f6;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .dropdown-option.selected:hover {
+      background: #2563eb;
+    }
+    
+    /* No Results */
+    .no-results {
+      padding: 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+    }
+    
+    /* Compact Modern Flatpickr Calendar Styling */
+    .flatpickr-calendar {
+      background: white;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+      border: 1px solid #e2e8f0 !important;
+      padding: 4px !important;
+      width: 280px !important;
+    }
+    
+    .flatpickr-months {
+      background: transparent !important;
+      padding: 4px 0 !important;
+    }
+    
+    .flatpickr-month {
+      color: #0f172a !important;
+      fill: #0f172a !important;
+      height: 32px !important;
+    }
+    
+    .flatpickr-current-month {
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      color: #0f172a !important;
+      padding: 4px 0 !important;
+      height: 32px !important;
+      line-height: 32px !important;
+    }
+    
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 14px;
+    }
+    
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      fill: #3b82f6 !important;
+      padding: 6px !important;
+      width: 28px !important;
+      height: 28px !important;
+    }
+    
+    .flatpickr-prev-month:hover,
+    .flatpickr-next-month:hover {
+      background: #dbeafe !important;
+      border-radius: 6px;
+    }
+    
+    .flatpickr-prev-month svg,
+    .flatpickr-next-month svg {
+      width: 14px !important;
+      height: 14px !important;
+    }
+    
+    .flatpickr-weekdays {
+      background: transparent !important;
+      height: 28px !important;
+      padding: 0 !important;
+    }
+    
+    .flatpickr-weekday {
+      color: #64748b !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      height: 28px !important;
+      line-height: 28px !important;
+    }
+    
+    .flatpickr-days {
+      width: 280px !important;
+    }
+    
+    .dayContainer {
+      width: 280px !important;
+      min-width: 280px !important;
+      max-width: 280px !important;
+    }
+    
+    .flatpickr-day {
+      height: 32px !important;
+      line-height: 32px !important;
+      max-width: 36px !important;
+      border-radius: 6px !important;
+      font-size: 13px !important;
+      color: #1e293b;
+      margin: 1px;
+      transition: all 0.15s ease;
+    }
+    
+    .flatpickr-day:hover {
+      background: #dbeafe !important;
+      border-color: #dbeafe !important;
+      color: #1e40af;
+    }
+    
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      background: #3b82f6 !important;
+      border-color: #3b82f6 !important;
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .flatpickr-day.today {
+      border-color: #3b82f6 !important;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+    
+    .flatpickr-day.today:hover {
+      background: #dbeafe !important;
+      border-color: #3b82f6 !important;
+      color: #1e40af;
+    }
+    
+    .flatpickr-day.selected.today,
+    .flatpickr-day.startRange.today,
+    .flatpickr-day.endRange.today {
+      background: #3b82f6 !important;
+      color: white !important;
     }
     
     /* Team Members Box */
     .team-members-box {
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
       max-height: 300px;
       overflow-y: auto;
-      background: #f8fafc;
+    }
+    
+    .team-members-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .team-members-box::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    
+    .team-members-box::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
     }
     
     .form-check {
       padding: 12px;
-      background: white;
       border-radius: 8px;
-      margin-bottom: 8px;
       transition: all 0.2s;
+      margin-bottom: 8px;
     }
     
     .form-check:hover {
@@ -176,7 +521,7 @@
     .btn-primary {
       background: #3b82f6;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px 24px;
       font-weight: 600;
       transition: all 0.2s;
@@ -191,9 +536,9 @@
     
     .btn-secondary {
       background: #f1f5f9;
-      border: 2px solid #e2e8f0;
+      border: 1px solid #e2e8f0;
       color: #0f172a;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 10px 24px;
       font-weight: 600;
       transition: all 0.2s;
@@ -205,65 +550,22 @@
       border-color: #cbd5e1;
       color: #0f172a;
     }
-    
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 14px;
-    }
   </style>
 </head>
 <body>
-  <!-- Top Navigation -->
-  <nav class="top-nav">
-    <a href="/dashboard" class="nav-brand">
-      <i class="bi bi-shield-check"></i>
-      <span>Internal Audit Portal</span>
-    </a>
-    
-    <div class="nav-links">
-      <a href="/dashboard" class="nav-link">
-        <i class="bi bi-house"></i> Dashboard
-      </a>
-      <a href="/auditees" class="nav-link">
-        <i class="bi bi-building"></i> Auditees
-      </a>
-      <a href="/audits" class="nav-link active">
-        <i class="bi bi-clipboard-check"></i> Audits
-      </a>
-      <a href="/working-papers" class="nav-link">
-        <i class="bi bi-file-earmark-text"></i> Working Papers
-      </a>
-      <% if (user.role === 'manager' || user.role === 'head_of_audit') { %>
-        <a href="/issues/verify" class="nav-link">
-          <i class="bi bi-check-circle"></i> Verify
-        </a>
-      <% } %>
-    </div>
-    
-    <div class="user-menu">
-      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-      <div>
-        <div style="font-weight: 600; font-size: 14px;"><%= user.name %></div>
-        <div style="font-size: 12px; color: #64748b;"><%= user.role %></div>
-      </div>
-      <a href="/auth/logout" class="btn btn-sm btn-secondary">
-        <i class="bi bi-box-arrow-right"></i>
-      </a>
-    </div>
-  </nav>
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+  
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
   
   <!-- Main Content -->
   <div class="main-content">
-    <%- include('../partials/messages') %>
-    
     <!-- Page Header -->
     <div class="page-header">
       <h1 class="page-title">
         <i class="bi bi-plus-circle"></i> Create Audit
       </h1>
-      <a href="/audits" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Back
-      </a>
     </div>
     
     <!-- Create Form -->
@@ -277,36 +579,74 @@
           </div>
           
           <div class="col-md-6 mb-4">
-            <label for="auditee_id" class="form-label">Select Auditee *</label>
-            <select class="form-select" id="auditee_id" name="auditee_id" required>
-              <option value="">-- Choose Auditee --</option>
-              <% auditees.forEach(auditee => { %>
-                <option value="<%= auditee.id %>"><%= auditee.name %></option>
-              <% }) %>
-            </select>
+            <label class="form-label">Select Auditee *</label>
+            <div class="custom-dropdown" data-dropdown="auditee_id">
+              <select name="auditee_id" id="auditee_id" required>
+                <option value="">-- Choose Auditee --</option>
+                <% auditees.forEach(auditee => { %>
+                  <option value="<%= auditee.id %>"><%= auditee.name %></option>
+                <% }) %>
+              </select>
+              
+              <div class="dropdown-button">
+                <span class="dropdown-button-text">-- Choose Auditee --</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
+              </div>
+              
+              <div class="dropdown-menu-custom">
+                <div class="dropdown-search">
+                  <input type="text" placeholder="Search auditees..." class="search-input">
+                </div>
+                <div class="dropdown-options"></div>
+              </div>
+            </div>
           </div>
         </div>
         
         <div class="row">
           <div class="col-md-6 mb-4">
             <label for="start_date" class="form-label">Start Date *</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" required>
+            <input type="text" class="form-control datepicker" id="start_date" name="start_date" 
+                   placeholder="Select start date" required readonly>
           </div>
           
           <div class="col-md-6 mb-4">
             <label for="end_date" class="form-label">End Date *</label>
-            <input type="date" class="form-control" id="end_date" name="end_date" required>
+            <input type="text" class="form-control datepicker" id="end_date" name="end_date" 
+                   placeholder="Select end date" required readonly>
           </div>
         </div>
         
-        <div class="mb-4">
-          <label for="team_leader_id" class="form-label">Team Leader *</label>
-          <select class="form-select" id="team_leader_id" name="team_leader_id" required>
-            <option value="">-- Choose Team Leader --</option>
-            <% auditors.forEach(auditor => { %>
-              <option value="<%= auditor.id %>"><%= auditor.name %> (<%= auditor.role %>)</option>
-            <% }) %>
-          </select>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <label class="form-label">Team Leader *</label>
+            <div class="custom-dropdown" data-dropdown="team_leader_id">
+              <select name="team_leader_id" id="team_leader_id" required>
+                <option value="">-- Choose Team Leader --</option>
+                <% auditors.forEach(auditor => { %>
+                  <option value="<%= auditor.id %>"><%= auditor.name %> (<%= auditor.role %>)</option>
+                <% }) %>
+              </select>
+              
+              <div class="dropdown-button">
+                <span class="dropdown-button-text">-- Choose Team Leader --</span>
+                <i class="bi bi-chevron-down dropdown-arrow"></i>
+              </div>
+              
+              <div class="dropdown-menu-custom">
+                <div class="dropdown-search">
+                  <input type="text" placeholder="Search team leaders..." class="search-input">
+                </div>
+                <div class="dropdown-options"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-4">
+            <label for="audit_year" class="form-label">Audit Year *</label>
+            <input type="number" class="form-control" id="audit_year" name="audit_year" 
+                   placeholder="e.g. 2025" min="2000" max="2100" required>
+          </div>
         </div>
         
         <div class="mb-4">
@@ -336,5 +676,178 @@
   </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 
+        '<i class="bi bi-check-circle-fill"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        dismissNotification(notification.querySelector('.notification-close'));
+      }, 3000);
+    }
+    
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }
+    
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+      showNotification('<%= success_msg %>', 'success');
+    <% } %>
+    
+    <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+      showNotification('<%= error_msg %>', 'error');
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error.length > 0) { %>
+      showNotification('<%= error %>', 'error');
+    <% } %>
+    
+    // Custom Dropdown Functionality
+    class CustomDropdown {
+      constructor(element) {
+        this.container = element;
+        this.select = this.container.querySelector('select');
+        this.button = this.container.querySelector('.dropdown-button');
+        this.buttonText = this.button.querySelector('.dropdown-button-text');
+        this.menu = this.container.querySelector('.dropdown-menu-custom');
+        this.searchInput = this.menu.querySelector('.search-input');
+        this.optionsContainer = this.menu.querySelector('.dropdown-options');
+        this.options = Array.from(this.select.options).slice(1);
+        
+        this.init();
+      }
+      
+      init() {
+        this.renderOptions();
+        this.attachEvents();
+      }
+      
+      renderOptions(filter = '') {
+        const filteredOptions = this.options.filter(option => 
+          option.text.toLowerCase().includes(filter.toLowerCase())
+        );
+        
+        if (filteredOptions.length === 0) {
+          this.optionsContainer.innerHTML = '<div class="no-results">No results found</div>';
+          return;
+        }
+        
+        this.optionsContainer.innerHTML = filteredOptions.map(option => {
+          const isSelected = option.value === this.select.value;
+          
+          return `
+            <div class="dropdown-option ${isSelected ? 'selected' : ''}" data-value="${option.value}">
+              ${option.text}
+            </div>
+          `;
+        }).join('');
+      }
+      
+      attachEvents() {
+        this.button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.toggle();
+        });
+        
+        this.searchInput.addEventListener('input', (e) => {
+          this.renderOptions(e.target.value);
+          this.attachOptionEvents();
+        });
+        
+        this.attachOptionEvents();
+        
+        document.addEventListener('click', (e) => {
+          if (!this.container.contains(e.target)) {
+            this.close();
+          }
+        });
+      }
+      
+      attachOptionEvents() {
+        this.optionsContainer.querySelectorAll('.dropdown-option').forEach(option => {
+          option.addEventListener('click', () => {
+            const value = option.dataset.value;
+            const text = option.textContent.trim();
+            
+            this.select.value = value;
+            this.buttonText.textContent = text;
+            this.buttonText.classList.add('selected');
+            
+            this.renderOptions(this.searchInput.value);
+            this.attachOptionEvents();
+            this.close();
+          });
+        });
+      }
+      
+      toggle() {
+        const isOpen = this.menu.classList.contains('show');
+        if (isOpen) {
+          this.close();
+        } else {
+          this.open();
+        }
+      }
+      
+      open() {
+        document.querySelectorAll('.dropdown-menu-custom.show').forEach(menu => {
+          menu.classList.remove('show');
+        });
+        document.querySelectorAll('.dropdown-button.active').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        this.menu.classList.add('show');
+        this.button.classList.add('active');
+        this.searchInput.value = '';
+        this.searchInput.focus();
+        this.renderOptions();
+        this.attachOptionEvents();
+      }
+      
+      close() {
+        this.menu.classList.remove('show');
+        this.button.classList.remove('active');
+      }
+    }
+    
+    // Initialize all custom dropdowns
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+        new CustomDropdown(dropdown);
+      });
+      
+      // Initialize Flatpickr for date inputs
+      flatpickr('.datepicker', {
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'F j, Y',
+        allowInput: false,
+        disableMobile: true
+      });
+    });
+  </script>
 </body>
 </html>

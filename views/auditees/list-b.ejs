@@ -4,72 +4,553 @@
   <title><%= title %> - Internal Audit Portal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    /* Main Content */
+    .main-content {
+      margin-left: 260px;
+      min-height: 100vh;
+      padding: 32px;
+      max-width: calc(100% - 260px);
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    /* Notification Toast */
+    .notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 9999;
+      max-width: 420px;
+    }
+    
+    .notification {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: slideIn 0.4s ease;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.success {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    .notification.hiding {
+      animation: slideOut 0.4s ease forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(450px);
+        opacity: 0;
+      }
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    
+    .notification.success .notification-icon {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification.error .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-message {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    
+    .notification-close {
+      background: #f8fafc;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .notification-close:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    /* Search and Filter Section */
+    .search-filter-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 16px;
+    }
+    
+    .search-input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px 12px 44px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .search-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .filter-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .filter-select {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      min-width: 150px;
+      cursor: pointer;
+    }
+    
+    .filter-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+    
+    .clear-filters-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .clear-filters-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    
+    /* Card Styles */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    
+    /* Button Styles */
+    .btn-primary {
+      background: #3b82f6;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: white;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      color: white;
+    }
+    
+    .btn-info {
+      background: #0ea5e9;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-info:hover {
+      background: #0284c7;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      color: #0f172a;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    
+    .btn-success {
+      background: #22c55e;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    
+    .btn-success:hover {
+      background: #16a34a;
+      color: white;
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+      color: white;
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+    
+    /* Table Styles */
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .table-modern thead {
+      background: #f8fafc;
+    }
+    
+    .table-modern th {
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-modern td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+      font-size: 14px;
+    }
+    
+    .table-modern tbody tr {
+      transition: all 0.2s;
+    }
+    
+    .table-modern tbody tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* Badge Styles */
+    .badge-custom {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-primary {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: #64748b;
+    }
+  </style>
 </head>
 <body>
-  <%- include('../partials/navbar') %>
-  <%- include('../partials/messages') %>
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
   
-  <div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1><i class="bi bi-building"></i> Auditees</h1>
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-building"></i> Auditees
+      </h1>
       <a href="/auditees/create" class="btn btn-primary">
         <i class="bi bi-plus-circle"></i> Create Auditee
       </a>
     </div>
     
-    <div class="card">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Official Email</th>
-                <th>Departments</th>
-                <th>Created At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (auditees.length === 0) { %>
-                <tr>
-                  <td colspan="6" class="text-center text-muted">No auditees found. Create your first auditee!</td>
-                </tr>
-              <% } else { %>
-                <% auditees.forEach((auditee, index) => { %>
-                  <tr>
-                    <td><%= index + 1 %></td>
-                    <td><%= auditee.name %></td>
-                    <td><%= auditee.official_email %></td>
-                    <td><%= auditee.department_count %> departments</td>
-                    <td><%= new Date(auditee.created_at).toLocaleDateString() %></td>
-                    <td>
-                      <a href="/auditees/<%= auditee.id %>" class="btn btn-sm btn-info" title="View">
-                        <i class="bi bi-eye"></i>
-                      </a>
-                      <a href="/auditees/<%= auditee.id %>/audit-universe" class="btn btn-sm btn-success" title="Audit Universe">
-                        <i class="bi bi-grid"></i>
-                      </a>
-                      <a href="/auditees/<%= auditee.id %>/edit" class="btn btn-sm btn-warning" title="Edit">
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                      <form action="/auditees/<%= auditee.id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="return confirm('Delete this auditee?');">
-                        <button type="submit" class="btn btn-sm btn-danger" title="Delete">
-                          <i class="bi bi-trash"></i>
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                <% }) %>
-              <% } %>
-            </tbody>
-          </table>
+    <!-- Auditees Table -->
+    <div class="card-modern">
+      <% if (auditees.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-building"></i>
+          </div>
+          <div class="empty-text">No auditees found.</div>
+          <a href="/auditees/create" class="btn btn-primary mt-3">
+            <i class="bi bi-plus-circle"></i> Create First Auditee
+          </a>
         </div>
-      </div>
+      <% } else { %>
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Official Email</th>
+              <th>Departments</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% auditees.forEach((auditee, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td style="font-weight: 600;"><%= auditee.name %></td>
+                <td><%= auditee.official_email %></td>
+                <td>
+                  <span class="badge-custom badge-primary">
+                    <%= auditee.department_count %> departments
+                  </span>
+                </td>
+                <td><%= new Date(auditee.created_at).toLocaleDateString() %></td>
+                <td>
+                  <div style="display: flex; gap: 8px;">
+                    <a href="/auditees/<%= auditee.id %>" class="btn btn-sm btn-info" title="View Details">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="/auditees/<%= auditee.id %>/audit-universe" class="btn btn-sm btn-success" title="Audit Universe">
+                      <i class="bi bi-grid"></i>
+                    </a>
+                    <a href="/auditees/<%= auditee.id %>/edit" class="btn btn-sm btn-warning" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <form action="/auditees/<%= auditee.id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="return confirm('Delete this auditee?');">
+                      <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
     </div>
   </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 
+        '<i class="bi bi-check-circle-fill"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill"></i>';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">${icon}</div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close" onclick="dismissNotification(this)">
+          <i class="bi bi-x"></i>
+        </button>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        dismissNotification(notification.querySelector('.notification-close'));
+      }, 3000);
+    }
+    
+    function dismissNotification(button) {
+      const notification = button.closest('.notification');
+      notification.classList.add('hiding');
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 400);
+    }
+    
+    <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+      showNotification('<%= success_msg %>', 'success');
+    <% } %>
+    
+    <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+      showNotification('<%= error_msg %>', 'error');
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error.length > 0) { %>
+      showNotification('<%= error %>', 'error');
+    <% } %>
+  </script>
 </body>
 </html>

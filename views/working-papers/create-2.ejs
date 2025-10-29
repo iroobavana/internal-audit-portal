@@ -145,6 +145,15 @@
     }
 
     /* Card Styles */
+    .card-modern {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+
     .card {
       background: white;
       border-radius: 16px;
@@ -158,9 +167,6 @@
       border-bottom: 1px solid #e2e8f0;
       padding: 20px 24px;
       border-radius: 16px 16px 0 0 !important;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .card-header h5 {
@@ -276,79 +282,56 @@
       box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
     }
 
-    /* Editable Table Styles */
-    .editable-table {
+    /* Column Item Styles */
+    .column-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .column-item:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+
+    .column-item .remove-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border-radius: 6px;
+    }
+
+    /* Preview Table Styles */
+    .preview-table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
+      margin-top: 16px;
     }
 
-    .editable-table thead tr:first-child th {
+    .preview-table th {
       background: #3b82f6;
       color: white;
-      padding: 0;
-      border: none;
-      position: relative;
-    }
-
-    .editable-table .column-header {
-      position: relative;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       padding: 12px;
-      gap: 8px;
-    }
-
-    .editable-table .column-name-input {
-      background: transparent;
+      text-align: left;
       border: none;
-      color: white;
       font-weight: 600;
       font-size: 14px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      flex: 1;
-      transition: all 0.2s;
     }
 
-    .editable-table .column-name-input:focus {
-      background: rgba(255, 255, 255, 0.15);
-      outline: none;
+    .preview-table th:first-child {
+      border-radius: 8px 0 0 0;
     }
 
-    .editable-table .column-name-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
+    .preview-table th:last-child {
+      border-radius: 0 8px 0 0;
     }
 
-    .editable-table .remove-column-btn {
-      background: rgba(239, 68, 68, 0.9);
-      border: none;
-      color: white;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-
-    .editable-table .remove-column-btn:hover {
-      background: #dc2626;
-      transform: scale(1.05);
-    }
-
-    .editable-table thead tr:nth-child(2) td {
-      background: #f8fafc;
-      padding: 12px;
-      border-bottom: 2px solid #e2e8f0;
-    }
-
-    .editable-table tbody td {
+    .preview-table td {
       padding: 12px;
       border: 1px solid #e2e8f0;
       border-top: none;
@@ -371,22 +354,6 @@
       font-size: 16px;
       color: #64748b;
     }
-
-    /* Options and Formula Container */
-    .config-container {
-      margin-top: 8px;
-    }
-
-    .config-container textarea,
-    .config-container input {
-      font-size: 13px;
-    }
-
-    .config-container small {
-      display: block;
-      margin-top: 4px;
-      color: #64748b;
-    }
   </style>
 </head>
 <body>
@@ -402,62 +369,66 @@
     <div class="page-header">
       <div>
         <h1 class="page-title">
-          <i class="bi bi-pencil-square"></i> Edit Working Paper
+          <i class="bi bi-plus-circle"></i> Create Working Paper
         </h1>
-        <p class="text-muted mb-0">Update working paper structure and properties</p>
+        <p class="text-muted mb-0">Design a new working paper template with custom properties</p>
       </div>
       <a href="/working-papers" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Back
       </a>
     </div>
     
-    <form action="/working-papers/<%= workingPaper.id %>/update" method="POST" id="wpForm">
-      <!-- Basic Configuration -->
+    <form action="/working-papers/create" method="POST" id="wpForm">
+      <!-- Form Builder Section -->
       <div class="card">
+        <div class="card-header">
+          <h5><i class="bi bi-gear me-2"></i>Working Paper Configuration</h5>
+        </div>
         <div class="card-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="name" class="form-label">Working Paper Name</label>
-              <input type="text" class="form-control" id="name" name="name" value="<%= workingPaper.name %>" required placeholder="e.g., Reconciliation Working Paper">
+          <div class="mb-4">
+            <label for="name" class="form-label">Working Paper Name</label>
+            <input type="text" class="form-control" id="name" name="name" required placeholder="e.g., Reconciliation Working Paper">
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label">Allow Row Insertion</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_yes" value="true" checked>
+              <label class="form-check-label" for="allow_yes">
+                Yes - Auditors can add rows during field work
+              </label>
             </div>
-            
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Allow Row Insertion</label>
-              <div class="d-flex gap-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_yes" value="true" <%= workingPaper.allow_row_insert ? 'checked' : '' %>>
-                  <label class="form-check-label" for="allow_yes">
-                    Yes
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_no" value="false" <%= !workingPaper.allow_row_insert ? 'checked' : '' %>>
-                  <label class="form-check-label" for="allow_no">
-                    No
-                  </label>
-                </div>
-              </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="allow_row_insert" id="allow_no" value="false">
+              <label class="form-check-label" for="allow_no">
+                No - Fixed structure
+              </label>
             </div>
+          </div>
+          
+          <hr>
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Properties</h5>
+            <button type="button" class="btn btn-primary btn-sm" id="addColumnBtn">
+              <i class="bi bi-plus-circle"></i> Add Property
+            </button>
+          </div>
+          
+          <div id="columnsContainer">
+            <!-- Columns will be added here dynamically -->
           </div>
         </div>
       </div>
 
-      <!-- Preview/Builder Section -->
+      <!-- Preview Section - Full Width Below -->
       <div class="card">
         <div class="card-header">
-          <h5><i class="bi bi-table me-2"></i>Table Structure</h5>
-          <button type="button" class="btn btn-primary btn-sm" id="addColumnBtn">
-            <i class="bi bi-plus-circle"></i> Add Property
-          </button>
+          <h5><i class="bi bi-eye me-2"></i>Preview - Table Structure</h5>
         </div>
         <div class="card-body">
-          <div id="tableArea">
-            <div class="empty-state">
-              <div class="empty-icon">
-                <i class="bi bi-table"></i>
-              </div>
-              <div class="empty-text">Loading existing properties...</div>
-            </div>
+          <div id="previewArea">
+            <p class="text-muted text-center py-4">Add properties to see preview</p>
           </div>
         </div>
         <div class="card-footer">
@@ -466,7 +437,7 @@
               <i class="bi bi-x-lg"></i> Cancel
             </a>
             <button type="submit" class="btn btn-success">
-              <i class="bi bi-save"></i> Update Working Paper
+              <i class="bi bi-check-circle"></i> Create Working Paper
             </button>
           </div>
         </div>
@@ -535,139 +506,64 @@
       { value: 'formula', label: 'Formula', icon: 'bi-calculator' }
     ];
     
-    // Load existing columns
-    const existingColumns = <%- JSON.stringify(columns) %>;
-    
     document.getElementById('addColumnBtn').addEventListener('click', function() {
       addColumn();
     });
     
-    function addColumn(existingData = null) {
+    function addColumn(name = '', type = '', options = '', formula = '') {
       columnCount++;
+      const columnDiv = document.createElement('div');
+      columnDiv.className = 'column-item';
+      columnDiv.dataset.columnIndex = columnCount;
       
-      const name = existingData ? existingData.column_name : '';
-      const type = existingData ? existingData.column_type : '';
-      const formula = existingData ? existingData.formula : '';
-      let options = '';
-      
-      if (existingData && existingData.options) {
-        try {
-          const optionsArray = JSON.parse(existingData.options);
-          options = optionsArray.join('\n');
-        } catch(e) {}
-      }
-      
-      // Check if table exists, if not create it
-      let table = document.querySelector('.editable-table');
-      if (!table) {
-        document.getElementById('tableArea').innerHTML = `
-          <div style="overflow-x: auto;">
-            <table class="editable-table">
-              <thead>
-                <tr id="headerRow"></tr>
-                <tr id="configRow"></tr>
-              </thead>
-              <tbody>
-                <tr id="previewRow"></tr>
-              </tbody>
-            </table>
+      columnDiv.innerHTML = `
+        <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="removeColumn(${columnCount})">
+          <i class="bi bi-x"></i>
+        </button>
+        
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Property Name</label>
+            <input type="text" class="form-control column-name" name="columns[${columnCount}][name]" value="${name}" required placeholder="e.g., Item Description">
           </div>
-        `;
-        table = document.querySelector('.editable-table');
-      }
-      
-      // Add header cell
-      const headerRow = document.getElementById('headerRow');
-      const headerCell = document.createElement('th');
-      headerCell.dataset.columnIndex = columnCount;
-      headerCell.innerHTML = `
-        <div class="column-header">
-          <input type="text" 
-                 class="column-name-input" 
-                 name="columns[${columnCount}][name]" 
-                 value="${name}"
-                 placeholder="Column Name" 
-                 required>
-          <button type="button" class="remove-column-btn" onclick="removeColumn(${columnCount})">
-            <i class="bi bi-x"></i>
-          </button>
-        </div>
-      `;
-      headerRow.appendChild(headerCell);
-      
-      // Add config cell
-      const configRow = document.getElementById('configRow');
-      const configCell = document.createElement('td');
-      configCell.dataset.columnIndex = columnCount;
-      configCell.innerHTML = `
-        <div>
-          <select class="form-select form-select-sm column-type" 
-                  name="columns[${columnCount}][type]" 
-                  required 
-                  onchange="handleTypeChange(${columnCount})">
-            <option value="">Select Type</option>
-            ${columnTypes.map(t => `<option value="${t.value}" ${t.value === type ? 'selected' : ''}>${t.label}</option>`).join('')}
-          </select>
-          
-          <div class="config-container options-container" id="options-${columnCount}" style="display: ${type === 'select' || type === 'multiselect' ? 'block' : 'none'};">
-            <textarea class="form-control form-control-sm mt-2" 
-                      name="columns[${columnCount}][options]" 
-                      rows="2" 
-                      placeholder="Option 1&#10;Option 2&#10;Option 3">${options}</textarea>
-            <small>One option per line</small>
-          </div>
-          
-          <div class="config-container formula-container" id="formula-${columnCount}" style="display: ${type === 'formula' ? 'block' : 'none'};">
-            <input type="text" 
-                   class="form-control form-control-sm mt-2" 
-                   name="columns[${columnCount}][formula]" 
-                   value="${formula}"
-                   placeholder="e.g., col1 + col2">
-            <small>Use col1, col2, etc. Operators: +, -, *, /</small>
+          <div class="col-md-6">
+            <label class="form-label">Property Type</label>
+            <select class="form-select column-type" name="columns[${columnCount}][type]" required onchange="handleTypeChange(${columnCount})">
+              <option value="">- Select Type -</option>
+              ${columnTypes.map(t => `<option value="${t.value}" ${t.value === type ? 'selected' : ''}>${t.label}</option>`).join('')}
+            </select>
           </div>
         </div>
+        
+        <div class="options-container" id="options-${columnCount}" style="display: ${type === 'select' || type === 'multiselect' ? 'block' : 'none'};">
+          <label class="form-label">Options (one per line)</label>
+          <textarea class="form-control" name="columns[${columnCount}][options]" rows="3" placeholder="Option 1\nOption 2\nOption 3">${options}</textarea>
+          <small class="text-muted">Enter each option on a new line</small>
+        </div>
+        
+        <div class="formula-container" id="formula-${columnCount}" style="display: ${type === 'formula' ? 'block' : 'none'};">
+          <label class="form-label">Formula</label>
+          <input type="text" class="form-control" name="columns[${columnCount}][formula]" value="${formula}" placeholder="e.g., col1 + col2 or col1 * col2">
+          <small class="text-muted">Use col1, col2, etc. Operators: +, -, *, /</small>
+        </div>
       `;
-      configRow.appendChild(configCell);
       
-      // Add preview cell
-      const previewRow = document.getElementById('previewRow');
-      const previewCell = document.createElement('td');
-      previewCell.dataset.columnIndex = columnCount;
-      previewRow.appendChild(previewCell);
+      document.getElementById('columnsContainer').appendChild(columnDiv);
+      updatePreview();
       
-      // Update preview for this cell
-      if (type) {
-        updatePreviewCell(columnCount, type);
-      } else {
-        previewCell.innerHTML = `<span class="text-muted">Select type above</span>`;
-      }
+      // Add event listeners for real-time preview
+      columnDiv.querySelector('.column-name').addEventListener('input', updatePreview);
+      columnDiv.querySelector('.column-type').addEventListener('change', updatePreview);
     }
     
     function removeColumn(index) {
-      const headerCell = document.querySelector(`#headerRow th[data-column-index="${index}"]`);
-      const configCell = document.querySelector(`#configRow td[data-column-index="${index}"]`);
-      const previewCell = document.querySelector(`#previewRow td[data-column-index="${index}"]`);
-      
-      if (headerCell) headerCell.remove();
-      if (configCell) configCell.remove();
-      if (previewCell) previewCell.remove();
-      
-      // Check if table is empty
-      const headerRow = document.getElementById('headerRow');
-      if (headerRow && headerRow.children.length === 0) {
-        document.getElementById('tableArea').innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">
-              <i class="bi bi-table"></i>
-            </div>
-            <div class="empty-text">Click "Add Property" to start building your table</div>
-          </div>
-        `;
-      }
+      const column = document.querySelector(`[data-column-index="${index}"]`);
+      column.remove();
+      updatePreview();
     }
     
     function handleTypeChange(index) {
-      const select = document.querySelector(`#configRow td[data-column-index="${index}"] .column-type`);
+      const select = document.querySelector(`[data-column-index="${index}"] .column-type`);
       const type = select.value;
       
       const optionsDiv = document.getElementById(`options-${index}`);
@@ -686,68 +582,85 @@
         formulaInput.required = (type === 'formula');
       }
       
-      // Update preview cell
-      updatePreviewCell(index, type);
+      updatePreview();
     }
     
-    function updatePreviewCell(index, type) {
-      const previewCell = document.querySelector(`#previewRow td[data-column-index="${index}"]`);
-      if (!previewCell) return;
+    function updatePreview() {
+      const columns = document.querySelectorAll('.column-item');
+      const previewArea = document.getElementById('previewArea');
       
-      let cellContent = '-';
-      
-      switch(type) {
-        case 'text': cellContent = '<input type="text" class="form-control form-control-sm" disabled>'; break;
-        case 'number': cellContent = '<input type="number" class="form-control form-control-sm" disabled>'; break;
-        case 'date': cellContent = '<input type="date" class="form-control form-control-sm" disabled>'; break;
-        case 'select': cellContent = '<select class="form-select form-select-sm" disabled><option>Select...</option></select>'; break;
-        case 'multiselect': cellContent = '<select class="form-select form-select-sm" multiple disabled><option>Select...</option></select>'; break;
-        case 'file': cellContent = '<input type="file" class="form-control form-control-sm" disabled>'; break;
-        case 'url': cellContent = '<input type="url" class="form-control form-control-sm" placeholder="https://" disabled>'; break;
-        case 'formula': cellContent = '<span class="badge bg-secondary">Auto-calculated</span>'; break;
-        default: cellContent = '<span class="text-muted">Select type</span>';
+      if (columns.length === 0) {
+        previewArea.innerHTML = '<p class="text-muted text-center py-4">Add properties to see preview</p>';
+        return;
       }
       
-      previewCell.innerHTML = cellContent;
+      let tableHTML = '<div style="overflow-x: auto;"><table class="preview-table"><thead><tr>';
+      
+      columns.forEach((column, index) => {
+        const name = column.querySelector('.column-name').value || `Column ${index + 1}`;
+        const type = column.querySelector('.column-type').value;
+        const typeIcon = columnTypes.find(t => t.value === type)?.icon || 'bi-square';
+        
+        tableHTML += `<th><i class="${typeIcon}"></i> ${name}</th>`;
+      });
+      
+      tableHTML += '</tr></thead><tbody><tr>';
+      
+      columns.forEach((column) => {
+        const type = column.querySelector('.column-type').value;
+        let cellContent = '-';
+        
+        switch(type) {
+          case 'text': cellContent = '<input type="text" class="form-control form-control-sm" disabled>'; break;
+          case 'number': cellContent = '<input type="number" class="form-control form-control-sm" disabled>'; break;
+          case 'date': cellContent = '<input type="date" class="form-control form-control-sm" disabled>'; break;
+          case 'select': cellContent = '<select class="form-select form-select-sm" disabled><option>Select...</option></select>'; break;
+          case 'multiselect': cellContent = '<select class="form-select form-select-sm" multiple disabled><option>Select...</option></select>'; break;
+          case 'file': cellContent = '<input type="file" class="form-control form-control-sm" disabled>'; break;
+          case 'url': cellContent = '<input type="url" class="form-control form-control-sm" placeholder="https://" disabled>'; break;
+          case 'formula': cellContent = '<span class="badge bg-secondary">Auto-calculated</span>'; break;
+        }
+        
+        tableHTML += `<td>${cellContent}</td>`;
+      });
+      
+      tableHTML += '</tr></tbody></table></div>';
+      
+      previewArea.innerHTML = tableHTML;
     }
     
     // Form submission handler
     document.getElementById('wpForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      const headerRow = document.getElementById('headerRow');
-      if (!headerRow || headerRow.children.length === 0) {
+      const columns = document.querySelectorAll('.column-item');
+      if (columns.length === 0) {
         showNotification('Please add at least one property', 'error');
         return;
       }
       
       // Validation: Check if all columns have names and types
       let isValid = true;
-      const configCells = document.querySelectorAll('#configRow td');
-      
-      configCells.forEach((cell) => {
-        const index = cell.dataset.columnIndex;
-        const nameInput = document.querySelector(`#headerRow th[data-column-index="${index}"] .column-name-input`);
-        const typeSelect = cell.querySelector('.column-type');
+      columns.forEach((column) => {
+        const name = column.querySelector('.column-name').value.trim();
+        const type = column.querySelector('.column-type').value;
         
-        if (!nameInput || !nameInput.value.trim() || !typeSelect || !typeSelect.value) {
+        if (!name || !type) {
           isValid = false;
         }
       });
       
       if (!isValid) {
-        showNotification('Please fill in all column names and types', 'error');
+        showNotification('Please fill in all property names and types', 'error');
         return;
       }
       
-      // Submit the form
+      // Submit the form - will redirect to /working-papers list after creation
       this.submit();
     });
     
-    // Load existing columns on page load
-    existingColumns.forEach((col) => {
-      addColumn(col);
-    });
+    // Add first column automatically
+    addColumn();
   </script>
 </body>
 </html>
