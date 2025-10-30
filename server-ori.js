@@ -1,63 +1,44 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
 const passport = require('passport');
 const flash = require('connect-flash');
 const path = require('path');
 const methodOverride = require('method-override');
 const { noCacheMiddleware } = require('./middleware/cache');
 const { attachOrganizationName } = require('./middleware/auth');
-const pool = require('./config/database');
-
+require('dotenv').config();
 const app = express();
-
 // Passport config
 require('./config/passport')(passport);
-
 // EJS template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
 // Body parser middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 // Method override for PUT and DELETE requests
 app.use(methodOverride('_method'));
-
 // Static folder
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// FIXED: PostgreSQL session store (no more memory leak!)
+// Express session
 app.use(
   session({
-    store: new pgSession({
-      pool: pool, // Use your existing database connection
-      tableName: 'user_sessions', // Session table name
-      createTableIfMissing: true // Auto-create table if it doesn't exist
-    }),
     secret: process.env.SESSION_SECRET || 'your_secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 24 hours
-      secure: process.env.NODE_ENV === 'production' ? false : false, // Set to true when using HTTPS
-      httpOnly: true,
-      sameSite: 'lax'
+      maxAge: 1000 * 60 * 60 * 24 // 24 hours
     }
   })
 );
-
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(attachOrganizationName);
-
 // Connect flash
 app.use(flash());
-
 // Global variables
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
@@ -66,10 +47,8 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
-
 // OPTIMIZATION: Apply cache middleware to all routes
 app.use(noCacheMiddleware);
-
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
@@ -83,7 +62,6 @@ app.use('/testing-procedures', require('./routes/fieldWork')); // Add this line 
 app.use('/issues', require('./routes/issues'));
 app.use('/auditee', require('./routes/auditee'));
 app.use('/reports', require('./routes/reports'));
-
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -93,7 +71,6 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err : {}
   });
 });
-
 // 404 handler
 app.use((req, res) => {
   res.status(404).render('error', {
@@ -102,7 +79,6 @@ app.use((req, res) => {
     error: {}
   });
 });
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('=================================');
