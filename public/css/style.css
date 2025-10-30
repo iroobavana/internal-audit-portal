@@ -1,4 +1,4 @@
-/* Modern Google Material Design Style */
+/* Modern Google Material Design Style - OPTIMIZED */
 
 :root {
   --primary: #1a73e8;
@@ -26,6 +26,7 @@ body {
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.5;
+  /* Remove conflicting animations - handled by layout now */
 }
 
 /* Navbar - Google style */
@@ -364,9 +365,13 @@ footer {
   margin-bottom: 24px;
 }
 
-/* Smooth transitions */
-* {
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+/* Smooth transitions - OPTIMIZED to not conflict with page loading */
+button, .btn, .nav-link, .card {
+  transition: all 0.2s ease;
+}
+
+.form-control, .form-select {
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 /* Remove Bootstrap primary color overrides */
@@ -402,29 +407,6 @@ footer {
   box-shadow: var(--shadow-2);
   max-width: 450px;
 }
-/* Page Fade Transitions */
-body {
-  animation: fadeIn 0.5s ease-in;
-}
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.page-transition {
-  animation: fadeOut 0.3s ease-out;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
+/* REMOVED: Conflicting page transitions that cause blink */
+/* All page transition animations are now handled in layout.ejs inline CSS */

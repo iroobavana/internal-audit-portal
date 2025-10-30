@@ -5,57 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> - Internal Audit Portal</title>
   
-  <!-- Critical CSS - Prevents Flash of Unstyled Content -->
+  <!-- CRITICAL INLINE CSS - Loads instantly, prevents any flash -->
   <style>
-    /* Prevent FOUC - Hide body until CSS loads */
-    body {
-      opacity: 0;
-      transition: opacity 0.3s ease-in;
+    /* Prevent flash of unstyled content */
+    html {
+      background-color: #f8f9fa;
     }
-    body.loaded {
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+      color: #202124;
+      opacity: 0;
+      transition: opacity 0.2s ease-in;
+    }
+    
+    body.ready {
       opacity: 1;
     }
     
-    /* Loading spinner */
-    .page-loader {
+    /* Page transition overlay - smooth transitions between pages */
+    .page-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background-color: #f8f9fa;
       z-index: 9999;
-      opacity: 1;
-      transition: opacity 0.3s ease-out;
-    }
-    .page-loader.hidden {
-      opacity: 0;
       pointer-events: none;
-    }
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #0d6efd;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      opacity: 0;
+      transition: opacity 0.15s ease-out;
     }
     
-    /* Smooth page transitions */
-    .container-fluid, .container {
-      animation: fadeIn 0.3s ease-in;
+    body.transitioning .page-overlay {
+      opacity: 1;
     }
-    @keyframes fadeIn {
+    
+    /* Loading indicator */
+    .loading-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, #1a73e8, #00acc1);
+      z-index: 10000;
+      transition: width 0.3s ease-out;
+    }
+    
+    body.loading .loading-bar {
+      width: 100%;
+    }
+    
+    /* Navbar placeholder - prevents layout shift */
+    .navbar {
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #dadce0;
+      box-shadow: 0 1px 2px 0 rgba(60,64,67,.3);
+    }
+    
+    /* Container placeholder */
+    .container-fluid, .container {
+      padding: 24px 32px;
+    }
+    
+    /* Smooth content fade in */
+    main {
+      animation: contentFadeIn 0.2s ease-in;
+    }
+    
+    @keyframes contentFadeIn {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(8px);
       }
       to {
         opacity: 1;
@@ -64,24 +90,44 @@
     }
   </style>
   
-  <!-- Preload Critical Resources -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <!-- Preconnect to external domains for faster loading -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://code.jquery.com">
   
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
+  <link rel="preload" href="/css/style.css" as="style">
+  
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/style.css">
+  
+  <!-- Immediate script to show body as soon as possible -->
+  <script>
+    // Mark body as ready as soon as this script runs
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('ready');
+    });
+    
+    // Fallback in case DOMContentLoaded already fired
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      document.body.classList.add('ready');
+    }
+  </script>
 </head>
 <body>
   
-  <!-- Page Loader -->
-  <div class="page-loader" id="pageLoader">
-    <div class="spinner"></div>
-  </div>
+  <!-- Page transition overlay -->
+  <div class="page-overlay"></div>
+  
+  <!-- Loading bar -->
+  <div class="loading-bar"></div>
   
   <% if (user) { %>
     <!-- Navigation Bar -->
@@ -96,40 +142,40 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/dashboard">
+              <a class="nav-link smooth-nav" href="/dashboard">
                 <i class="bi bi-house-door"></i> Dashboard
               </a>
             </li>
             
             <% if (user.role === 'head_of_audit') { %>
               <li class="nav-item">
-                <a class="nav-link" href="/auditees">
+                <a class="nav-link smooth-nav" href="/auditees">
                   <i class="bi bi-building"></i> Auditees
                 </a>
               </li>
             <% } %>
             
             <li class="nav-item">
-              <a class="nav-link" href="/audits">
+              <a class="nav-link smooth-nav" href="/audits">
                 <i class="bi bi-calendar3"></i> Audits
               </a>
             </li>
             
             <li class="nav-item">
-              <a class="nav-link" href="/working-papers">
+              <a class="nav-link smooth-nav" href="/working-papers">
                 <i class="bi bi-file-earmark-text"></i> Working Papers
               </a>
             </li>
             
             <li class="nav-item">
-              <a class="nav-link" href="/issues">
+              <a class="nav-link smooth-nav" href="/issues">
                 <i class="bi bi-exclamation-triangle"></i> Issues
               </a>
             </li>
             
             <% if (user.role === 'head_of_audit' || user.role === 'manager') { %>
               <li class="nav-item">
-                <a class="nav-link" href="/issues/verify">
+                <a class="nav-link smooth-nav" href="/issues/verify">
                   <i class="bi bi-check-circle"></i> Verify Issues
                 </a>
               </li>
@@ -182,9 +228,9 @@
   <% } %>
 
   <!-- Main Content -->
-  <div class="<%= user ? 'container-fluid' : 'container' %> mt-4">
+  <main class="<%= user ? 'container-fluid' : 'container' %> mt-4">
     <%- body %>
-  </div>
+  </main>
 
   <!-- Footer -->
   <footer class="bg-light text-center text-lg-start mt-5">
@@ -195,38 +241,58 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  
   <!-- Custom JS -->
   <script src="/js/main.js"></script>
   
-  <!-- Page Load Script -->
+  <!-- Smooth navigation script -->
   <script>
-    // Hide loader and show content when page is fully loaded
-    window.addEventListener('load', function() {
-      document.body.classList.add('loaded');
-      document.getElementById('pageLoader').classList.add('hidden');
-    });
-    
-    // Fallback: Remove loader after 1 second even if page hasn't fully loaded
-    setTimeout(function() {
-      document.body.classList.add('loaded');
-      document.getElementById('pageLoader').classList.add('hidden');
-    }, 1000);
-    
-    // Optional: Add smooth transition when clicking navigation links
-    document.addEventListener('DOMContentLoaded', function() {
-      const navLinks = document.querySelectorAll('.nav-link');
-      navLinks.forEach(link => {
+    (function() {
+      // Show body immediately when script runs
+      document.body.classList.add('ready');
+      
+      // Add smooth page transitions on navigation
+      const smoothNavLinks = document.querySelectorAll('.smooth-nav, .navbar-brand');
+      
+      smoothNavLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-          // Show loader briefly for smooth transition
-          const loader = document.getElementById('pageLoader');
-          if (loader) {
-            loader.classList.remove('hidden');
+          // Don't interfere with modifier keys (ctrl, cmd, etc)
+          if (e.ctrlKey || e.metaKey || e.shiftKey) {
+            return;
+          }
+          
+          // Show brief transition overlay
+          document.body.classList.add('transitioning');
+          document.body.classList.add('loading');
+          
+          // Let the browser navigate normally
+          // The overlay will be visible during the navigation
+        });
+      });
+      
+      // Remove transition class after page loads
+      window.addEventListener('pageshow', function() {
+        document.body.classList.remove('transitioning', 'loading');
+        document.body.classList.add('ready');
+      });
+      
+      // Performance optimization: Prefetch on hover
+      smoothNavLinks.forEach(link => {
+        link.addEventListener('mouseenter', function() {
+          const url = this.getAttribute('href');
+          if (url && url.startsWith('/')) {
+            // Create prefetch link
+            const prefetch = document.createElement('link');
+            prefetch.rel = 'prefetch';
+            prefetch.href = url;
+            document.head.appendChild(prefetch);
           }
         });
       });
-    });
+    })();
   </script>
 </body>
 </html>
